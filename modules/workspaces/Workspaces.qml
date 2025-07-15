@@ -52,12 +52,8 @@ Item {
     implicitWidth: rowLayout.implicitWidth + widgetPadding * 2
     implicitHeight: rowLayout.implicitHeight + widgetPadding * 2
 
-    Rectangle {
+    StyledContainer {
         anchors.fill: parent
-        color: Colors.surface
-        border.color: Colors.surfaceBright
-        border.width: 2
-        radius: Appearance.rounding.global
     }
 
     WheelHandler {
@@ -203,7 +199,7 @@ Item {
                             animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                         }
                     }
-                    Rectangle {
+                    StyledContainer {
                         opacity: (ConfigOptions?.bar.workspaces.alwaysShowNumbers || GlobalStates.workspaceShowNumbers || (ConfigOptions?.bar.workspaces.showAppIcons && workspaceButtonBackground.biggestWindow)) ? 0 : 1
                         visible: opacity > 0
                         anchors.centerIn: parent

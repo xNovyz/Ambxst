@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Services.SystemTray
 import "../theme"
 
-Rectangle {
+StyledContainer {
     id: root
 
     required property var bar
@@ -12,9 +12,6 @@ Rectangle {
     Layout.preferredWidth: rowLayout.implicitWidth + 16
     implicitWidth: rowLayout.implicitWidth + 16
     implicitHeight: rowLayout.implicitHeight + 16
-    color: Colors.surface
-    border.color: Colors.surfaceBright
-    border.width: 2
     radius: 16
 
     RowLayout {
