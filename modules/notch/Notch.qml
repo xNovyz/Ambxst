@@ -10,6 +10,7 @@ Rectangle {
     property Component defaultViewComponent
     property Component launcherViewComponent
     property var stackView: stackViewInternal
+    property bool isExpanded: stackViewInternal.currentItem !== stackViewInternal.initialItem
 
     implicitWidth: Math.max(stackContainer.width, 140)
     implicitHeight: Math.max(stackContainer.height, 40)
@@ -20,17 +21,19 @@ Rectangle {
     bottomLeftRadius: 20
     bottomRightRadius: 20
 
-    Behavior on width {
+    Behavior on implicitWidth {
         NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutCubic
+            duration: 250
+            easing.type: isExpanded ? Easing.OutBack : Easing.OutQuart
+            easing.overshoot: isExpanded ? 1.2 : 1.0
         }
     }
 
-    Behavior on height {
+    Behavior on implicitHeight {
         NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutCubic
+            duration: 250
+            easing.type: isExpanded ? Easing.OutBack : Easing.OutQuart
+            easing.overshoot: isExpanded ? 1.2 : 1.0
         }
     }
 
