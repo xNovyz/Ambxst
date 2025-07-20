@@ -11,7 +11,7 @@ Rectangle {
     property bool showResults: searchText.length > 0
     property int selectedIndex: -1
     signal itemSelected
-    
+
     function clearSearch() {
         searchInput.text = "";
         searchText = "";
@@ -21,7 +21,7 @@ Rectangle {
 
     implicitWidth: 500
     implicitHeight: mainLayout.implicitHeight + 32
-    color: Colors.surface
+    color: "transparent"
     radius: 32
     border.color: Colors.outline
     border.width: 0
