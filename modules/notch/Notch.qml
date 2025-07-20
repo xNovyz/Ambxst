@@ -14,7 +14,7 @@ Item {
     property bool isExpanded: stackViewInternal.currentItem !== stackViewInternal.initialItem
 
     // implicitWidth: Math.max(stackContainer.width, 250)
-    implicitWidth: GlobalStates.launcherOpen ? Math.max(stackContainer.width, 250) : 250
+    implicitWidth: GlobalStates.launcherOpen ? Math.max(stackContainer.width + 40, 290) : 290
     // implicitHeight: Math.max(stackContainer.height, 40)
     implicitHeight: GlobalStates.launcherOpen ? Math.max(stackContainer.height, 40) : 40
 
@@ -46,7 +46,7 @@ Item {
     Rectangle {
         id: notchRect
         anchors.centerIn: parent
-        width: parent.implicitWidth
+        width: parent.implicitWidth - 40
         height: parent.implicitHeight
 
         color: Colors.surface

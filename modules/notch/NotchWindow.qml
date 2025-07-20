@@ -74,7 +74,7 @@ PanelWindow {
     Component {
         id: launcherViewComponent
         Item {
-            width: 480
+            width: 440
             height: Math.min(launcherSearch.implicitHeight, 400)
 
             LauncherSearch {
@@ -139,9 +139,9 @@ PanelWindow {
         layer.effect: DropShadow {
             horizontalOffset: 0
             verticalOffset: 0
-            radius: 8
-            samples: 16
-            color: Qt.rgba(Colors.shadow.r, Colors.shadow.g, Colors.shadow.b, 1)
+            radius: GlobalStates.launcherOpen ? 16 : 8
+            samples: GlobalStates.launcherOpen ? 32 : 16
+            color: GlobalStates.launcherOpen ? Qt.rgba(Colors.shadow.r, Colors.shadow.g, Colors.shadow.b, 0.7) : Qt.rgba(Colors.shadow.r, Colors.shadow.g, Colors.shadow.b, 0.5)
             transparentBorder: true
         }
 
