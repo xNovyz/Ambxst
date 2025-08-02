@@ -30,35 +30,4 @@ Singleton {
     property bool dashboardOpen: false
     property bool workspaceShowNumbers: false
     property var wallpaperManager: null
-
-    Timer {
-        id: workspaceShowNumbersTimer
-        interval: 300 // ConfigOptions.bar.workspaces.showNumberDelay
-        repeat: false
-        onTriggered: {
-            workspaceShowNumbers = true;
-        }
-    }
-
-    GlobalShortcut {
-        name: "workspaceNumber"
-        description: qsTr("Hold to show workspace numbers, release to show icons")
-
-        onPressed: {
-            workspaceShowNumbersTimer.start();
-        }
-        onReleased: {
-            workspaceShowNumbersTimer.stop();
-            workspaceShowNumbers = false;
-        }
-    }
-
-    GlobalShortcut {
-        name: "toggleDashboard"
-        description: qsTr("Toggle dashboard")
-
-        onPressed: {
-            dashboardOpen = !dashboardOpen;
-        }
-    }
 }
