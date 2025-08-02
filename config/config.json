@@ -1,21 +1,15 @@
 {
-  "theme": {
-    "oledMode": false,
-    "roundness": 16
-  },
-  "bar": {
-    "bottom": false,
-    "borderless": false,
-    "topLeftIcon": "spark",
-    "showBackground": true,
-    "verbose": true,
-    "screenList": []
-  },
-  "workspaces": {
-    "shown": 10,
-    "showAppIcons": true,
-    "alwaysShowNumbers": false,
-    "showNumberDelay": 300,
-    "showNumbers": false
-  }
+  "oledMode": false,
+  "roundness": 16,
+  "barBottom": false,
+  "barBorderless": false,
+  "barTopLeftIcon": "spark",
+  "barShowBackground": true,
+  "barVerbose": true,
+  "barScreenList": [],
+  "workspacesShown": 10,
+  "workspacesShowAppIcons": true,
+  "workspacesAlwaysShowNumbers": false,
+  "workspacesShowNumberDelay": 300,
+  "workspacesShowNumbers": false
 }
