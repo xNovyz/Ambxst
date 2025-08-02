@@ -29,35 +29,76 @@ PanelWindow {
     function setWallpaper(path) {
         console.log("setWallpaper called with:", path);
         currentWallpaper = path;
-        
-        const process = Qt.createQmlObject(`
-            import Quickshell.Io
-            Process {
-                command: ["ln", "-sf", "${path}", "${Quickshell.env("HOME")}/.current.wall"]
-                running: true
-            }
-        `, wallpaper);
+        const pathIndex = wallpaperPaths.indexOf(path);
+        if (pathIndex !== -1) {
+            currentIndex = pathIndex;
+        }
+        wallpaperConfig.adapter.currentWallpaperPath = path;
     }
 
     function nextWallpaper() {
         if (wallpaperPaths.length === 0) return;
         currentIndex = (currentIndex + 1) % wallpaperPaths.length;
+        currentWallpaper = wallpaperPaths[currentIndex];
+        wallpaperConfig.adapter.currentWallpaperPath = wallpaperPaths[currentIndex];
     }
 
     function previousWallpaper() {
         if (wallpaperPaths.length === 0) return;
         currentIndex = currentIndex === 0 ? wallpaperPaths.length - 1 : currentIndex - 1;
+        currentWallpaper = wallpaperPaths[currentIndex];
+        wallpaperConfig.adapter.currentWallpaperPath = wallpaperPaths[currentIndex];
     }
 
     function setWallpaperByIndex(index) {
         if (index >= 0 && index < wallpaperPaths.length) {
             currentIndex = index;
+            currentWallpaper = wallpaperPaths[currentIndex];
+            wallpaperConfig.adapter.currentWallpaperPath = wallpaperPaths[currentIndex];
         }
     }
 
     Component.onCompleted: {
         GlobalStates.wallpaperManager = wallpaper;
         scanWallpapers.running = true;
+        forceActiveFocus();
+    }
+
+    FileView {
+        id: wallpaperConfig
+        path: Quickshell.env("PWD") + "/modules/wallpaper/wallpaper_config.json"
+        watchChanges: true
+        
+        onFileChanged: reload()
+        onAdapterUpdated: writeAdapter()
+        
+        JsonAdapter {
+            property string currentWallpaperPath: ""
+            
+            onCurrentWallpaperPathChanged: {
+                // Solo actualizar si el cambio viene del archivo JSON (no de nuestras funciones)
+                if (currentWallpaperPath && currentWallpaperPath !== wallpaper.currentWallpaper) {
+                    console.log("Loading wallpaper from JSON:", currentWallpaperPath);
+                    wallpaper.currentWallpaper = currentWallpaperPath;
+                    const pathIndex = wallpaper.wallpaperPaths.indexOf(currentWallpaperPath);
+                    if (pathIndex !== -1) {
+                        wallpaper.currentIndex = pathIndex;
+                    }
+                }
+            }
+        }
+    }
+
+    Keys.onLeftPressed: {
+        if (wallpaperPaths.length > 0) {
+            previousWallpaper();
+        }
+    }
+
+    Keys.onRightPressed: {
+        if (wallpaperPaths.length > 0) {
+            nextWallpaper();
+        }
     }
 
     Process {
@@ -73,7 +114,18 @@ PanelWindow {
                 } else {
                     wallpaperPaths = files.sort();
                     if (wallpaperPaths.length > 0) {
-                        currentIndex = 0;
+                        if (wallpaperConfig.adapter.currentWallpaperPath) {
+                            const savedIndex = wallpaperPaths.indexOf(wallpaperConfig.adapter.currentWallpaperPath);
+                            if (savedIndex !== -1) {
+                                currentIndex = savedIndex;
+                            } else {
+                                currentIndex = 0;
+                                wallpaperConfig.adapter.currentWallpaperPath = wallpaperPaths[0];
+                            }
+                        } else {
+                            currentIndex = 0;
+                            wallpaperConfig.adapter.currentWallpaperPath = wallpaperPaths[0];
+                        }
                     }
                 }
             }
@@ -98,7 +150,18 @@ PanelWindow {
                 const files = text.trim().split("\n").filter(f => f.length > 0);
                 wallpaperPaths = files.sort();
                 if (wallpaperPaths.length > 0) {
-                    currentIndex = 0;
+                    if (wallpaperConfig.adapter.currentWallpaperPath) {
+                        const savedIndex = wallpaperPaths.indexOf(wallpaperConfig.adapter.currentWallpaperPath);
+                        if (savedIndex !== -1) {
+                            currentIndex = savedIndex;
+                        } else {
+                            currentIndex = 0;
+                            wallpaperConfig.adapter.currentWallpaperPath = wallpaperPaths[0];
+                        }
+                    } else {
+                        currentIndex = 0;
+                        wallpaperConfig.adapter.currentWallpaperPath = wallpaperPaths[0];
+                    }
                 }
             }
         }
