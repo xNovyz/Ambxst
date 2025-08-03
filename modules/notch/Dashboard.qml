@@ -41,8 +41,7 @@ Item {
                     implicitWidth: (tabs.width - tabs.spacing * 3) / 4
 
                     background: Rectangle {
-                        color: root.state.currentTab === index ? Colors.adapter.primary : "transparent"
-                        opacity: 0.1
+                        color: root.state.currentTab === index ? Colors.adapter.surfaceContainer : "transparent"
                         radius: Configuration.roundness > 0 ? Configuration.roundness + 4 : 0
 
                         Behavior on color {

@@ -170,8 +170,9 @@ PanelWindow {
             shadowEnabled: true
             shadowHorizontalOffset: 0
             shadowVerticalOffset: 0
-            shadowBlur: (GlobalStates.launcherOpen || GlobalStates.dashboardOpen) ? 1.0 : 0.5
-            shadowColor: (GlobalStates.launcherOpen || GlobalStates.dashboardOpen) ? Qt.rgba(Colors.adapter.shadow.r, Colors.adapter.shadow.g, Colors.adapter.shadow.b, 0.7) : Qt.rgba(Colors.adapter.shadow.r, Colors.adapter.shadow.g, Colors.adapter.shadow.b, 0.5)
+            shadowBlur: GlobalStates.notchOpen ? 2.0 : 1.0
+            shadowColor: Colors.adapter.shadow
+            shadowOpacity: GlobalStates.notchOpen ? 0.75 : 0.5
         }
 
         defaultViewComponent: defaultViewComponent

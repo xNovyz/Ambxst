@@ -112,8 +112,8 @@ Item {
                 topRightRadius: radiusRight
                 bottomRightRadius: radiusRight
 
-                color: Colors.adapter.primary
-                opacity: (workspaceOccupied[index] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 1)) ? 0.3 : 0
+                color: Colors.adapter.surfaceContainerHighest
+                opacity: (workspaceOccupied[index] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 1)) ? 1 : 0
 
                 Behavior on opacity {
                     NumberAnimation {

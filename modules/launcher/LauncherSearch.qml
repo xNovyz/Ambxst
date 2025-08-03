@@ -46,7 +46,7 @@ Rectangle {
             id: searchInputContainer
             Layout.fillWidth: true
             implicitHeight: 48
-            color: Colors.adapter.surfaceContainerHigh
+            color: Colors.adapter.surfaceContainerHighest
             radius: Configuration.roundness > 0 ? Configuration.roundness + 4 : 0
             border.color: searchInput.activeFocus ? Colors.adapter.primary : Colors.adapter.outline
             border.width: 0

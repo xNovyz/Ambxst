@@ -14,7 +14,8 @@ Rectangle {
         shadowEnabled: true
         shadowHorizontalOffset: 0
         shadowVerticalOffset: 0
-        shadowBlur: 0.5
-        shadowColor: Qt.rgba(Colors.adapter.shadow.r, Colors.adapter.shadow.g, Colors.adapter.shadow.b, 0.5)
+        shadowBlur: 1
+        shadowColor: Colors.adapter.shadow
+        shadowOpacity: 0.5
     }
 }
