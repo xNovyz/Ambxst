@@ -1,12 +1,16 @@
 {
   "theme": {
     "oledMode": false,
-    "roundness": 16
+    "roundness": 16,
+    "iconFont": "nerd",
+    "defaultFont": "Roboto Condensed"
   },
   "bar": {
     "bottom": false,
     "borderless": false,
-    "launcherIcon": "",
+    "launcherNerdIcon": "",
+    "launcherTablerIcon": "&#xec2c;",
+    "launcherPhosphorIcon": "",
     "showBackground": false,
     "verbose": true,
     "screenList": []

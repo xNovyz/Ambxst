@@ -244,7 +244,8 @@ Rectangle {
             }
 
             highlight: Rectangle {
-                color: Colors.adapter.surfaceBright
+                color: Colors.adapter.primary
+                opacity: 0.2
                 radius: Configuration.roundness
                 visible: root.selectedIndex >= 0
             }

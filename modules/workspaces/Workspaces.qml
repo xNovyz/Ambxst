@@ -13,6 +13,7 @@ import qs.modules.globals
 import qs.config
 
 Item {
+    id: workspacesWidget
     required property var bar
     property bool borderless: Configuration.bar.borderless
     readonly property HyprlandMonitor monitor: Hyprland.monitorFor(bar.screen)
@@ -20,10 +21,10 @@ Item {
 
     readonly property int workspaceGroup: Math.floor((monitor?.activeWorkspace?.id - 1 || 0) / Configuration.workspaces.shown)
     property list<bool> workspaceOccupied: []
-    property int widgetPadding: 5
-    property int workspaceButtonWidth: 26
-    property real workspaceIconSize: workspaceButtonWidth * 0.69
-    property real workspaceIconSizeShrinked: workspaceButtonWidth * 0.55
+    property int widgetPadding: 4
+    property int workspaceButtonWidth: parent.height - widgetPadding * 2
+    property real workspaceIconSize: workspaceButtonWidth * 0.7
+    property real workspaceIconSizeShrinked: workspaceButtonWidth * 0.5
     property real workspaceIconOpacityShrinked: 1
     property real workspaceIconMarginShrinked: -4
     property int workspaceIndexInGroup: (monitor?.activeWorkspace?.id - 1 || 0) % Configuration.workspaces.shown
@@ -100,11 +101,11 @@ Item {
                 z: 1
                 implicitWidth: workspaceButtonWidth
                 implicitHeight: workspaceButtonWidth
-                radius: 12
+                radius: Configuration.roundness - 4
                 property var leftOccupied: (workspaceOccupied[index - 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index))
                 property var rightOccupied: (workspaceOccupied[index + 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 2))
-                property var radiusLeft: leftOccupied ? 0 : 12
-                property var radiusRight: rightOccupied ? 0 : 12
+                property var radiusLeft: leftOccupied ? 0 : Configuration.roundness - 4
+                property var radiusRight: rightOccupied ? 0 : Configuration.roundness - 4
 
                 topLeftRadius: radiusLeft
                 bottomLeftRadius: radiusLeft

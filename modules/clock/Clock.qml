@@ -27,7 +27,7 @@ StyledContainer {
         repeat: true
         onTriggered: {
             var now = new Date();
-            clockContainer.currentTime = Qt.formatDateTime(now, " hh:mm:ss");
+            clockContainer.currentTime = Qt.formatDateTime(now, "hh:mm:ss");
         }
     }
 }

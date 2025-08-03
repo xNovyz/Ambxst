@@ -45,14 +45,16 @@ PanelWindow {
     }
 
     function nextWallpaper() {
-        if (wallpaperPaths.length === 0) return;
+        if (wallpaperPaths.length === 0)
+            return;
         currentIndex = (currentIndex + 1) % wallpaperPaths.length;
         currentWallpaper = wallpaperPaths[currentIndex];
         wallpaperConfig.adapter.currentWall = wallpaperPaths[currentIndex];
     }
 
     function previousWallpaper() {
-        if (wallpaperPaths.length === 0) return;
+        if (wallpaperPaths.length === 0)
+            return;
         currentIndex = currentIndex === 0 ? wallpaperPaths.length - 1 : currentIndex - 1;
         currentWallpaper = wallpaperPaths[currentIndex];
         wallpaperConfig.adapter.currentWall = wallpaperPaths[currentIndex];
@@ -76,14 +78,14 @@ PanelWindow {
         id: wallpaperConfig
         path: Quickshell.env("PWD") + "/modules/wallpaper/wallpaper_config.json"
         watchChanges: true
-        
+
         onFileChanged: reload()
         onAdapterUpdated: writeAdapter()
-        
+
         JsonAdapter {
             property string currentWall: ""
             property string wallPath: ""
-            
+
             onCurrentWallChanged: {
                 // Solo actualizar si el cambio viene del archivo JSON (no de nuestras funciones)
                 if (currentWall && currentWall !== wallpaper.currentWallpaper) {
@@ -95,7 +97,7 @@ PanelWindow {
                     }
                 }
             }
-            
+
             onWallPathChanged: {
                 // Rescan wallpapers when wallPath changes
                 if (wallPath) {
@@ -235,21 +237,21 @@ PanelWindow {
 
         Behavior on opacity {
             NumberAnimation {
-                duration: 400
+                duration: 500
                 easing.type: Easing.OutCubic
             }
         }
 
         Behavior on scale {
             NumberAnimation {
-                duration: 400
+                duration: 500
                 easing.type: Easing.OutCubic
             }
         }
 
         Image {
             anchors.fill: parent
-            source: parent.source ? "file://" + parent.source : ""
+            source: parent.source ? parent.source : ""
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             smooth: true

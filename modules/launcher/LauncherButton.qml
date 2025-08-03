@@ -29,8 +29,9 @@ Button {
     }
 
     contentItem: Text {
-        text: Configuration.bar.launcherIcon
-        font.family: Styling.defaultFont
+        text: Configuration.launcherIcon
+        textFormat: Text.RichText
+        font.family: Styling.iconFont
         font.pixelSize: 20
         color: root.pressed ? Colors.background : Colors.adapter.primary
         horizontalAlignment: Text.AlignHCenter
