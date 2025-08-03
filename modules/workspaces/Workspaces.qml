@@ -101,11 +101,11 @@ Item {
                 z: 1
                 implicitWidth: workspaceButtonWidth
                 implicitHeight: workspaceButtonWidth
-                radius: Configuration.roundness - widgetPadding
+                radius: Math.max(0, Configuration.roundness - widgetPadding)
                 property var leftOccupied: (workspaceOccupied[index - 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index))
                 property var rightOccupied: (workspaceOccupied[index + 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 2))
-                property var radiusLeft: leftOccupied ? 0 : Configuration.roundness - widgetPadding
-                property var radiusRight: rightOccupied ? 0 : Configuration.roundness - widgetPadding
+                property var radiusLeft: leftOccupied ? 0 : Math.max(0, Configuration.roundness - widgetPadding)
+                property var radiusRight: rightOccupied ? 0 : Math.max(0, Configuration.roundness - widgetPadding)
 
                 topLeftRadius: radiusLeft
                 bottomLeftRadius: radiusLeft
@@ -147,8 +147,11 @@ Item {
                 ws.id === (monitor?.activeWorkspace?.id || 1) && 
                 HyprlandData.windowList.some(w => w.workspace.id === ws.id)
             );
+            if (Configuration.roundness === 0) {
+                return 0;
+            }
             return currentWorkspaceHasWindows 
-                ? Configuration.roundness - parent.widgetPadding - activeWorkspaceMargin
+                ? Math.max(0, Configuration.roundness - parent.widgetPadding - activeWorkspaceMargin)
                 : implicitHeight / 2;
         }
         
