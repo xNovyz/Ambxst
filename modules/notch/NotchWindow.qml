@@ -32,7 +32,7 @@ PanelWindow {
     HyprlandFocusGrab {
         id: focusGrab
         windows: [notchPanel]
-        active: isScreenFocused && (screenVisibilities.launcher || screenVisibilities.dashboard || screenVisibilities.overview)
+        active: screenVisibilities.launcher || screenVisibilities.dashboard || screenVisibilities.overview
 
         onCleared: {
             screenVisibilities.launcher = false;
@@ -223,21 +223,21 @@ PanelWindow {
             shadowEnabled: true
             shadowHorizontalOffset: 0
             shadowVerticalOffset: 0
-            shadowBlur: GlobalStates.getNotchOpen(screen.name) ? 2.0 : 1.0
+            shadowBlur: screenVisibilities && (screenVisibilities.launcher || screenVisibilities.dashboard || screenVisibilities.overview) ? 2.0 : 1.0
             shadowColor: Colors.adapter.shadow
-            shadowOpacity: GlobalStates.getNotchOpen(screen.name) ? 0.75 : 0.5
+            shadowOpacity: screenVisibilities && (screenVisibilities.launcher || screenVisibilities.dashboard || screenVisibilities.overview) ? 0.75 : 0.5
 
             Behavior on shadowBlur {
                 NumberAnimation {
                     duration: Config.animDuration
-                    easing.type: GlobalStates.getNotchOpen(screen.name) ? Easing.OutBack : Easing.OutQuart
+                    easing.type: screenVisibilities && (screenVisibilities.launcher || screenVisibilities.dashboard || screenVisibilities.overview) ? Easing.OutBack : Easing.OutQuart
                 }
             }
 
             Behavior on shadowOpacity {
                 NumberAnimation {
                     duration: Config.animDuration
-                    easing.type: GlobalStates.getNotchOpen(screen.name) ? Easing.OutBack : Easing.OutQuart
+                    easing.type: screenVisibilities && (screenVisibilities.launcher || screenVisibilities.dashboard || screenVisibilities.overview) ? Easing.OutBack : Easing.OutQuart
                 }
             }
         }
@@ -246,6 +246,7 @@ PanelWindow {
         launcherViewComponent: launcherViewComponent
         dashboardViewComponent: dashboardViewComponent
         overviewViewComponent: overviewViewComponent
+        visibilities: screenVisibilities
 
         // Handle global keyboard events
         Keys.onPressed: event => {
@@ -265,7 +266,6 @@ PanelWindow {
             if (screenVisibilities.launcher) {
                 notchContainer.stackView.push(launcherViewComponent);
                 Qt.callLater(() => {
-                    notchPanel.activate();
                     notchPanel.forceActiveFocus();
                     // Additional focus to ensure search input gets focus
                     let currentItem = notchContainer.stackView.currentItem;
@@ -284,7 +284,6 @@ PanelWindow {
             if (screenVisibilities.dashboard) {
                 notchContainer.stackView.push(dashboardViewComponent);
                 Qt.callLater(() => {
-                    notchPanel.activate();
                     notchPanel.forceActiveFocus();
                 });
             } else {
@@ -298,7 +297,6 @@ PanelWindow {
             if (screenVisibilities.overview) {
                 notchContainer.stackView.push(overviewViewComponent);
                 Qt.callLater(() => {
-                    notchPanel.activate();
                     notchPanel.forceActiveFocus();
                 });
             } else {

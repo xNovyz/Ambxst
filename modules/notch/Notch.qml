@@ -16,10 +16,13 @@ Item {
     property Component overviewViewComponent
     property var stackView: stackViewInternal
     property bool isExpanded: stackViewInternal.currentItem !== stackViewInternal.initialItem
+    
+    // Screen-specific visibility properties passed from parent
+    property var visibilities
+    readonly property bool screenNotchOpen: visibilities ? (visibilities.launcher || visibilities.dashboard || visibilities.overview) : false
 
-    implicitWidth: (GlobalStates.launcherOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen) ? Math.max(stackContainer.width + 40, 290) : 290
-    // implicitHeight: Math.max(stackContainer.height, 40)
-    implicitHeight: (GlobalStates.launcherOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen) ? Math.max(stackContainer.height, 40) : 40
+    implicitWidth: screenNotchOpen ? Math.max(stackContainer.width + 40, 290) : 290
+    implicitHeight: screenNotchOpen ? Math.max(stackContainer.height, 40) : 40
 
     Behavior on implicitWidth {
         NumberAnimation {
@@ -55,23 +58,23 @@ Item {
         color: Colors.background
         topLeftRadius: 0
         topRightRadius: 0
-        bottomLeftRadius: Config.roundness > 0 ? (GlobalStates.notchOpen ? Config.roundness + 20 : Config.roundness + 4) : 0
-        bottomRightRadius: Config.roundness > 0 ? (GlobalStates.notchOpen ? Config.roundness + 20 : Config.roundness + 4) : 0
+        bottomLeftRadius: Config.roundness > 0 ? (screenNotchOpen ? Config.roundness + 20 : Config.roundness + 4) : 0
+        bottomRightRadius: Config.roundness > 0 ? (screenNotchOpen ? Config.roundness + 20 : Config.roundness + 4) : 0
         clip: true
 
         Behavior on bottomLeftRadius {
             NumberAnimation {
                 duration: Config.animDuration
-                easing.type: GlobalStates.notchOpen ? Easing.OutBack : Easing.OutQuart
-                easing.overshoot: GlobalStates.notchOpen ? 1.2 : 1.0
+                easing.type: screenNotchOpen ? Easing.OutBack : Easing.OutQuart
+                easing.overshoot: screenNotchOpen ? 1.2 : 1.0
             }
         }
 
         Behavior on bottomRightRadius {
             NumberAnimation {
                 duration: Config.animDuration
-                easing.type: GlobalStates.notchOpen ? Easing.OutBack : Easing.OutQuart
-                easing.overshoot: GlobalStates.notchOpen ? 1.2 : 1.0
+                easing.type: screenNotchOpen ? Easing.OutBack : Easing.OutQuart
+                easing.overshoot: screenNotchOpen ? 1.2 : 1.0
             }
         }
 
