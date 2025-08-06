@@ -55,19 +55,6 @@ PanelWindow {
             )
             color: Config.bar.showBackground ? bgColor : "transparent"
 
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskSource: barBg
-                maskInverted: true
-                shadowEnabled: true
-                shadowHorizontalOffset: 0
-                shadowVerticalOffset: 0
-                shadowBlur: 1
-                shadowColor: Colors.adapter.shadow
-                shadowOpacity: Config.theme.shadowOpacity
-            }
-
             RoundCorner {
                 id: topLeft
                 size: Config.roundness > 0 ? Config.roundness + 4 : 0
@@ -79,6 +66,47 @@ PanelWindow {
 
             RoundCorner {
                 id: topRight
+                size: Config.roundness > 0 ? Config.roundness + 4 : 0
+                anchors.right: parent.right
+                anchors.top: parent.bottom
+                corner: RoundCorner.CornerEnum.TopRight
+                color: parent.color
+            }
+        }
+
+        Rectangle {
+            id: barBgShadow
+            anchors.fill: barBg
+            property color bgColor: Qt.rgba(
+              Qt.color(Colors.adapter.surfaceContainerLowest).r,
+              Qt.color(Colors.adapter.surfaceContainerLowest).g,
+              Qt.color(Colors.adapter.surfaceContainerLowest).b,
+              Config.bar.bgOpacity
+            )
+            color: Config.bar.showBackground ? bgColor : "transparent"
+
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                maskEnabled: true
+                maskSource: barBgShadow
+                maskInverted: true
+                shadowEnabled: true
+                shadowHorizontalOffset: 0
+                shadowVerticalOffset: 0
+                shadowBlur: 1
+                shadowColor: Colors.adapter.shadow
+                shadowOpacity: Config.theme.shadowOpacity
+            }
+
+            RoundCorner {
+                size: Config.roundness > 0 ? Config.roundness + 4 : 0
+                anchors.left: parent.left
+                anchors.top: parent.bottom
+                corner: RoundCorner.CornerEnum.TopLeft
+                color: parent.color
+            }
+
+            RoundCorner {
                 size: Config.roundness > 0 ? Config.roundness + 4 : 0
                 anchors.right: parent.right
                 anchors.top: parent.bottom
