@@ -16,11 +16,11 @@ Rectangle {
 
     function clearSearch() {
         GlobalStates.clearLauncherState();
-        searchInput.focus();
+        searchInput.focusInput();
     }
 
     function focusSearchInput() {
-        searchInput.focus();
+        searchInput.focusInput();
     }
 
     implicitWidth: 500

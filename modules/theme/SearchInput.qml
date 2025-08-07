@@ -22,7 +22,7 @@ PaneRect {
     signal homePressed()
     signal endPressed()
 
-    function focus() {
+    function focusInput() {
         textField.forceActiveFocus()
     }
 
