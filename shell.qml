@@ -6,7 +6,7 @@ import qs.modules.bar
 import qs.modules.bar.workspaces
 import qs.modules.notifications
 import qs.modules.widgets.wallpapers
-import qs.modules.widgets.notch
+import qs.modules.notch
 import qs.modules.services
 import qs.modules.corners
 import qs.config

@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import qs.modules.theme
 import qs.modules.globals
 import qs.modules.services
-import qs.modules.widgets.notch
+import qs.modules.notch
 import qs.modules.widgets.wallpapers
 import qs.config
 
