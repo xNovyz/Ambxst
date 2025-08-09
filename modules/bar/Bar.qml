@@ -12,6 +12,7 @@ import qs.modules.bar.clock
 import qs.modules.bar.systray
 import qs.modules.widgets.overview
 import qs.modules.widgets.launcher
+import qs.modules.widgets.powermenu
 import qs.modules.corners
 import qs.modules.components
 import qs.modules.services
@@ -163,17 +164,8 @@ PanelWindow {
                 id: clockComponent
             }
 
-            ToggleButton {
+            PowerButton {
                 id: powerButton
-                buttonIcon: Icons.powermenu
-                tooltipText: "Power Menu"
-                onToggle: function () {
-                    if (Visibilities.currentActiveModule === "powermenu") {
-                        Visibilities.setActiveModule("");
-                    } else {
-                        Visibilities.setActiveModule("powermenu");
-                    }
-                }
             }
         }
     }

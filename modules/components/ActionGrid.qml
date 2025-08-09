@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import qs.modules.theme
 import qs.modules.components
+import qs.config
 
 FocusScope {
     id: root
@@ -11,7 +12,7 @@ FocusScope {
     property alias actions: repeater.model
     property string layout: "row" // "row" or "grid"
     property int buttonSize: 48
-    property int spacing: 12
+    property int spacing: 4
     property int columns: 3 // para layout grid
 
     signal actionTriggered(var action)
@@ -98,7 +99,7 @@ FocusScope {
 
                     background: BgRect {
                         color: actionButton.pressed ? Colors.adapter.primary : (actionButton.hovered || actionButton.activeFocus) ? Colors.adapter.surfaceContainerHighest : Colors.adapter.surfaceContainer
-                        radius: root.buttonSize / 2
+                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
 
                         border.width: actionButton.activeFocus ? 2 : 0
                         border.color: Colors.adapter.primary
@@ -107,8 +108,8 @@ FocusScope {
                     contentItem: Text {
                         text: modelData.icon || ""
                         font.family: Icons.font
-                        font.pixelSize: 20
-                        color: actionButton.pressed ? Colors.adapter.overPrimary : Colors.adapter.primary
+                        font.pixelSize: 24
+                        color: actionButton.pressed ? Colors.background : Colors.adapter.primary
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }

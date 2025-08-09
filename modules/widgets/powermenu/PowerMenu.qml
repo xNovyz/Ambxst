@@ -1,46 +1,47 @@
 import QtQuick
 import qs.modules.components
 import qs.modules.services
+import qs.modules.theme
 
 ActionGrid {
     id: root
-    
-    signal itemSelected()
-    
+
+    signal itemSelected
+
     layout: "row"
-    buttonSize: 48
-    spacing: 12
-    
+    buttonSize: 52
+    spacing: 8
+
     actions: [
         {
-            icon: "\uf023",
+            icon: Icons.lock,
             tooltip: "Lock Session",
             command: "loginctl lock-session"
         },
         {
-            icon: "\uf186", 
+            icon: Icons.suspend,
             tooltip: "Suspend",
             command: "systemctl suspend"
         },
         {
-            icon: "\uf2f5",
-            tooltip: "Exit Hyprland", 
+            icon: Icons.logout,
+            tooltip: "Exit Hyprland",
             command: "hyprctl dispatch exit"
         },
         {
-            icon: "\uf2f1",
+            icon: Icons.reboot,
             tooltip: "Reboot",
             command: "systemctl reboot"
         },
         {
-            icon: "\uf011",
+            icon: Icons.shutdown,
             tooltip: "Power Off",
             command: "systemctl poweroff"
         }
     ]
-    
-    onActionTriggered: (action) => {
-        console.log("Executing power action:", action.command)
-        root.itemSelected()
+
+    onActionTriggered: action => {
+        console.log("Executing power action:", action.command);
+        root.itemSelected();
     }
 }
