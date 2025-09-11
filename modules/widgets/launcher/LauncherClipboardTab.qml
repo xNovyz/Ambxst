@@ -15,7 +15,16 @@ Rectangle {
     focus: true
 
     Keys.onEscapePressed: {
-        root.itemSelected();
+        if (root.deleteMode) {
+            console.log("DEBUG: Escape pressed in delete mode - canceling");
+            root.cancelDeleteMode();
+        } else if (root.imageDeleteMode) {
+            console.log("DEBUG: Escape pressed in image delete mode - canceling");
+            root.cancelImageDeleteMode();
+        } else {
+            // Solo cerrar el notch si NO estamos en modo delete
+            root.itemSelected();
+        }
     }
 
     property string searchText: ""
