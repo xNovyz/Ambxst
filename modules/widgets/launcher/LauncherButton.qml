@@ -13,6 +13,7 @@ ToggleButton {
             GlobalStates.clearLauncherState();
             Visibilities.setActiveModule("");
         } else {
+            GlobalStates.launcherCurrentTab = 0;
             Visibilities.setActiveModule("launcher");
         }
     }

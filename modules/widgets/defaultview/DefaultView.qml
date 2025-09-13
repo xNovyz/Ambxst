@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import qs.modules.theme
 import qs.modules.services
+import qs.modules.globals
 import qs.config
 
 Item {
@@ -33,10 +34,12 @@ Item {
             if (Visibilities.currentActiveModule === "dashboard") {
                 Visibilities.setActiveModule("overview");
             } else if (Visibilities.currentActiveModule === "overview") {
+                GlobalStates.launcherCurrentTab = 0;
                 Visibilities.setActiveModule("launcher");
             } else if (Visibilities.currentActiveModule === "launcher") {
                 Visibilities.setActiveModule("");
             } else {
+                GlobalStates.dashboardCurrentTab = 0;
                 Visibilities.setActiveModule("dashboard");
             }
         }
