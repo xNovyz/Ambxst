@@ -4,7 +4,7 @@ import qs.modules.theme
 import qs.config
 import qs.modules.components
 
-ClippingRectangle {
+Rectangle {
     color: Colors.background
     radius: Config.roundness
     border.color: Colors.adapter[Config.theme.borderColor] || Colors.adapter.surfaceBright
