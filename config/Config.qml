@@ -78,6 +78,11 @@ Singleton {
                 property bool blurTransition: true
                 property bool windowPreview: true
             }
+
+            property JsonObject weather: JsonObject {
+                property string location: ""
+                property string unit: "C"
+            }
         }
     }
 
@@ -127,4 +132,7 @@ Singleton {
     // Performance configuration
     property QtObject performance: loader.adapter.performance
     property bool blurTransition: performance.blurTransition
+
+    // Weather configuration
+    property QtObject weather: loader.adapter.weather
 }
