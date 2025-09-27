@@ -94,7 +94,7 @@ FocusScope {
             z: 0 // Por debajo de los botones
             visible: repeater.count > 0
 
-            property real activeButtonMargin: 2
+
             property real idx1X: root.currentIndex % (root.layout === "row" ? root.actions.length : root.columns)
             property real idx2X: root.currentIndex % (root.layout === "row" ? root.actions.length : root.columns)
             property real idx1Y: root.layout === "row" ? 0 : Math.floor(root.currentIndex / root.columns)
@@ -102,22 +102,22 @@ FocusScope {
 
             // Posición y tamaño con efecto elástico
             x: {
-                let minX = Math.min(idx1X, idx2X) * (root.buttonSize + root.spacing) + container.x + activeButtonMargin;
+                let minX = Math.min(idx1X, idx2X) * (root.buttonSize + root.spacing) + container.x;
                 return minX;
             }
 
             y: {
-                let minY = Math.min(idx1Y, idx2Y) * (root.buttonSize + root.spacing) + container.y + activeButtonMargin;
+                let minY = Math.min(idx1Y, idx2Y) * (root.buttonSize + root.spacing) + container.y;
                 return minY;
             }
 
             width: {
-                let stretchX = Math.abs(idx1X - idx2X) * (root.buttonSize + root.spacing) + root.buttonSize - activeButtonMargin * 2;
+                let stretchX = Math.abs(idx1X - idx2X) * (root.buttonSize + root.spacing) + root.buttonSize;
                 return stretchX;
             }
 
             height: {
-                let stretchY = Math.abs(idx1Y - idx2Y) * (root.buttonSize + root.spacing) + root.buttonSize - activeButtonMargin * 2;
+                let stretchY = Math.abs(idx1Y - idx2Y) * (root.buttonSize + root.spacing) + root.buttonSize;
                 return stretchY;
             }
 
