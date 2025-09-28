@@ -264,30 +264,73 @@ Item {
                     urgency: notificationObject ? notificationObject.urgency : NotificationUrgency.Normal
                 }
 
-                Column {
+                Item {
                     Layout.fillWidth: true
-                    spacing: 4
+                    implicitHeight: expanded ? columnLayout.implicitHeight : rowLayout.implicitHeight
 
-                    Text {
+                    Column {
+                        id: columnLayout
                         width: parent.width
-                        text: notificationObject.summary || ""
-                        font.family: Config.theme.font
-                        font.pixelSize: 14
-                        font.weight: Font.Bold
-                        color: Colors.adapter.primary
-                        elide: Text.ElideRight
+                        spacing: 4
+                        visible: expanded
+
+                        Text {
+                            width: parent.width
+                            text: notificationObject.summary || ""
+                            font.family: Config.theme.font
+                            font.pixelSize: 14
+                            font.weight: Font.Bold
+                            color: Colors.adapter.primary
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            width: parent.width
+                            text: processNotificationBody(notificationObject.body || "")
+                            font.family: Config.theme.font
+                            font.pixelSize: root.fontSize
+                            color: Colors.adapter.overBackground
+                            wrapMode: Text.Wrap
+                            maximumLineCount: 3
+                            elide: Text.ElideRight
+                            visible: text.length > 0
+                        }
                     }
 
-                    Text {
+                    RowLayout {
+                        id: rowLayout
                         width: parent.width
-                        text: processNotificationBody(notificationObject.body || "")
-                        font.family: Config.theme.font
-                        font.pixelSize: root.fontSize
-                        color: Colors.adapter.overBackground
-                        wrapMode: Text.Wrap
-                        maximumLineCount: expanded ? 3 : 1
-                        elide: Text.ElideRight
-                        visible: text.length > 0
+                        spacing: 4
+                        visible: !expanded
+
+                        Text {
+                            text: notificationObject.summary || ""
+                            font.family: Config.theme.font
+                            font.pixelSize: 14
+                            font.weight: Font.Bold
+                            color: Colors.adapter.primary
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            text: "•"
+                            font.family: Config.theme.font
+                            font.pixelSize: 14
+                            font.weight: Font.Bold
+                            color: Colors.adapter.outline
+                            visible: notificationObject.body && notificationObject.body.length > 0
+                        }
+
+                        Text {
+                            text: processNotificationBody(notificationObject.body || "").replace(/\n/g, ' ')
+                            font.family: Config.theme.font
+                            font.pixelSize: root.fontSize
+                            color: Colors.adapter.overBackground
+                            wrapMode: Text.NoWrap
+                            elide: Text.ElideRight
+                            Layout.fillWidth: true
+                            visible: text.length > 0
+                        }
                     }
                 }
             }
