@@ -198,19 +198,18 @@ Item {
                             }
                         }
 
-                        // Body: mostrar solo el más reciente cuando no expanded
-                        Text {
-                            width: parent.width
-                            text: latestNotification ? processNotificationBody(latestNotification.body, latestNotification.appName) : ""
-                            font.family: Config.theme.font
-                            font.pixelSize: Config.theme.fontSize
-                            font.weight: Font.Bold
-                            color: Colors.adapter.overBackground
-                            wrapMode: onlyNotification ? Text.Wrap : Text.NoWrap
-                            maximumLineCount: onlyNotification ? 3 : 1
-                            elide: Text.ElideRight
-                            visible: onlyNotification || text !== ""
-                        }
+                         // Body: mostrar solo el más reciente cuando no expanded
+                         Text {
+                             width: parent.width
+                             text: latestNotification ? processNotificationBody(latestNotification.body, latestNotification.appName) : ""
+                             font.family: Config.theme.font
+                             font.pixelSize: Config.theme.fontSize
+                             color: Colors.adapter.overBackground
+                             wrapMode: onlyNotification ? Text.Wrap : Text.NoWrap
+                             maximumLineCount: onlyNotification ? 3 : 1
+                             elide: Text.ElideRight
+                             visible: onlyNotification || text !== ""
+                         }
                     }
                 }
 

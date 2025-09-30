@@ -187,18 +187,17 @@ Item {
                             }
                         }
 
-                        Text {
-                            width: parent.width
-                            text: notificationObject ? processNotificationBody(notificationObject.body, notificationObject.appName) : ""
-                            font.family: Config.theme.font
-                            font.pixelSize: Config.theme.fontSize
-                            font.weight: Font.Bold
-                            color: Colors.adapter.overBackground
-                            wrapMode: onlyNotification ? Text.Wrap : Text.NoWrap
-                            maximumLineCount: onlyNotification ? 3 : 1
-                            elide: Text.ElideRight
-                            visible: onlyNotification || text !== ""
-                        }
+                         Text {
+                             width: parent.width
+                             text: notificationObject ? processNotificationBody(notificationObject.body, notificationObject.appName) : ""
+                             font.family: Config.theme.font
+                             font.pixelSize: Config.theme.fontSize
+                             color: Colors.adapter.overBackground
+                             wrapMode: onlyNotification ? Text.Wrap : Text.NoWrap
+                             maximumLineCount: onlyNotification ? 3 : 1
+                             elide: Text.ElideRight
+                             visible: onlyNotification || text !== ""
+                         }
                     }
                 }
 
