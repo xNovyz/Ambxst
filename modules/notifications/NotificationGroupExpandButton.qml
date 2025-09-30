@@ -14,12 +14,12 @@ Button {
     implicitHeight: 24
 
     background: Rectangle {
-        color: root.pressed ? Colors.adapter.primary : (root.hovered ? Colors.surfaceBright : Colors.surfaceContainerHigh)
+        color: root.expanded ? Colors.adapter.primary : (root.pressed ? Colors.adapter.primary : (root.hovered ? Colors.surfaceBright : Colors.surfaceContainerHigh))
         radius: Config.roundness
 
         Behavior on color {
             ColorAnimation {
-                duration: Config.animDuration / 2
+                duration: Config.animDuration / 4
             }
         }
     }
@@ -34,7 +34,7 @@ Button {
             font.family: Config.theme.font
             font.pixelSize: Config.theme.fontSize
             font.weight: Font.Bold
-            color: root.pressed ? Colors.adapter.overPrimary : (root.hovered ? Colors.adapter.overBackground : Colors.adapter.primary)
+            color: root.expanded ? Colors.adapter.overPrimary : (root.pressed ? Colors.adapter.overPrimary : (root.hovered ? Colors.adapter.overBackground : Colors.adapter.primary))
             verticalAlignment: Text.AlignVCenter
             leftPadding: 4
             rightPadding: 4
@@ -44,7 +44,7 @@ Button {
             text: root.expanded ? Icons.caretUp : Icons.caretDown
             font.family: Icons.font
             font.pixelSize: Config.theme.fontSize
-            color: root.pressed ? Colors.adapter.overPrimary : (root.hovered ? Colors.adapter.overBackground : Colors.adapter.primary)
+            color: root.expanded ? Colors.adapter.overPrimary : (root.pressed ? Colors.adapter.overPrimary : (root.hovered ? Colors.adapter.overBackground : Colors.adapter.primary))
             verticalAlignment: Text.AlignVCenter
         }
     }
