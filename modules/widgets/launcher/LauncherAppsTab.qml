@@ -203,35 +203,45 @@ Rectangle {
                     anchors.margins: 8
                     spacing: 12
 
-                    Image {
-                        id: appIcon
+                    Loader {
                         Layout.preferredWidth: 32
                         Layout.preferredHeight: 32
-                        source: "image://icon/" + modelData.icon
-                        fillMode: Image.PreserveAspectFit
-                        visible: !Config.tintIcons
+                        sourceComponent: Config.tintIcons ? tintedIconComponent : normalIconComponent
+                    }
 
-                        Rectangle {
-                            anchors.fill: parent
-                            color: "transparent"
-                            border.color: Colors.outline
-                            border.width: parent.status === Image.Error ? 1 : 0
-                            radius: 4
+                    Component {
+                        id: normalIconComponent
+                        Image {
+                            id: appIcon
+                            source: "image://icon/" + modelData.icon
+                            fillMode: Image.PreserveAspectFit
 
-                            Text {
-                                anchors.centerIn: parent
-                                text: "?"
-                                visible: parent.parent.status === Image.Error
-                                color: Colors.overBackground
-                                font.family: Config.theme.font
+                            Rectangle {
+                                anchors.fill: parent
+                                color: "transparent"
+                                border.color: Colors.outline
+                                border.width: parent.status === Image.Error ? 1 : 0
+                                radius: 4
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "?"
+                                    visible: parent.parent.status === Image.Error
+                                    color: Colors.overBackground
+                                    font.family: Config.theme.font
+                                }
                             }
                         }
                     }
 
-                    Tinted {
-                        sourceItem: appIcon
-                        Layout.preferredWidth: 32
-                        Layout.preferredHeight: 32
+                    Component {
+                        id: tintedIconComponent
+                        Tinted {
+                            sourceItem: Image {
+                                source: "image://icon/" + modelData.icon
+                                fillMode: Image.PreserveAspectFit
+                            }
+                        }
                     }
 
                     Text {
