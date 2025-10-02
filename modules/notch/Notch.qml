@@ -82,7 +82,7 @@ Item {
             enabled: hasActiveNotifications
 
             onHoveredChanged: {
-                if (hasActiveNotifications && stackViewInternal.currentItem) {
+                if (hasActiveNotifications && stackViewInternal.currentItem && stackViewInternal.currentItem.hasOwnProperty("notchHovered")) {
                     stackViewInternal.currentItem.notchHovered = hovered;
                 }
             }
