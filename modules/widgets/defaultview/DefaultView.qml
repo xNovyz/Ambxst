@@ -188,9 +188,11 @@ Item {
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canGoPrevious ?? false ? 1.0 : 0.3
                             visible: opacity > 0
-                            width: (playerHover.hovered || root.notchHovered) ? implicitWidth : 0
                             clip: true
                             scale: 1.0
+                            
+                            readonly property real naturalWidth: implicitWidth
+                            width: (playerHover.hovered || root.notchHovered) ? naturalWidth : 0
 
                             Behavior on width {
                                 NumberAnimation {
@@ -296,9 +298,11 @@ Item {
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canGoNext ?? false ? 1.0 : 0.3
                             visible: opacity > 0
-                            width: (playerHover.hovered || root.notchHovered) ? implicitWidth : 0
                             clip: true
                             scale: 1.0
+                            
+                            readonly property real naturalWidth: implicitWidth
+                            width: (playerHover.hovered || root.notchHovered) ? naturalWidth : 0
 
                             Behavior on width {
                                 NumberAnimation {
@@ -457,15 +461,14 @@ Item {
                         anchors.rightMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
                         text: {
-                            if (!compactPlayer.player)
-                                return Icons.player;
-                            const identity = compactPlayer.player.identity.toLowerCase();
-                            if (identity.includes("spotify"))
-                                return Icons.spotify;
-                            if (identity.includes("chromium") || identity.includes("chrome"))
-                                return Icons.chromium;
-                            if (identity.includes("firefox"))
-                                return Icons.firefox;
+                            if (!compactPlayer.player) return Icons.player;
+                            const dbusName = (compactPlayer.player.dbusName || "").toLowerCase();
+                            const desktopEntry = (compactPlayer.player.desktopEntry || "").toLowerCase();
+                            const identity = (compactPlayer.player.identity || "").toLowerCase();
+                            
+                            if (dbusName.includes("spotify") || desktopEntry.includes("spotify") || identity.includes("spotify")) return Icons.spotify;
+                            if (dbusName.includes("chromium") || dbusName.includes("chrome") || desktopEntry.includes("chromium") || desktopEntry.includes("chrome")) return Icons.chromium;
+                            if (dbusName.includes("firefox") || desktopEntry.includes("firefox")) return Icons.firefox;
                             return Icons.player;
                         }
                         textFormat: Text.RichText

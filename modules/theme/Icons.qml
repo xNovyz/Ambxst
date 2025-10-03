@@ -60,7 +60,7 @@ QtObject {
     readonly property string player: ""
     readonly property string spotify: ""
     readonly property string firefox: "<font face='Symbols Nerd Font'>󰈹</font>"
-    readonly property string chromium: ""
+    readonly property string chromium: ""
     // Misc
     readonly property string accept: ""
     readonly property string cancel: ""
