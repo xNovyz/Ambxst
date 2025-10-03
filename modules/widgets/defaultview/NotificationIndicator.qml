@@ -14,20 +14,11 @@ Item {
 
         Text {
             anchors.centerIn: parent
-            text: Icons.bell
+            text: Notifications.list.length > 0 ? Icons.bellRinging : Icons.bell
+            textFormat: Text.RichText
             font.family: Icons.font
             font.pixelSize: 20
-            color: Colors.overBackground
-        }
-
-        Rectangle {
-            visible: Notifications.list.length > 0
-            anchors.right: parent.right
-            anchors.top: parent.top
-            width: 8
-            height: 8
-            radius: 4
-            color: Colors.error
+            color: Notifications.list.length > 0 ? Colors.error : Colors.overBackground
         }
     }
 }

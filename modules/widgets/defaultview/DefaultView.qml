@@ -11,7 +11,7 @@ import qs.config
 Item {
     id: root
 
-    implicitWidth: Math.round(hasActiveNotifications ? (notificationHoverHandler.hovered ? 420 + 48 : 320 + 48) : 250 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32)
+    implicitWidth: Math.round(hasActiveNotifications ? (notificationHoverHandler.hovered ? 420 + 48 : 320 + 48) : 300 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32)
     implicitHeight: mainRow.height + (hasActiveNotifications ? (notificationHoverHandler.hovered ? notificationView.implicitHeight + 32 : notificationView.implicitHeight + 16) : 0)
 
     Behavior on implicitHeight {
@@ -145,7 +145,7 @@ Item {
                             width: 24
                             height: 24
                             radius: Math.max(0, Config.roundness - 8)
-                            color: Colors.background
+                            color: Colors.overPrimaryFixed
 
                             Image {
                                 anchors.fill: parent
@@ -167,8 +167,9 @@ Item {
                             id: previousBtn
                             anchors.verticalCenter: parent.verticalCenter
                             text: Icons.previous
-                            color: previousHover.hovered ? Colors.primary : Colors.overBackground
-                            font.pixelSize: 16
+                            textFormat: Text.RichText
+                            color: previousHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                            font.pixelSize: 20
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canGoPrevious ?? false ? 1.0 : 0.3
                             visible: opacity > 0
@@ -225,8 +226,9 @@ Item {
                             id: playPauseBtn
                             anchors.verticalCenter: parent.verticalCenter
                             text: compactPlayer.isPlaying ? Icons.pause : Icons.play
-                            color: playPauseHover.hovered ? Colors.primary : Colors.overBackground
-                            font.pixelSize: 16
+                            textFormat: Text.RichText
+                            color: playPauseHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                            font.pixelSize: 20
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canPause ?? false ? 1.0 : 0.3
                             scale: 1.0
@@ -273,8 +275,9 @@ Item {
                             id: nextBtn
                             anchors.verticalCenter: parent.verticalCenter
                             text: Icons.next
-                            color: nextHover.hovered ? Colors.primary : Colors.overBackground
-                            font.pixelSize: 16
+                            textFormat: Text.RichText
+                            color: nextHover.hovered ? Colors.primaryFixed : Colors.whiteSource
+                            font.pixelSize: 20
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canGoNext ?? false ? 1.0 : 0.3
                             visible: opacity > 0
@@ -347,7 +350,7 @@ Item {
                             width: (1 - positionControl.progressRatio) * parent.width - 4
                             height: parent.height
                             radius: height / 2
-                            color: Colors.background
+                            color: Colors.shadow
                         }
 
                         Loader {
@@ -357,7 +360,7 @@ Item {
                             sourceComponent: WavyLine {
                                 id: wavyFill
                                 frequency: 8
-                                color: Colors.primary
+                                color: Colors.primaryFixed
                                 amplitudeMultiplier: 0.8
                                 height: positionControl.height * 8
                                 width: Math.max(0, positionControl.width * positionControl.progressRatio - 4)
@@ -378,7 +381,7 @@ Item {
                                 width: Math.max(0, positionControl.width * positionControl.progressRatio - 4)
                                 height: positionControl.height
                                 radius: height / 2
-                                color: Colors.primary
+                                color: Colors.primaryFixed
                             }
                         }
 
@@ -389,7 +392,7 @@ Item {
                             width: positionControl.isDragging ? 4 : 4
                             height: positionControl.isDragging ? 20 : 16
                             radius: width / 2
-                            color: Colors.overBackground
+                            color: Colors.whiteSource
 
                             Behavior on width {
                                 NumberAnimation {

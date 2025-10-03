@@ -143,6 +143,7 @@ Item {
 
                         contentItem: Text {
                             text: parent.text
+                            textFormat: Text.RichText
                             color: root.state.currentTab === index ? Colors.overPrimary : Colors.overBackground
                             font.family: Icons.font
                             font.pixelSize: 20

@@ -185,6 +185,7 @@ FocusScope {
 
                     contentItem: Text {
                         text: modelData.icon || ""
+                        textFormat: Text.RichText
                         font.family: Icons.font
                         font.pixelSize: root.iconSize
                         color: actionButton.pressed ? Colors.primary : (index === root.currentIndex ? Colors.overPrimary : Colors.overBackground)

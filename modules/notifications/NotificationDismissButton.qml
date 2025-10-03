@@ -21,6 +21,7 @@ Button {
 
     contentItem: Text {
         text: Icons.cancel
+        textFormat: Text.RichText
         font.family: Icons.font
         font.pixelSize: 16
         color: urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overError : (parent.hovered ? Colors.overBackground : Colors.error))

@@ -27,16 +27,15 @@ Singleton {
                 property string borderColor: "background"
                 property string font: "Roboto Condensed"
                 property int fontSize: 14
-                property bool fillIcons: false
                 property bool tintIcons: false
                 property string currentTheme: "default"
                 property bool enableCorners: true
                 property int animDuration: 300
-                 property real shadowOpacity: 0.5
-                 property string shadowColor: "shadow"
-                 property int shadowXOffset: 0
-                 property int shadowYOffset: 0
-                 property real shadowBlur: 1
+                property real shadowOpacity: 0.5
+                property string shadowColor: "shadow"
+                property int shadowXOffset: 0
+                property int shadowYOffset: 0
+                property real shadowBlur: 1
             }
 
             property JsonObject bar: JsonObject {
@@ -67,44 +66,44 @@ Singleton {
             }
 
             property JsonObject hyprland: JsonObject {
-                 property string activeBorderColor: "primary"
-                 property string inactiveBorderColor: "surface"
-                 property int borderSize: 2
-                 property int rounding: 16
-                 property bool syncRoundness: true
-                 property bool syncBorderWidth: false
-                 property bool syncBorderColor: false
-                 property bool syncShadowOpacity: false
-                 property bool syncShadowColor: false
-                 property int gapsIn: 2
-                 property int gapsOut: 4
-                 property bool shadowEnabled: true
-                 property int shadowRange: 8
-                 property int shadowRenderPower: 3
-                 property bool shadowSharp: false
-                 property bool shadowIgnoreWindow: true
-                 property string shadowColor: "shadow"
-                 property string shadowColorInactive: "shadow"
-                 property real shadowOpacity: 0.5
-                 property string shadowOffset: "0 0"
-                 property real shadowScale: 1.0
-                 property bool blurEnabled: true
-                 property int blurSize: 4
-                 property int blurPasses: 2
-                 property bool blurIgnoreOpacity: true
-                 property bool blurNewOptimizations: true
-                 property bool blurXray: false
-                 property real blurNoise: 0.0
-                 property real blurContrast: 1.0
-                 property real blurBrightness: 1.0
-                 property real blurVibrancy: 0.0
-                 property real blurVibrancyDarkness: 0.0
-                 property bool blurSpecial: true
-                 property bool blurPopups: false
-                 property real blurPopupsIgnorealpha: 0.2
-                 property bool blurInputMethods: false
-                 property real blurInputMethodsIgnorealpha: 0.2
-             }
+                property string activeBorderColor: "primary"
+                property string inactiveBorderColor: "surface"
+                property int borderSize: 2
+                property int rounding: 16
+                property bool syncRoundness: true
+                property bool syncBorderWidth: false
+                property bool syncBorderColor: false
+                property bool syncShadowOpacity: false
+                property bool syncShadowColor: false
+                property int gapsIn: 2
+                property int gapsOut: 4
+                property bool shadowEnabled: true
+                property int shadowRange: 8
+                property int shadowRenderPower: 3
+                property bool shadowSharp: false
+                property bool shadowIgnoreWindow: true
+                property string shadowColor: "shadow"
+                property string shadowColorInactive: "shadow"
+                property real shadowOpacity: 0.5
+                property string shadowOffset: "0 0"
+                property real shadowScale: 1.0
+                property bool blurEnabled: true
+                property int blurSize: 4
+                property int blurPasses: 2
+                property bool blurIgnoreOpacity: true
+                property bool blurNewOptimizations: true
+                property bool blurXray: false
+                property real blurNoise: 0.0
+                property real blurContrast: 1.0
+                property real blurBrightness: 1.0
+                property real blurVibrancy: 0.0
+                property real blurVibrancyDarkness: 0.0
+                property bool blurSpecial: true
+                property bool blurPopups: false
+                property real blurPopupsIgnorealpha: 0.2
+                property bool blurInputMethods: false
+                property real blurInputMethodsIgnorealpha: 0.2
+            }
 
             property JsonObject performance: JsonObject {
                 property bool blurTransition: true
@@ -157,12 +156,12 @@ Singleton {
     property string notchTheme: theme.borderSize > 0 ? "island" : notch.theme
 
     // Hyprland configuration
-     property QtObject hyprland: loader.adapter.hyprland
-     property int hyprlandRounding: hyprland.syncRoundness ? Math.max(0, roundness - hyprlandBorderSize) : Math.max(0, hyprland.rounding - hyprland.borderSize)
-     property int hyprlandBorderSize: hyprland.syncBorderWidth ? theme.borderSize : hyprland.borderSize
-     property string hyprlandBorderColor: hyprland.syncBorderColor ? theme.borderColor : hyprland.activeBorderColor
-     property real hyprlandShadowOpacity: hyprland.syncShadowOpacity ? theme.shadowOpacity : hyprland.shadowOpacity
-     property string hyprlandShadowColor: hyprland.syncShadowColor ? theme.shadowColor : hyprland.shadowColor
+    property QtObject hyprland: loader.adapter.hyprland
+    property int hyprlandRounding: hyprland.syncRoundness ? Math.max(0, roundness - hyprlandBorderSize) : Math.max(0, hyprland.rounding - hyprland.borderSize)
+    property int hyprlandBorderSize: hyprland.syncBorderWidth ? theme.borderSize : hyprland.borderSize
+    property string hyprlandBorderColor: hyprland.syncBorderColor ? theme.borderColor : hyprland.activeBorderColor
+    property real hyprlandShadowOpacity: hyprland.syncShadowOpacity ? theme.shadowOpacity : hyprland.shadowOpacity
+    property string hyprlandShadowColor: hyprland.syncShadowColor ? theme.shadowColor : hyprland.shadowColor
 
     // Performance configuration
     property QtObject performance: loader.adapter.performance

@@ -35,17 +35,18 @@ Button {
             font.pixelSize: Config.theme.fontSize
             font.weight: Font.Bold
             color: root.expanded ? Colors.overPrimary : (root.pressed ? Colors.overPrimary : (root.hovered ? Colors.overBackground : Colors.primary))
-            verticalAlignment: Text.AlignVCenter
+            anchors.verticalCenter: parent.verticalCenter
             leftPadding: 4
             rightPadding: 4
         }
 
         Text {
             text: root.expanded ? Icons.caretUp : Icons.caretDown
+            textFormat: Text.RichText
             font.family: Icons.font
             font.pixelSize: Config.theme.fontSize
             color: root.expanded ? Colors.overPrimary : (root.pressed ? Colors.overPrimary : (root.hovered ? Colors.overBackground : Colors.primary))
-            verticalAlignment: Text.AlignVCenter
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 }

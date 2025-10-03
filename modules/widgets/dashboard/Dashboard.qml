@@ -155,6 +155,7 @@ NotchAnimationBehavior {
 
                         contentItem: Text {
                             text: parent.text
+                            textFormat: Text.RichText
                             color: root.state.currentTab === index ? Colors.overPrimary : Colors.overBackground
                             // font.family: Config.theme.font
                             font.family: Icons.font
