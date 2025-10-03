@@ -1,10 +1,7 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Effects
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs.modules.bar.workspaces
 import qs.modules.theme
@@ -113,7 +110,7 @@ PanelWindow {
                 shadowHorizontalOffset: 0
                 shadowVerticalOffset: 0
                 shadowBlur: 1
-                 shadowColor: Colors[Config.theme.shadowColor] || Colors.shadow
+                shadowColor: Colors[Config.theme.shadowColor] || Colors.shadow
                 shadowOpacity: Config.theme.shadowOpacity
             }
 

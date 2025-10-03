@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Widgets
 import Quickshell.Services.Mpris
 import qs.modules.theme
 import qs.modules.services
@@ -95,10 +96,41 @@ Item {
                     radius: Math.max(0, Config.roundness - 4)
                     color: Colors.surface
 
+                    Loader {
+                        id: artworkLoader
+                        anchors.left: parent.left
+                        anchors.leftMargin: 4
+                        anchors.verticalCenter: parent.verticalCenter
+                        active: (compactPlayer.player?.trackArtUrl ?? "") !== ""
+                        width: active ? 24 : 0
+                        height: 24
+
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: Config.animDuration
+                                easing.type: Easing.OutQuart
+                            }
+                        }
+
+                        sourceComponent: ClippingRectangle {
+                            width: 24
+                            height: 24
+                            radius: Math.max(0, Config.roundness - 8)
+                            color: Colors.surfaceContainerHigh
+
+                            Image {
+                                anchors.fill: parent
+                                source: compactPlayer.player?.trackArtUrl ?? ""
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                            }
+                        }
+                    }
+
                     Row {
                         id: controlButtons
-                        anchors.left: parent.left
-                        anchors.leftMargin: 8
+                        anchors.left: artworkLoader.right
+                        anchors.leftMargin: artworkLoader.active ? 8 : 4
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 4
 
@@ -113,6 +145,7 @@ Item {
                             visible: opacity > 0
                             width: playerHover.hovered ? implicitWidth : 0
                             clip: true
+                            scale: 1.0
 
                             Behavior on width {
                                 NumberAnimation {
@@ -128,6 +161,14 @@ Item {
                                 }
                             }
 
+                            Behavior on scale {
+                                NumberAnimation {
+                                    duration: Config.animDuration
+                                    easing.type: Easing.OutBack
+                                    easing.overshoot: 1.5
+                                }
+                            }
+
                             HoverHandler {
                                 id: previousHover
                                 enabled: compactPlayer.player?.canGoPrevious ?? false
@@ -137,7 +178,17 @@ Item {
                                 anchors.fill: parent
                                 cursorShape: compactPlayer.player?.canGoPrevious ?? false ? Qt.PointingHandCursor : Qt.ArrowCursor
                                 enabled: compactPlayer.player?.canGoPrevious ?? false
-                                onClicked: compactPlayer.player?.previous()
+                                onClicked: {
+                                    previousBtn.scale = 1.1;
+                                    compactPlayer.player?.previous();
+                                    previousScaleTimer.restart();
+                                }
+                            }
+
+                            Timer {
+                                id: previousScaleTimer
+                                interval: 100
+                                onTriggered: previousBtn.scale = 1.0
                             }
                         }
 
@@ -149,11 +200,20 @@ Item {
                             font.pixelSize: 16
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canPause ?? false ? 1.0 : 0.3
+                            scale: 1.0
 
                             Behavior on color {
                                 ColorAnimation {
                                     duration: Config.animDuration
                                     easing.type: Easing.OutQuart
+                                }
+                            }
+
+                            Behavior on scale {
+                                NumberAnimation {
+                                    duration: Config.animDuration
+                                    easing.type: Easing.OutBack
+                                    easing.overshoot: 1.5
                                 }
                             }
 
@@ -166,7 +226,17 @@ Item {
                                 anchors.fill: parent
                                 cursorShape: compactPlayer.player ? Qt.PointingHandCursor : Qt.ArrowCursor
                                 enabled: compactPlayer.player !== null
-                                onClicked: compactPlayer.player?.togglePlaying()
+                                onClicked: {
+                                    playPauseBtn.scale = 1.1;
+                                    compactPlayer.player?.togglePlaying();
+                                    playPauseScaleTimer.restart();
+                                }
+                            }
+
+                            Timer {
+                                id: playPauseScaleTimer
+                                interval: 100
+                                onTriggered: playPauseBtn.scale = 1.0
                             }
                         }
 
@@ -181,6 +251,7 @@ Item {
                             visible: opacity > 0
                             width: playerHover.hovered ? implicitWidth : 0
                             clip: true
+                            scale: 1.0
 
                             Behavior on width {
                                 NumberAnimation {
@@ -196,6 +267,14 @@ Item {
                                 }
                             }
 
+                            Behavior on scale {
+                                NumberAnimation {
+                                    duration: Config.animDuration
+                                    easing.type: Easing.OutBack
+                                    easing.overshoot: 1.5
+                                }
+                            }
+
                             HoverHandler {
                                 id: nextHover
                                 enabled: compactPlayer.player?.canGoNext ?? false
@@ -205,7 +284,17 @@ Item {
                                 anchors.fill: parent
                                 cursorShape: compactPlayer.player?.canGoNext ?? false ? Qt.PointingHandCursor : Qt.ArrowCursor
                                 enabled: compactPlayer.player?.canGoNext ?? false
-                                onClicked: compactPlayer.player?.next()
+                                onClicked: {
+                                    nextBtn.scale = 1.1;
+                                    compactPlayer.player?.next();
+                                    nextScaleTimer.restart();
+                                }
+                            }
+
+                            Timer {
+                                id: nextScaleTimer
+                                interval: 100
+                                onTriggered: nextBtn.scale = 1.0
                             }
                         }
                     }
@@ -220,8 +309,9 @@ Item {
                         height: 4
 
                         property bool isDragging: false
+                        property real dragPosition: 0.0
 
-                        property real progressRatio: compactPlayer.length > 0 ? compactPlayer.position / compactPlayer.length : 0
+                        property real progressRatio: isDragging ? dragPosition : (compactPlayer.length > 0 ? compactPlayer.position / compactPlayer.length : 0)
 
                         Rectangle {
                             anchors.right: parent.right
@@ -296,11 +386,19 @@ Item {
                                     compactPlayer.player.position = (mouse.x / width) * compactPlayer.length;
                                 }
                             }
-                            onPressed: positionControl.isDragging = true
-                            onReleased: positionControl.isDragging = false
+                            onPressed: {
+                                positionControl.isDragging = true;
+                                positionControl.dragPosition = Math.min(Math.max(0, mouseX / width), 1);
+                            }
+                            onReleased: {
+                                if (compactPlayer.player && compactPlayer.player.canSeek) {
+                                    compactPlayer.player.position = positionControl.dragPosition * compactPlayer.length;
+                                }
+                                positionControl.isDragging = false;
+                            }
                             onPositionChanged: {
-                                if (positionControl.isDragging && compactPlayer.player && compactPlayer.player.canSeek) {
-                                    compactPlayer.player.position = Math.min(Math.max(0, (mouseX / width) * compactPlayer.length), compactPlayer.length);
+                                if (positionControl.isDragging) {
+                                    positionControl.dragPosition = Math.min(Math.max(0, mouseX / width), 1);
                                 }
                             }
                         }

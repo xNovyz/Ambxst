@@ -1,8 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import Qt5Compat.GraphicalEffects
-import QtQuick.Controls
-import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Wayland
