@@ -10,6 +10,7 @@ import qs.config
 
 Item {
     id: root
+    anchors.top: parent.top
 
     implicitWidth: Math.round(hasActiveNotifications ? (notificationHoverHandler.hovered ? 420 + 48 : 320 + 48) : (root.notchHovered ? 420 : 200 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32))
     implicitHeight: hasActiveNotifications ? (mainRow.height + (notificationHoverHandler.hovered ? notificationView.implicitHeight + 32 : notificationView.implicitHeight + 16)) : 36
@@ -40,7 +41,7 @@ Item {
 
     Column {
         anchors.fill: parent
-        anchors.topMargin: hasActiveNotifications ? 0 : ((parent.height - mainRow.height) / 2)
+        // anchors.topMargin: hasActiveNotifications ? 0 : ((parent.height - mainRow.height) / 2)
         spacing: hasActiveNotifications ? 4 : 0
 
         Behavior on spacing {
