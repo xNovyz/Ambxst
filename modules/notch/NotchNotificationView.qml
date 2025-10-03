@@ -353,15 +353,15 @@ Item {
                         Column {
                             id: notificationContent
                             width: parent.width
-        spacing: hovered ? 8 : 0
+                            spacing: hovered ? 8 : 0
 
-        Behavior on spacing {
-            NumberAnimation {
-                duration: Config.animDuration
-                easing.type: Easing.OutBack
-                easing.overshoot: 1.2
-            }
-        }
+                            Behavior on spacing {
+                                NumberAnimation {
+                                    duration: Config.animDuration
+                                    easing.type: Easing.OutBack
+                                    easing.overshoot: 1.2
+                                }
+                            }
 
                             // Contenido principal de la notificación
                             Item {
@@ -588,6 +588,7 @@ Item {
 
                                                 contentItem: Text {
                                                     text: Icons.cancel
+                                                    textFormat: Text.RichText
                                                     font.family: Icons.font
                                                     font.pixelSize: 16
                                                     color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overError : (parent.hovered ? Colors.overBackground : Colors.error))

@@ -67,7 +67,7 @@ Rectangle {
                 visible: Notifications.appNameList.length === 0
 
                 Text {
-                    text: Icons.bellCheck
+                    text: Icons.bellZ
                     textFormat: Text.RichText
                     font.family: Icons.font
                     font.pixelSize: 64

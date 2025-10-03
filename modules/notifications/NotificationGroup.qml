@@ -32,9 +32,9 @@ Item {
         });
         // Limitar cada grupo a máximo 5 notificaciones visibles
         return Object.values(groups).map(notifications => ({
-                     summary: notifications[0].summary,
-                     notifications: notifications.slice(0, 5)
-                 }));
+                    summary: notifications[0].summary,
+                    notifications: notifications.slice(0, 5)
+                }));
     }
 
     onNotificationGroupChanged: {}
@@ -43,7 +43,8 @@ Item {
     property bool expanded: false
 
     onNotificationCountChanged: {
-        if (notificationCount === 1) root.expanded = true;
+        if (notificationCount === 1)
+            root.expanded = true;
     }
     property bool popup: false
     property real padding: 8
@@ -208,6 +209,7 @@ Item {
                         }
                         Text {
                             text: Icons.info
+                            textFormat: Text.RichText
                             font.family: Icons.font
                             font.pixelSize: 16
                             color: topRow.showAppName ? Colors.outline : Colors.primary
@@ -263,7 +265,12 @@ Item {
                         }
                     }
 
-                    model: expanded ? root.groupedNotifications : [{ notifications: root.validNotifications, isCompactGroup: true }]
+                    model: expanded ? root.groupedNotifications : [
+                        {
+                            notifications: root.validNotifications,
+                            isCompactGroup: true
+                        }
+                    ]
 
                     delegate: NotificationDelegate {
                         required property int index

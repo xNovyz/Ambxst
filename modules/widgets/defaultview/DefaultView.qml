@@ -11,7 +11,7 @@ import qs.config
 Item {
     id: root
 
-    implicitWidth: Math.round(hasActiveNotifications ? (notificationHoverHandler.hovered ? 420 + 48 : 320 + 48) : 300 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32)
+    implicitWidth: Math.round(hasActiveNotifications ? (notificationHoverHandler.hovered ? 420 + 48 : 320 + 48) : (root.notchHovered ? 420 : 200 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32))
     implicitHeight: mainRow.height + (hasActiveNotifications ? (notificationHoverHandler.hovered ? notificationView.implicitHeight + 32 : notificationView.implicitHeight + 16) : 0)
 
     Behavior on implicitHeight {
@@ -159,18 +159,18 @@ Item {
 
                     Row {
                         id: controlButtons
-                        anchors.left: parent.left
-                        anchors.leftMargin: (artworkLoader.active && (playerHover.hovered || root.notchHovered)) ? (4 + 24 + 8) : 4
+                        anchors.left: artworkLoader.right
+                        anchors.leftMargin: (artworkLoader.active && (playerHover.hovered || root.notchHovered)) ? 8 : 4
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: (playerHover.hovered || root.notchHovered) ? 4 : 0
-                        
+
                         Behavior on anchors.leftMargin {
                             NumberAnimation {
                                 duration: Config.animDuration
                                 easing.type: Easing.OutQuart
                             }
                         }
-                        
+
                         Behavior on spacing {
                             NumberAnimation {
                                 duration: Config.animDuration
@@ -184,7 +184,7 @@ Item {
                             text: Icons.previous
                             textFormat: Text.RichText
                             color: previousHover.hovered ? Colors.primaryFixed : Colors.whiteSource
-                            font.pixelSize: 20
+                            font.pixelSize: 16
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canGoPrevious ?? false ? 1.0 : 0.3
                             visible: opacity > 0
@@ -224,7 +224,7 @@ Item {
                                 cursorShape: compactPlayer.player?.canGoPrevious ?? false ? Qt.PointingHandCursor : Qt.ArrowCursor
                                 enabled: compactPlayer.player?.canGoPrevious ?? false
                                 onClicked: {
-                                    previousBtn.scale = 1.1;
+                                    previousBtn.scale = 1.25;
                                     compactPlayer.player?.previous();
                                     previousScaleTimer.restart();
                                 }
@@ -243,7 +243,7 @@ Item {
                             text: compactPlayer.isPlaying ? Icons.pause : Icons.play
                             textFormat: Text.RichText
                             color: playPauseHover.hovered ? Colors.primaryFixed : Colors.whiteSource
-                            font.pixelSize: 20
+                            font.pixelSize: 16
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canPause ?? false ? 1.0 : 0.3
                             scale: 1.0
@@ -259,7 +259,7 @@ Item {
                                 NumberAnimation {
                                     duration: Config.animDuration
                                     easing.type: Easing.OutBack
-                                    easing.overshoot: 1.5
+                                    easing.overshoot: 1.25
                                 }
                             }
 
@@ -292,7 +292,7 @@ Item {
                             text: Icons.next
                             textFormat: Text.RichText
                             color: nextHover.hovered ? Colors.primaryFixed : Colors.whiteSource
-                            font.pixelSize: 20
+                            font.pixelSize: 16
                             font.family: Icons.font
                             opacity: compactPlayer.player?.canGoNext ?? false ? 1.0 : 0.3
                             visible: opacity > 0
@@ -318,7 +318,7 @@ Item {
                                 NumberAnimation {
                                     duration: Config.animDuration
                                     easing.type: Easing.OutBack
-                                    easing.overshoot: 1.5
+                                    easing.overshoot: 1.25
                                 }
                             }
 
@@ -349,7 +349,7 @@ Item {
                     Item {
                         id: positionControl
                         anchors.left: controlButtons.right
-                        anchors.right: parent.right
+                        anchors.right: playerIcon.left
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.leftMargin: 8
                         anchors.rightMargin: 8
@@ -449,6 +449,30 @@ Item {
                                 }
                             }
                         }
+                    }
+
+                    Text {
+                        id: playerIcon
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: {
+                            if (!compactPlayer.player)
+                                return Icons.player;
+                            const identity = compactPlayer.player.identity.toLowerCase();
+                            if (identity.includes("spotify"))
+                                return Icons.spotify;
+                            if (identity.includes("chromium") || identity.includes("chrome"))
+                                return Icons.chromium;
+                            if (identity.includes("firefox"))
+                                return Icons.firefox;
+                            return Icons.player;
+                        }
+                        textFormat: Text.RichText
+                        color: Colors.whiteSource
+                        font.pixelSize: 20
+                        font.family: Icons.font
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
             }
