@@ -204,6 +204,7 @@ PanelWindow {
                 spacing: 4
                 LauncherButton { id: launcherButton }
                 Workspaces {
+                    orientation: panel.orientation
                     bar: QtObject {
                         property var screen: panel.screen
                     }
@@ -236,10 +237,10 @@ PanelWindow {
                     Layout.preferredHeight: 36
                 }
                 Workspaces {
+                    orientation: panel.orientation
                     bar: QtObject {
                         property var screen: panel.screen
                     }
-                    Layout.preferredHeight: 36
                 }
                 OverviewButton { 
                     id: overviewButtonVert
