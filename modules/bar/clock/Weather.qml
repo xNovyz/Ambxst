@@ -22,15 +22,15 @@ BgRect {
     property int weatherRetryCount: 0
     property int weatherMaxRetries: 5
 
-    Layout.preferredWidth: vertical ? 36 : (dayDisplay.implicitWidth + (weatherVisible ? symbolDisplay.implicitWidth + tempDisplay.implicitWidth + 8 : 0) + (weatherVisible ? 32 : 20))
-    implicitHeight: vertical ? columnLayout.implicitHeight + 24 : 36
+    Layout.preferredWidth: vertical ? 36 : (dayDisplay.implicitWidth + (weatherVisible ? separator.implicitWidth + symbolDisplay.implicitWidth + tempDisplay.implicitWidth + 16 : 0) + (weatherVisible ? 20 : 20))
+    implicitHeight: vertical ? columnLayout.implicitHeight + 20 : 36
     Layout.preferredHeight: implicitHeight
 
     RowLayout { // horizontal layout
         id: rowLayout
         visible: !vertical
         anchors.centerIn: parent
-        spacing: 8
+        spacing: 4
 
         Text {
             id: dayDisplay
@@ -39,6 +39,11 @@ BgRect {
             font.pixelSize: Config.theme.fontSize
             font.family: Config.theme.font
             font.bold: true
+        }
+
+        Separator {
+            id: separator
+            visible: weatherContainer.weatherVisible
         }
 
         Text {
@@ -78,6 +83,13 @@ BgRect {
             font.bold: true
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.NoWrap
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        Separator {
+            id: separatorV
+            vert: true
+            visible: weatherContainer.weatherVisible
             Layout.alignment: Qt.AlignHCenter
         }
 

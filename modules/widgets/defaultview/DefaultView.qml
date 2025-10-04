@@ -59,21 +59,16 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - 28
             height: Config.bar.showBackground ? (Config.notchTheme === "island" ? 36 : 44) : (Config.notchTheme === "island" ? 36 : 40)
-            spacing: 8
+            spacing: 4
 
             UserInfo {
                 id: userInfo
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            Text {
+            Separator {
                 id: separator1
                 anchors.verticalCenter: parent.verticalCenter
-                text: "•"
-                color: Colors.outline
-                font.pixelSize: Config.theme.fontSize
-                font.family: Config.theme.font
-                font.bold: true
             }
 
             Item {
@@ -514,14 +509,9 @@ Item {
                 }
             }
 
-            Text {
+            Separator {
                 id: separator2
                 anchors.verticalCenter: parent.verticalCenter
-                text: "•"
-                color: Colors.outline
-                font.pixelSize: Config.theme.fontSize
-                font.family: Config.theme.font
-                font.bold: true
             }
 
             NotificationIndicator {
