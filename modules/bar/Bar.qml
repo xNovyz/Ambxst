@@ -23,10 +23,10 @@ PanelWindow {
     property string position: (Config.bar.position === "bottom" || Config.bar.position === "top") ? Config.bar.position : "top"
 
     anchors {
-        top: position === "top"
-        bottom: position === "bottom"
-        left: true
-        right: true
+        top: position !== "bottom"
+        bottom: position !== "top"
+        left: position !== "right"
+        right: position !== "left"
     }
 
     color: "transparent"
@@ -137,7 +137,7 @@ PanelWindow {
 
         // Lado izquierdo de la barra
         RowLayout {
-            id: leftSide
+            id: barStart
             anchors.left: parent.left
             anchors.top: panel.position === "top" ? parent.top : undefined
             anchors.bottom: panel.position === "bottom" ? parent.bottom : undefined
@@ -161,7 +161,7 @@ PanelWindow {
 
         // Lado derecho de la barra
         RowLayout {
-            id: rightSide
+            id: barEnd
             anchors.right: parent.right
             anchors.top: panel.position === "top" ? parent.top : undefined
             anchors.bottom: panel.position === "bottom" ? parent.bottom : undefined
