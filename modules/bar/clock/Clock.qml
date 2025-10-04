@@ -8,13 +8,13 @@ BgRect {
     id: clockContainer
 
     // Time values
-    property string currentTime: ""                  // raw time hh:mm:ss
-    property string currentTimeVertical: ""          // time with colons -> newlines
+    property string currentHours: ""
+    property string currentMinutes: ""
 
     required property var bar
     property bool vertical: bar.orientation === "vertical"
 
-    Layout.preferredWidth: vertical ? 36 : (timeDisplay.implicitWidth + 20)
+    Layout.preferredWidth: vertical ? 36 : (clockIndicator.implicitWidth + hoursDisplay.implicitWidth + minutesDisplay.implicitWidth + 36)
     implicitHeight: vertical ? columnLayout.implicitHeight + 24 : 36
     Layout.preferredHeight: implicitHeight
 
@@ -22,10 +22,29 @@ BgRect {
         id: rowLayout
         visible: !vertical
         anchors.centerIn: parent
+        spacing: 4
 
         Text {
-            id: timeDisplay
-            text: clockContainer.currentTime
+            id: hoursDisplay
+            text: clockContainer.currentHours
+            color: Colors.overBackground
+            font.pixelSize: Config.theme.fontSize
+            font.family: Config.theme.font
+            font.bold: true
+        }
+
+        Item {
+            Layout.preferredWidth: clockIndicator.implicitWidth
+            Layout.preferredHeight: hoursDisplay.height
+            ClockIndicator {
+                id: clockIndicator
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: minutesDisplay
+            text: clockContainer.currentMinutes
             color: Colors.overBackground
             font.pixelSize: Config.theme.fontSize
             font.family: Config.theme.font
@@ -37,11 +56,29 @@ BgRect {
         id: columnLayout
         visible: vertical
         anchors.centerIn: parent
+        spacing: 4
         Layout.alignment: Qt.AlignHCenter
 
         Text {
-            id: timeDisplayV
-            text: clockContainer.currentTimeVertical
+            id: hoursDisplayV
+            text: clockContainer.currentHours
+            color: Colors.overBackground
+            font.pixelSize: Config.theme.fontSize
+            font.family: Config.theme.font
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.NoWrap
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        ClockIndicator {
+            id: clockIndicatorV
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        Text {
+            id: minutesDisplayV
+            text: clockContainer.currentMinutes
             color: Colors.overBackground
             font.pixelSize: Config.theme.fontSize
             font.family: Config.theme.font
@@ -53,22 +90,23 @@ BgRect {
     }
 
     Timer {
-        // update time every second
         interval: 1000
         running: true
         repeat: true
         onTriggered: {
             var now = new Date();
-            var rawTime = Qt.formatDateTime(now, "hh:mm");
-            clockContainer.currentTime = rawTime; // horizontal
-            clockContainer.currentTimeVertical = rawTime.replace(/:/g, '\n'); // vertical variant
+            var formatted = Qt.formatDateTime(now, "hh:mm");
+            var parts = formatted.split(":");
+            clockContainer.currentHours = parts[0];
+            clockContainer.currentMinutes = parts[1];
         }
     }
 
     Component.onCompleted: {
         var now = new Date();
-        var rawTime = Qt.formatDateTime(now, "hh:mm");
-        clockContainer.currentTime = rawTime;
-        clockContainer.currentTimeVertical = rawTime.replace(/:/g, '\n');
+        var formatted = Qt.formatDateTime(now, "hh:mm");
+        var parts = formatted.split(":");
+        clockContainer.currentHours = parts[0];
+        clockContainer.currentMinutes = parts[1];
     }
 }

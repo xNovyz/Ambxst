@@ -61,6 +61,10 @@ QtObject {
     readonly property string spotify: "<font face='Symbols Nerd Font'>󰓇</font>"
     readonly property string firefox: "<font face='Symbols Nerd Font'>󰈹</font>"
     readonly property string chromium: "<font face='Symbols Nerd Font'></font>"
+    // Clock
+    readonly property string clock: ""
+    readonly property string alarm: ""
+    readonly property string timer: ""
     // Misc
     readonly property string accept: ""
     readonly property string cancel: ""
