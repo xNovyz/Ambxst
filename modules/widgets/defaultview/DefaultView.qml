@@ -91,7 +91,7 @@ Item {
         Item {
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
-            height: hasActiveNotifications ? (notificationHoverHandler.hovered ? notificationView.implicitHeight + 32 : notificationView.implicitHeight + 16) : 0
+            height: hasActiveNotifications ? notificationView.implicitHeight : 0
             clip: false
             visible: height > 0
 
