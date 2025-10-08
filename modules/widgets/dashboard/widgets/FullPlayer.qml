@@ -224,7 +224,7 @@ PaneRect {
                         }
 
                         FrameAnimation {
-                            running: player.isPlaying || !MprisController.activePlayer
+                            running: wavyFill.visible && wavyFill.opacity > 0
                             onTriggered: wavyFill.requestPaint()
                         }
                     }

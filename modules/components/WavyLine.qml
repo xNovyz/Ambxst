@@ -10,7 +10,7 @@ Canvas {
     property real lineWidth: 4
     property real fullLength: width
     
-    renderStrategy: Canvas.Threaded
+    renderStrategy: Canvas.Cooperative
     renderTarget: Canvas.FramebufferObject
     antialiasing: true
     
@@ -19,10 +19,13 @@ Canvas {
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
     onColorChanged: requestPaint()
+    onLineWidthChanged: requestPaint()
     
     Component.onCompleted: requestPaint()
 
     onPaint: {
+        if (width <= 0 || height <= 0) return;
+        
         var ctx = getContext("2d");
         
         ctx.save();

@@ -20,7 +20,7 @@ Item {
 
     readonly property real mainRowContentWidth: 200 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 32
 
-    implicitWidth: Math.round(hasActiveNotifications ? Math.max(expandedState ? 420 + 32 : 320 + 32, mainRowContentWidth) : (expandedState ? 420 + 32 : mainRowContentWidth))
+    implicitWidth: Math.round(hasActiveNotifications ? Math.max(expandedState ? 360 + 32 : 320 + 32, mainRowContentWidth) : (expandedState ? 360 + 32 : mainRowContentWidth))
     implicitHeight: hasActiveNotifications ? (mainRow.height + (expandedState ? notificationView.implicitHeight + (Config.notchTheme === "island" ? 56 : 52) : notificationView.implicitHeight + (Config.notchTheme === "island" ? 40 : 36))) : mainRow.height
 
     Behavior on implicitHeight {

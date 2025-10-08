@@ -298,6 +298,7 @@ Item {
             anchors.leftMargin: compactPlayer.player ? 8 : 4
             anchors.rightMargin: compactPlayer.player ? 8 : 4
             height: 4
+            clip: false
 
             Behavior on anchors.leftMargin {
                 NumberAnimation {
@@ -326,6 +327,7 @@ Item {
                 radius: height / 2
                 color: Colors.shadow
                 visible: compactPlayer.player !== null
+                z: 0
             }
 
             WavyLine {
@@ -341,6 +343,7 @@ Item {
                 fullLength: positionControl.width
                 visible: compactPlayer.isPlaying || !compactPlayer.player
                 opacity: visible ? 1.0 : 0.0
+                z: 1
 
                 Behavior on color {
                     ColorAnimation {
@@ -364,7 +367,7 @@ Item {
                 }
 
                 FrameAnimation {
-                    running: compactPlayer.isPlaying || !compactPlayer.player
+                    running: wavyFill.visible && wavyFill.opacity > 0
                     onTriggered: wavyFill.requestPaint()
                 }
             }
@@ -377,6 +380,7 @@ Item {
                 color: Colors.primaryFixed
                 visible: !compactPlayer.isPlaying && compactPlayer.player
                 opacity: visible ? 1.0 : 0.0
+                z: 1
                 
                 Behavior on opacity {
                     NumberAnimation {
@@ -395,6 +399,7 @@ Item {
                 radius: width / 2
                 color: Colors.whiteSource
                 visible: compactPlayer.player !== null
+                z: 2
 
                 Behavior on width {
                     NumberAnimation {
@@ -422,6 +427,7 @@ Item {
                 anchors.fill: parent
                 cursorShape: compactPlayer.player?.canSeek ?? false ? Qt.PointingHandCursor : Qt.ArrowCursor
                 enabled: compactPlayer.player?.canSeek ?? false
+                z: 3
                 onClicked: mouse => {
                     if (compactPlayer.player && compactPlayer.player.canSeek) {
                         compactPlayer.player.position = (mouse.x / width) * compactPlayer.length;
