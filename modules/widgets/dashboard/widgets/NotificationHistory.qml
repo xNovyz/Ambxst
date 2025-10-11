@@ -123,11 +123,15 @@ Item {
                     anchors.right: parent.right
 
                     Behavior on color {
-                        ColorAnimation { duration: Config.animDuration / 2 }
+                        ColorAnimation {
+                            duration: Config.animDuration / 4
+                        }
                     }
 
                     Behavior on radius {
-                        NumberAnimation { duration: Config.animDuration / 2 }
+                        NumberAnimation {
+                            duration: Config.animDuration / 4
+                        }
                     }
 
                     Text {
@@ -139,7 +143,9 @@ Item {
                         color: Notifications.silent ? Colors.overPrimary : Colors.primary
 
                         Behavior on color {
-                            ColorAnimation { duration: Config.animDuration / 2 }
+                            ColorAnimation {
+                                duration: Config.animDuration / 4
+                            }
                         }
                     }
 
@@ -161,11 +167,15 @@ Item {
                 color: broomHover.pressed ? Colors.error : (broomHover.containsMouse ? Colors.overError : Colors.surface)
 
                 Behavior on color {
-                    ColorAnimation { duration: Config.animDuration / 2 }
+                    ColorAnimation {
+                        duration: Config.animDuration / 4
+                    }
                 }
 
                 Behavior on radius {
-                    NumberAnimation { duration: Config.animDuration / 2 }
+                    NumberAnimation {
+                        duration: Config.animDuration / 4
+                    }
                 }
 
                 Text {
@@ -177,7 +187,9 @@ Item {
                     color: broomHover.pressed ? Colors.overError : Colors.error
 
                     Behavior on color {
-                        ColorAnimation { duration: Config.animDuration / 2 }
+                        ColorAnimation {
+                            duration: Config.animDuration / 4
+                        }
                     }
                 }
 
