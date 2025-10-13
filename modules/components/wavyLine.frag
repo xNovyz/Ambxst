@@ -16,39 +16,38 @@ layout(std140, binding = 0) uniform buf {
 
 #define PI 3.14159265359
 
-// Función para suavizar los bordes laterales con forma más redondeada
-float roundedEdge(float x, float width, float radius) {
-    float distFromLeft = x;
-    float distFromRight = width - x;
-    float edgeDist = min(distFromLeft, distFromRight);
-    
-    // Usar una curva más suave (cuadrática) para un efecto más redondeado
-    if (edgeDist >= radius) return 1.0;
-    float t = edgeDist / radius;
-    return t * t * (3.0 - 2.0 * t); // Smootherstep para mayor suavidad
-}
-
-// Calcula la cobertura de un punto considerando la derivada
+// Calcula la cobertura de un punto para la onda con extremos redondeados
 float coverage(vec2 pos, float centerY) {
     float x = pos.x;
     float k = ubuf.frequency * 2.0 * PI / ubuf.fullLength;
-    
-    // Valor de la onda
-    float waveValue = sin(k * x + ubuf.phase);
+    float radius = ubuf.lineWidth * 1.5; // Radio de los extremos redondeados
+
+    // Limita la coordenada X para que la onda termine en los puntos de inicio de los arcos
+    float clippedX = clamp(x, radius, ubuf.canvasWidth - radius);
+
+    // Valor de la onda en el punto X limitado
+    float waveValue = sin(k * clippedX + ubuf.phase);
     float waveY = centerY + ubuf.amplitude * waveValue;
-    
-    // Derivada de la onda para calcular el ancho efectivo
-    float derivative = abs(cos(k * x + ubuf.phase) * k * ubuf.amplitude);
-    
-    // El ancho efectivo aumenta con la pendiente de la onda
+
+    // Derivada para calcular el ancho efectivo de la línea
+    float derivative = abs(cos(k * clippedX + ubuf.phase) * k * ubuf.amplitude);
     float effectiveWidth = ubuf.lineWidth * 1.0 * sqrt(1.0 + derivative * derivative);
-    
-    // Distancia del píxel a la línea de la onda
-    float dist = abs(pos.y - waveY);
-    
-    // Sharp cutoff for full opacity
     float halfWidth = effectiveWidth * 0.5;
-    
+
+    // Calcula la distancia del píxel a la forma de la onda con extremos redondeados
+    float dist;
+    if (x < radius) {
+        // Extremo izquierdo: distancia al centro del círculo
+        dist = distance(pos, vec2(radius, waveY));
+    } else if (x > ubuf.canvasWidth - radius) {
+        // Extremo derecho: distancia al centro del círculo
+        dist = distance(pos, vec2(ubuf.canvasWidth - radius, waveY));
+    } else {
+        // Parte central: distancia vertical a la onda
+        dist = abs(pos.y - waveY);
+    }
+
+    // Devuelve 1 si el píxel está dentro de la línea, 0 si no
     return step(dist, halfWidth);
 }
 
@@ -69,8 +68,6 @@ void main() {
     }
     
     alpha /= samples;
-    
-    // No edge fading for full opacity
     
     if (alpha < 0.5) {
         discard;
