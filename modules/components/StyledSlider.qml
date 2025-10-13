@@ -31,8 +31,9 @@ RowLayout {
      property real wavyAmplitude: 0.8
      property real wavyFrequency: 8
      property real heightMultiplier: 8
-    property bool resizeAnim: true
-    property bool scroll: true
+     property bool resizeAnim: true
+     property bool scroll: true
+     property bool tooltip: true
 
     Behavior on wavyAmplitude {
         NumberAnimation {
@@ -213,12 +214,25 @@ RowLayout {
             }
         }
 
-        ToolTip {
-            visible: root.isDragging
-            text: root.tooltipText
-            x: dragHandle.x + dragHandle.width / 2 - width / 2
-            y: dragHandle.y - height - 5
-        }
+         ToolTip {
+             background: Rectangle {
+               color: Colors.background
+               border.width: 2
+               border.color: Colors.surfaceBright
+               radius: Math.max(0, Config.roundness - 8)
+             }
+             contentItem: Text {
+               anchors.centerIn: parent
+               text: root.tooltipText
+               color: Colors.overBackground
+               font.pixelSize: Config.theme.fontSize
+               font.weight: Font.Bold
+               font.family: Config.theme.font
+             }
+             visible: root.isDragging && root.tooltip
+             x: dragHandle.x + dragHandle.width / 2 - width / 2
+             y: dragHandle.y - height - 5
+         }
     }
 
     onValueChanged:

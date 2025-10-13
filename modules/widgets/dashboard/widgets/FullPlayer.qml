@@ -55,32 +55,32 @@ PaneRect {
             anchors.margins: 4
             visible: !MprisController.activePlayer
 
-            WavyLine {
-                id: noPlayerWavyLine
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                frequency: 8
-                color: Colors.outline
-                amplitudeMultiplier: 0.8
-                height: 16
-                lineWidth: 4
-                fullLength: width
-                visible: true
-                opacity: 1.0
+             WavyLine {
+                 id: noPlayerWavyLine
+                 anchors.left: parent.left
+                 anchors.right: parent.right
+                 anchors.verticalCenter: parent.verticalCenter
+                 frequency: 2
+                 color: Colors.outline
+                 amplitudeMultiplier: 1
+                 height: 16
+                 lineWidth: 4
+                 fullLength: width
+                 visible: true
+                 opacity: 1.0
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: Config.animDuration
-                        easing.type: Easing.OutQuart
-                    }
-                }
+                 Behavior on color {
+                     ColorAnimation {
+                         duration: Config.animDuration
+                         easing.type: Easing.OutQuart
+                     }
+                 }
 
-                FrameAnimation {
-                    running: noPlayerWavyLine.visible
-                    onTriggered: noPlayerWavyLine.requestPaint()
-                }
-            }
+                 FrameAnimation {
+                     running: noPlayerWavyLine.visible
+                     onTriggered: noPlayerWavyLine.requestPaint()
+                 }
+             }
         }
 
         Image {
@@ -274,6 +274,7 @@ PaneRect {
                      heightMultiplier: MprisController.activePlayer ? 8 : 4
                      resizeAnim: false
                      scroll: false
+                     tooltip: false
 
                      onValueChanged: {
                          if (isDragging && MprisController.activePlayer && MprisController.activePlayer.canSeek) {

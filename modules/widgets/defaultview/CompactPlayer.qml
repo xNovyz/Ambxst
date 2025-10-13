@@ -239,29 +239,51 @@ Item {
                 }
             }
 
-            StyledSlider {
-                id: positionSlider
-                Layout.fillWidth: true
-                Layout.preferredHeight: 4
-                Layout.leftMargin: compactPlayer.notchHovered ? 0 : 8
-                Layout.rightMargin: compactPlayer.notchHovered ? 0 : 8
+             StyledSlider {
+                 id: positionSlider
+                 Layout.fillWidth: true
+                 Layout.preferredHeight: 4
+                 Layout.leftMargin: compactPlayer.notchHovered ? 0 : 8
+                 Layout.rightMargin: compactPlayer.notchHovered ? 0 : 8
+                 visible: compactPlayer.player !== null
 
-                 value: compactPlayer.length > 0 ? Math.min(1.0, compactPlayer.position / compactPlayer.length) : 0
-                 progressColor: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed
-                 backgroundColor: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.shadow : Colors.shadow
-                 wavy: compactPlayer.isPlaying
-                 wavyAmplitude: compactPlayer.isPlaying ? 0.5 : 0.0
-                 wavyFrequency: compactPlayer.isPlaying ? 4 : 0
-                 heightMultiplier: compactPlayer.player ? 8 : 4
-                 resizeAnim: false
-                 scroll: false
+                  value: compactPlayer.length > 0 ? Math.min(1.0, compactPlayer.position / compactPlayer.length) : 0
+                  progressColor: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.primary : Colors.primaryFixed
+                  backgroundColor: compactPlayer.hasArtwork && compactPlayer.playerColors ? compactPlayer.playerColors.shadow : Colors.shadow
+                  wavy: compactPlayer.isPlaying
+                  wavyAmplitude: compactPlayer.isPlaying ? 0.5 : 0.0
+                  wavyFrequency: compactPlayer.isPlaying ? 4 : 0
+                  heightMultiplier: compactPlayer.player ? 8 : 4
+                  resizeAnim: false
+                  scroll: false
+                  tooltip: false
 
-                onValueChanged: {
-                    if (isDragging && compactPlayer.player && compactPlayer.player.canSeek) {
-                        compactPlayer.player.position = value * compactPlayer.length;
-                    }
-                }
-            }
+                 onValueChanged: {
+                     if (isDragging && compactPlayer.player && compactPlayer.player.canSeek) {
+                         compactPlayer.player.position = value * compactPlayer.length;
+                     }
+                 }
+             }
+
+             WavyLine {
+                 Layout.fillWidth: true
+                 Layout.preferredHeight: 16
+                 Layout.leftMargin: 4
+                 Layout.rightMargin: 4
+                 visible: compactPlayer.player === null
+                 frequency: 2
+                 color: Colors.outline
+                 amplitudeMultiplier: 1
+                 height: 16
+                 lineWidth: 4
+                 fullLength: width
+                 opacity: 1.0
+
+                 FrameAnimation {
+                     running: parent.visible
+                     onTriggered: parent.requestPaint()
+                 }
+             }
 
             Text {
                 id: nextBtn
