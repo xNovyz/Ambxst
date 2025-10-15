@@ -178,12 +178,11 @@ Rectangle {
             ClippingRectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Colors.surface
+                color: "transparent"
                 radius: Config.roundness > 0 ? Config.roundness + 4 : 0
 
                 Flickable {
                     anchors.fill: parent
-                    anchors.margins: 4
                     contentHeight: optionsLayout.height
                     clip: true
 
