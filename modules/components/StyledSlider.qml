@@ -19,7 +19,8 @@ Item {
     implicitHeight: vertical ? size : 4
     implicitWidth: !vertical ? size : 4
 
-    signal iconClicked
+     signal iconClicked
+     signal iconHovered(bool hovered)
 
     property bool vertical: false // true for vertical, false for horizontal
     property string icon: ""
@@ -340,15 +341,15 @@ Item {
           x: !root.vertical ? (root.iconPos === "start" ? 0 : parent.width - width) : (parent.width - width) / 2
           y: root.vertical ? (root.iconPos === "start" ? 0 : parent.height - height) : (parent.height - height) / 2
  
-         MouseArea {
-             anchors.fill: parent
-             hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            z: 4
-             onEntered: iconColor = Colors.primary
-             onExited: iconColor = Colors.overBackground
-            onClicked: root.iconClicked()
-        }
+          MouseArea {
+              anchors.fill: parent
+              hoverEnabled: true
+             cursorShape: Qt.PointingHandCursor
+             z: 4
+              onEntered: { iconColor = Colors.primary; root.iconHovered(true) }
+              onExited: { iconColor = Colors.overBackground; root.iconHovered(false) }
+             onClicked: root.iconClicked()
+         }
     }
 
     MouseArea {
