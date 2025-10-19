@@ -48,6 +48,16 @@ QtObject {
     readonly property string shortcut: ""
     readonly property string launch: ""
 
+    // Toolbox
+    readonly property string toolbox: ""
+    readonly property string regionScreenshot: ""
+    readonly property string windowScreenshot: ""
+    readonly property string fullScreenshot: ""
+    readonly property string screenshots: ""
+
+    readonly property string recordScreen: ""
+    readonly property string recordings: ""
+
     // Notifications
     readonly property string bell: ""
     readonly property string bellRinging: ""
@@ -82,6 +92,9 @@ QtObject {
     readonly property string speakerNone: ""
     readonly property string speakerLow: ""
     readonly property string speakerHigh: ""
+
+    readonly property string microphone: ""
+    readonly property string microphoneSlash: ""
 
     // Keyboard
     readonly property string keyboard: ""
