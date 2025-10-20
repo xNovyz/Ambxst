@@ -40,43 +40,42 @@ Singleton {
         }
 
         adapter: JsonAdapter {
-             property JsonObject theme: JsonObject {
-                 property bool oledMode: false
-                 property bool lightMode: false
-                 property real opacity: 1.0
-                 property int roundness: 16
-                 property int borderSize: 0
-                 property string borderColor: "surfaceBright"
-                 property string font: "Roboto Condensed"
-                 property int fontSize: 14
-                 property bool tintIcons: false
-                 property string currentTheme: "default"
-                 property bool enableCorners: true
-                 property int animDuration: 300
-                 property real shadowOpacity: 0.5
-                 property string shadowColor: "shadow"
-                 property int shadowXOffset: 0
-                 property int shadowYOffset: 0
-                 property real shadowBlur: 1
-                 property list<var> bgColor: [["background", 0.0]]
-                 property string bgOrientation: "vertical"
-                  property list<var> paneColor: [["surface", 0.0]]
-                  property string paneOrientation: "vertical"
-                  property list<var> separatorColor: [["surfaceBright", 0.0]]
+            property JsonObject theme: JsonObject {
+                property bool oledMode: false
+                property bool lightMode: false
+                property real opacity: 1.0
+                property int roundness: 16
+                property int borderSize: 0
+                property string borderColor: "surfaceBright"
+                property string font: "Roboto Condensed"
+                property int fontSize: 14
+                property bool tintIcons: false
+                property string currentTheme: "default"
+                property bool enableCorners: true
+                property int animDuration: 300
+                property real shadowOpacity: 0.5
+                property string shadowColor: "shadow"
+                property int shadowXOffset: 0
+                property int shadowYOffset: 0
+                property real shadowBlur: 1
+                property list<var> bgColor: [["background", 0.0]]
+                property string bgOrientation: "vertical"
+                property list<var> paneColor: [["surface", 0.0]]
+                property string paneOrientation: "vertical"
+                property list<var> separatorColor: [["surfaceBright", 0.0]]
+            }
 
-              }
-
-             property JsonObject bar: JsonObject {
-                 property string position: "top"
-                 property string launcherIcon: ""
-                 property bool showBackground: false
-                 property real bgOpacity: 0.5
-                 property bool verbose: true
-                 property list<string> screenList: []
-                 property bool enableFirefoxPlayer: false
-                 property list<var> barColor: [["surface", 0.0]]
-                 property string barOrientation: "vertical"
-             }
+            property JsonObject bar: JsonObject {
+                property string position: "top"
+                property string launcherIcon: ""
+                property bool showBackground: false
+                property real bgOpacity: 0.5
+                property bool verbose: true
+                property list<string> screenList: []
+                property bool enableFirefoxPlayer: false
+                property list<var> barColor: [["surface", 0.0]]
+                property string barOrientation: "vertical"
+            }
 
             property JsonObject workspaces: JsonObject {
                 property int shown: 10
@@ -139,11 +138,11 @@ Singleton {
                 property real blurInputMethodsIgnorealpha: 0.2
             }
 
-             property JsonObject performance: JsonObject {
-                 property bool blurTransition: true
-                 property bool windowPreview: true
-                 property bool wavyLine: true
-             }
+            property JsonObject performance: JsonObject {
+                property bool blurTransition: true
+                property bool windowPreview: true
+                property bool wavyLine: true
+            }
 
             property JsonObject weather: JsonObject {
                 property string location: ""
@@ -199,7 +198,7 @@ Singleton {
 
     // Hyprland configuration
     property QtObject hyprland: loader.adapter.hyprland
-    property int hyprlandRounding: hyprland.syncRoundness ? Math.max(0, roundness - hyprlandBorderSize) : Math.max(0, hyprland.rounding - hyprland.borderSize)
+    property int hyprlandRounding: hyprland.syncRoundness ? Math.max(0, roundness - (hyprland.gapsOut - hyprlandBorderSize)) : Math.max(0, hyprland.rounding - hyprlandBorderSize)
     property int hyprlandBorderSize: hyprland.syncBorderWidth ? theme.borderSize : hyprland.borderSize
     property string hyprlandBorderColor: hyprland.syncBorderColor ? theme.borderColor : (hyprland.activeBorderColor.length > 0 ? hyprland.activeBorderColor[0] : "primary")
     property real hyprlandShadowOpacity: hyprland.syncShadowOpacity ? theme.shadowOpacity : hyprland.shadowOpacity
