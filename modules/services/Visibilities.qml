@@ -16,6 +16,7 @@ Singleton {
     property string lastFocusedScreen: ""
     property var contextMenu: null
     property bool playerMenuOpen: false
+    readonly property var moduleNames: ["launcher", "dashboard", "overview", "powermenu"]
 
     function setContextMenu(menu) {
         contextMenu = menu;
@@ -58,74 +59,57 @@ Singleton {
     }
 
     function setActiveModule(moduleName, skipFocusRestore) {
-        if (!Hyprland.focusedMonitor) return;
-        
-        let focusedScreenName = Hyprland.focusedMonitor.name;
-        
-        let wasOpen = currentActiveModule !== "";
-        
+        const focusedMonitor = Hyprland.focusedMonitor;
+        if (!focusedMonitor)
+            return;
+
+        const focusedScreenName = focusedMonitor.name;
+        const wasOpen = currentActiveModule !== "";
+
         clearAll();
-        
-        if (moduleName && moduleName !== "") {
-            let focusedScreen = getForScreen(focusedScreenName);
-            if (moduleName === "launcher") {
-                focusedScreen.launcher = true;
-            } else if (moduleName === "dashboard") {
-                focusedScreen.dashboard = true;
-            } else if (moduleName === "overview") {
-                focusedScreen.overview = true;
-            } else if (moduleName === "powermenu") {
-                focusedScreen.powermenu = true;
-            }
+
+        if (moduleName) {
             currentActiveModule = moduleName;
+            applyActiveModuleToScreen(focusedScreenName);
         } else {
             currentActiveModule = "";
-            
+
             if (wasOpen && !skipFocusRestore) {
                 Qt.callLater(() => {
-                    if (Hyprland.focusedMonitor) {
-                        let currentWorkspace = Hyprland.focusedMonitor.activeWorkspace?.id;
-                        if (currentWorkspace) {
-                            let windowInWorkspace = HyprlandData.windowList.find(win => 
-                                win?.workspace?.id === currentWorkspace && 
-                                Hyprland.focusedMonitor?.id === win.monitor
-                            );
-                            
-                            if (windowInWorkspace) {
-                                Hyprland.dispatch(`focuswindow address:${windowInWorkspace.address}`);
-                            }
-                        }
+                    const monitor = Hyprland.focusedMonitor;
+                    if (!monitor)
+                        return;
+
+                    const currentWorkspace = monitor.activeWorkspace?.id;
+                    if (!currentWorkspace)
+                        return;
+
+                    const windowInWorkspace = HyprlandData.windowList.find(win =>
+                        win?.workspace?.id === currentWorkspace &&
+                        monitor?.id === win.monitor
+                    );
+
+                    if (windowInWorkspace) {
+                        Hyprland.dispatch(`focuswindow address:${windowInWorkspace.address}`);
                     }
                 });
             }
         }
-        
+
         lastFocusedScreen = focusedScreenName;
     }
 
     function moveActiveModuleToFocusedScreen() {
-        if (!Hyprland.focusedMonitor || !currentActiveModule) return;
-        
-        let newFocusedScreen = Hyprland.focusedMonitor.name;
-        
-        // Don't do anything if we're already on the same screen
-        if (newFocusedScreen === lastFocusedScreen) return;
-        
-        // Clear all screens
+        const focusedMonitor = Hyprland.focusedMonitor;
+        if (!focusedMonitor || !currentActiveModule)
+            return;
+
+        const newFocusedScreen = focusedMonitor.name;
+        if (newFocusedScreen === lastFocusedScreen)
+            return;
+
         clearAll();
-        
-        // Set the active module on the newly focused screen
-        let focusedScreen = getForScreen(newFocusedScreen);
-        if (currentActiveModule === "launcher") {
-            focusedScreen.launcher = true;
-        } else if (currentActiveModule === "dashboard") {
-            focusedScreen.dashboard = true;
-        } else if (currentActiveModule === "overview") {
-            focusedScreen.overview = true;
-        } else if (currentActiveModule === "powermenu") {
-            focusedScreen.powermenu = true;
-        }
-        
+        applyActiveModuleToScreen(newFocusedScreen);
         lastFocusedScreen = newFocusedScreen;
     }
 
@@ -141,12 +125,21 @@ Singleton {
     }
 
     function clearAll() {
-        for (let screenName in screens) {
-            let screenProps = screens[screenName];
-            screenProps.launcher = false;
-            screenProps.dashboard = false;
-            screenProps.overview = false;
-            screenProps.powermenu = false;
+        for (const screenName in screens) {
+            const screenProps = screens[screenName];
+            for (let i = 0; i < moduleNames.length; i++) {
+                screenProps[moduleNames[i]] = false;
+            }
+        }
+    }
+
+    function applyActiveModuleToScreen(screenName) {
+        if (!currentActiveModule)
+            return;
+
+        const screenProps = getForScreen(screenName);
+        if (moduleNames.indexOf(currentActiveModule) !== -1) {
+            screenProps[currentActiveModule] = true;
         }
     }
 

@@ -6,254 +6,166 @@ import qs.modules.services
 Item {
     id: root
 
-    GlobalShortcut {
-        id: overviewShortcut
-        appid: "ambxst"
-        name: "overview"
-        description: "Toggle window overview"
+    readonly property string appId: "ambxst"
+    readonly property int mediaSeekStepMs: 5000
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "overview") {
-                Visibilities.setActiveModule("");
-            } else {
-                Visibilities.setActiveModule("overview");
-            }
+    function toggleSimpleModule(moduleName) {
+        if (Visibilities.currentActiveModule === moduleName) {
+            Visibilities.setActiveModule("");
+        } else {
+            Visibilities.setActiveModule(moduleName);
         }
     }
 
+    function toggleLauncherTab(tabIndex) {
+        const isActive = Visibilities.currentActiveModule === "launcher";
+        if (isActive && GlobalStates.launcherCurrentTab === tabIndex) {
+            GlobalStates.clearLauncherState();
+            Visibilities.setActiveModule("");
+            return;
+        }
+
+        GlobalStates.launcherCurrentTab = tabIndex;
+        if (!isActive) {
+            Visibilities.setActiveModule("launcher");
+        }
+    }
+
+    function toggleDashboardTab(tabIndex) {
+        const isActive = Visibilities.currentActiveModule === "dashboard";
+        if (isActive && GlobalStates.dashboardCurrentTab === tabIndex) {
+            Visibilities.setActiveModule("");
+            return;
+        }
+
+        GlobalStates.dashboardCurrentTab = tabIndex;
+        if (!isActive) {
+            Visibilities.setActiveModule("dashboard");
+        }
+    }
+
+    function seekActivePlayer(offset) {
+        const player = MprisController.activePlayer;
+        if (!player || !player.canSeek) {
+            return;
+        }
+
+        const maxLength = typeof player.length === "number" && !isNaN(player.length)
+                ? player.length
+                : Number.MAX_SAFE_INTEGER;
+        const clamped = Math.max(0, Math.min(maxLength, player.position + offset));
+        player.position = clamped;
+    }
+
     GlobalShortcut {
-        id: powermenuShortcut
-        appid: "ambxst"
+        appid: root.appId
+        name: "overview"
+        description: "Toggle window overview"
+
+        onPressed: toggleSimpleModule("overview")
+    }
+
+    GlobalShortcut {
+        appid: root.appId
         name: "powermenu"
         description: "Toggle power menu"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "powermenu") {
-                Visibilities.setActiveModule("");
-            } else {
-                Visibilities.setActiveModule("powermenu");
-            }
-        }
+        onPressed: toggleSimpleModule("powermenu")
     }
 
     // Launcher tab shortcuts
     GlobalShortcut {
-        id: launcherAppsShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "launcher-apps"
         description: "Open launcher apps tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "launcher" && GlobalStates.launcherCurrentTab === 0) {
-                GlobalStates.clearLauncherState();
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "launcher") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.launcherCurrentTab = 0;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.launcherCurrentTab = 0;
-                Visibilities.setActiveModule("launcher");
-            }
-        }
+        onPressed: toggleLauncherTab(0)
     }
 
     GlobalShortcut {
-        id: launcherTmuxShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "launcher-tmux"
         description: "Open launcher tmux tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "launcher" && GlobalStates.launcherCurrentTab === 1) {
-                GlobalStates.clearLauncherState();
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "launcher") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.launcherCurrentTab = 1;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.launcherCurrentTab = 1;
-                Visibilities.setActiveModule("launcher");
-            }
-        }
+        onPressed: toggleLauncherTab(1)
     }
 
     GlobalShortcut {
-        id: launcherClipboardShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "launcher-clipboard"
         description: "Open launcher clipboard tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "launcher" && GlobalStates.launcherCurrentTab === 2) {
-                GlobalStates.clearLauncherState();
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "launcher") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.launcherCurrentTab = 2;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.launcherCurrentTab = 2;
-                Visibilities.setActiveModule("launcher");
-            }
-        }
+        onPressed: toggleLauncherTab(2)
     }
 
     // Dashboard tab shortcuts
     GlobalShortcut {
-        id: dashboardWidgetsShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "dashboard-widgets"
         description: "Open dashboard widgets tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "dashboard" && GlobalStates.dashboardCurrentTab === 0) {
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "dashboard") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.dashboardCurrentTab = 0;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.dashboardCurrentTab = 0;
-                Visibilities.setActiveModule("dashboard");
-            }
-        }
+        onPressed: toggleDashboardTab(0)
     }
 
     GlobalShortcut {
-        id: dashboardPinsShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "dashboard-pins"
         description: "Open dashboard pins tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "dashboard" && GlobalStates.dashboardCurrentTab === 1) {
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "dashboard") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.dashboardCurrentTab = 1;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.dashboardCurrentTab = 1;
-                Visibilities.setActiveModule("dashboard");
-            }
-        }
+        onPressed: toggleDashboardTab(1)
     }
 
     GlobalShortcut {
-        id: dashboardKanbanShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "dashboard-kanban"
         description: "Open dashboard kanban tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "dashboard" && GlobalStates.dashboardCurrentTab === 2) {
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "dashboard") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.dashboardCurrentTab = 2;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.dashboardCurrentTab = 2;
-                Visibilities.setActiveModule("dashboard");
-            }
-        }
+        onPressed: toggleDashboardTab(2)
     }
 
     GlobalShortcut {
-        id: dashboardWallpapersShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "dashboard-wallpapers"
         description: "Open dashboard wallpapers tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "dashboard" && GlobalStates.dashboardCurrentTab === 3) {
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "dashboard") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.dashboardCurrentTab = 3;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.dashboardCurrentTab = 3;
-                Visibilities.setActiveModule("dashboard");
-            }
-        }
+        onPressed: toggleDashboardTab(3)
     }
 
     GlobalShortcut {
-        id: dashboardAssistantShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "dashboard-assistant"
         description: "Open dashboard assistant tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "dashboard" && GlobalStates.dashboardCurrentTab === 4) {
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "dashboard") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.dashboardCurrentTab = 4;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.dashboardCurrentTab = 4;
-                Visibilities.setActiveModule("dashboard");
-            }
-        }
+        onPressed: toggleDashboardTab(4)
     }
 
     GlobalShortcut {
-        id: launcherEmojiShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "launcher-emoji"
         description: "Open launcher emoji tab"
 
-        onPressed: {
-            if (Visibilities.currentActiveModule === "launcher" && GlobalStates.launcherCurrentTab === 3) {
-                GlobalStates.clearLauncherState();
-                Visibilities.setActiveModule("");
-            } else if (Visibilities.currentActiveModule === "launcher") {
-                // Solo navegar a la pestaña sin cerrar/abrir
-                GlobalStates.launcherCurrentTab = 3;
-            } else {
-                // Actualizar la pestaña ANTES de abrir el módulo
-                GlobalStates.launcherCurrentTab = 3;
-                Visibilities.setActiveModule("launcher");
-            }
-        }
+        onPressed: toggleLauncherTab(3)
     }
 
     // Media player shortcuts
     GlobalShortcut {
-        id: mediaSeekBackwardShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "media-seek-backward"
         description: "Seek backward in media player"
 
-        onPressed: {
-            if (MprisController.activePlayer && MprisController.activePlayer.canSeek) {
-                const seekAmount = 5000; // Seek 5 seconds backward
-                MprisController.activePlayer.position = Math.max(0, MprisController.activePlayer.position - seekAmount);
-            }
-        }
+        onPressed: seekActivePlayer(-mediaSeekStepMs)
     }
 
     GlobalShortcut {
-        id: mediaSeekForwardShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "media-seek-forward"
         description: "Seek forward in media player"
 
-        onPressed: {
-            if (MprisController.activePlayer && MprisController.activePlayer.canSeek) {
-                const seekAmount = 5000; // Seek 5 seconds forward
-                MprisController.activePlayer.position = Math.min(MprisController.activePlayer.length, MprisController.activePlayer.position + seekAmount);
-            }
-        }
+        onPressed: seekActivePlayer(mediaSeekStepMs)
     }
 
     GlobalShortcut {
-        id: mediaPlayPauseShortcut
-        appid: "ambxst"
+        appid: root.appId
         name: "media-play-pause"
         description: "Toggle play/pause in media player"
 

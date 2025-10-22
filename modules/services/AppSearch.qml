@@ -6,8 +6,7 @@ import Quickshell.Io
 
 Singleton {
     id: root
-    
-    property real scoreThreshold: 0.2
+
     property var substitutions: ({
         "code-url-handler": "visual-studio-code",
         "Code": "visual-studio-code",
@@ -18,9 +17,9 @@ Singleton {
         "footclient": "foot",
         "zen": "zen-browser",
     })
-    property var regexSubstitutions: [
+    property list<var> regexSubstitutions: [
         {
-            "regex": /^steam_app_(\\d+)$/,
+            "regex": /^steam_app_(\d+)$/,
             "replace": "steam_icon_$1"
         },
         {
@@ -45,20 +44,25 @@ Singleton {
     function getIconFromDesktopEntry(className) {
         if (!className || className.length === 0) return null;
 
+        const normalizedClassName = className.toLowerCase();
+
         for (let i = 0; i < list.length; i++) {
             const app = list[i];
             // Match by executable name (first command argument)
-            if (app.command && app.command.length > 0 && app.command[0] === className) {
-                return app.icon || "application-x-executable";
+            if (app.command && app.command.length > 0) {
+                const executableLower = app.command[0].toLowerCase();
+                if (executableLower === normalizedClassName) {
+                    return app.icon || "application-x-executable";
+                }
             }
             // Match by application name
-            if (app.name && app.name.toLowerCase() === className.toLowerCase()) {
+            if (app.name && app.name.toLowerCase() === normalizedClassName) {
                 return app.icon || "application-x-executable";
             }
             // Match by keywords
             if (app.keywords && app.keywords.length > 0) {
                 for (let j = 0; j < app.keywords.length; j++) {
-                    if (app.keywords[j].toLowerCase() === className.toLowerCase()) {
+                    if (app.keywords[j].toLowerCase() === normalizedClassName) {
                         return app.icon || "application-x-executable";
                     }
                 }
@@ -88,11 +92,11 @@ Singleton {
 
         if (iconExists(str)) return str;
 
-        let guessStr = str;
-        guessStr = str.split('.').slice(-1)[0].toLowerCase();
-        if (iconExists(guessStr)) return guessStr;
-        guessStr = str.toLowerCase().replace(/\s+/g, "-");
-        if (iconExists(guessStr)) return guessStr;
+        const extensionGuess = str.split('.').pop().toLowerCase();
+        if (iconExists(extensionGuess)) return extensionGuess;
+
+        const dashedGuess = str.toLowerCase().replace(/\s+/g, "-");
+        if (iconExists(dashedGuess)) return dashedGuess;
 
         return str;
     }
