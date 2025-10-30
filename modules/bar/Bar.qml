@@ -147,13 +147,18 @@ PanelWindow {
             }
 
             ClippingRectangle {
+                id: leftRect
                 Layout.fillWidth: true
                 Layout.preferredHeight: 36
                 color: "transparent"
                 radius: Config.roundness
+                layer.enabled: Config.bar.showBackground
+                layer.effect: Shadow {}
 
                 Flickable {
-                    anchors.fill: parent
+                    width: parent.width
+                    height: parent.height
+                    anchors.left: parent.left
                     contentWidth: leftContent.width
                     contentHeight: 36
                     flickableDirection: Flickable.HorizontalFlick
@@ -162,14 +167,23 @@ PanelWindow {
                         id: leftContent
                         spacing: 4
 
-                        Workspaces {
-                            orientation: panel.orientation
-                            bar: QtObject {
-                                property var screen: panel.screen
+                        RowLayout {
+                            id: leftWidgets
+                            spacing: 4
+
+                            Workspaces {
+                                orientation: panel.orientation
+                                bar: QtObject {
+                                    property var screen: panel.screen
+                                }
+                            }
+                            OverviewButton {
+                                id: overviewButton
                             }
                         }
-                        OverviewButton {
-                            id: overviewButton
+
+                        Item {
+                            Layout.preferredWidth: leftRect.width - leftWidgets.width - 4
                         }
                     }
                 }
@@ -261,13 +275,18 @@ PanelWindow {
             }
 
             ClippingRectangle {
+                id: topRect
                 Layout.fillHeight: true
                 Layout.preferredWidth: 36
                 color: "transparent"
                 radius: Config.roundness
+                layer.enabled: Config.bar.showBackground
+                layer.effect: Shadow {}
 
                 Flickable {
-                    anchors.fill: parent
+                    width: parent.width
+                    height: parent.height
+                    anchors.top: parent.top
                     contentWidth: 36
                     contentHeight: topContent.height
                     flickableDirection: Flickable.VerticalFlick
@@ -276,28 +295,42 @@ PanelWindow {
                         id: topContent
                         spacing: 4
 
-                        Workspaces {
-                            orientation: panel.orientation
-                            bar: QtObject {
-                                property var screen: panel.screen
+                        ColumnLayout {
+                            id: topWidgets
+                            spacing: 4
+
+                            Workspaces {
+                                orientation: panel.orientation
+                                bar: QtObject {
+                                    property var screen: panel.screen
+                                }
+                            }
+                            OverviewButton {
+                                id: overviewButtonVert
+                                Layout.preferredHeight: 36
                             }
                         }
-                        OverviewButton {
-                            id: overviewButtonVert
-                            Layout.preferredHeight: 36
+
+                        Item {
+                            Layout.preferredHeight: topRect.height - topWidgets.height - 4
                         }
                     }
                 }
             }
 
             ClippingRectangle {
+                id: bottomRect
                 Layout.fillHeight: true
                 Layout.preferredWidth: 36
                 color: "transparent"
                 radius: Config.roundness
+                layer.enabled: Config.bar.showBackground
+                layer.effect: Shadow {}
 
                 Flickable {
-                    anchors.fill: parent
+                    width: parent.width
+                    height: parent.height
+                    anchors.bottom: parent.bottom
                     contentWidth: 36
                     contentHeight: bottomContent.height
                     contentY: bottomContent.height
@@ -308,30 +341,44 @@ PanelWindow {
                         spacing: 4
 
                         Item {
-                            Layout.preferredHeight: 800
+                            Layout.preferredHeight: bottomRect.height - bottomWidgets.height - 4
                         }
 
-                        MicSlider {
-                            bar: panel
-                        }
+                        ColumnLayout {
+                            id: bottomWidgets
+                            spacing: 4
 
-                        VolumeSlider {
-                            bar: panel
-                        }
+                            MicSlider {
+                                bar: panel
+                                layerEnabled: Config.bar.showBackground
+                            }
 
-                        BrightnessSlider {
-                            bar: panel
-                        }
-                        SysTray {
-                            bar: panel
-                        }
-                        Weather {
-                            id: weatherComponentVert
-                            bar: panel
-                        }
-                        Clock {
-                            id: clockComponentVert
-                            bar: panel
+                            VolumeSlider {
+                                bar: panel
+                                layerEnabled: Config.bar.showBackground
+                            }
+
+                            BrightnessSlider {
+                                bar: panel
+                                layerEnabled: Config.bar.showBackground
+                            }
+
+                            SysTray {
+                                bar: panel
+                                layer.enabled: false
+                            }
+
+                            Weather {
+                                id: weatherComponentVert
+                                bar: panel
+                                layer.enabled: false
+                            }
+
+                            Clock {
+                                id: clockComponentVert
+                                bar: panel
+                                layer.enabled: false
+                            }
                         }
                     }
                 }
