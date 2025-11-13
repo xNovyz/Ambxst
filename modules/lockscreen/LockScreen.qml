@@ -129,7 +129,7 @@ PanelWindow {
             bottom: parent.bottom
             bottomMargin: 32
         }
-        width: 400
+        width: 350
         height: playerContent.height
 
         transform: Translate {
@@ -146,6 +146,7 @@ PanelWindow {
         FullPlayer {
             id: playerContent
             width: parent.width
+            playerRadius: Config.roundness * 2
         }
     }
 
@@ -157,7 +158,7 @@ PanelWindow {
             bottom: parent.bottom
             bottomMargin: 32
         }
-        width: 400
+        width: 350
         height: 80
 
         transform: Translate {

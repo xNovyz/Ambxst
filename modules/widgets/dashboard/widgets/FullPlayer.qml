@@ -11,6 +11,9 @@ import qs.config
 PaneRect {
     id: player
 
+    property real playerRadius: Config.roundness > 0 ? Config.roundness + 4 : 0
+    
+    radius: playerRadius
     height: MprisController.activePlayer ? layout.implicitHeight + layout.anchors.margins * 2 : 40
 
     property bool isPlaying: MprisController.activePlayer?.playbackState === MprisPlaybackState.Playing
@@ -54,7 +57,7 @@ PaneRect {
 
     ClippingRectangle {
         anchors.fill: parent
-        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+        radius: player.playerRadius > 0 ? player.playerRadius - 4 : 0
         color: Colors.surface
 
         Item {
