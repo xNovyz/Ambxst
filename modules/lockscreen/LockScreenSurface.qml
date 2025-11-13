@@ -113,17 +113,16 @@ WlSessionLockSurface {
         id: playerContainer
         anchors {
             left: parent.left
-            leftMargin: 32
+            leftMargin: startAnim ? 32 : -(playerContainer.width + 64)
             bottom: parent.bottom
-            bottomMargin: startAnim ? 32 : -80
+            bottomMargin: 32
         }
         width: 350
         height: playerContent.height
 
         opacity: startAnim ? 1 : 0
-        scale: startAnim ? 1 : 0.9
 
-        Behavior on anchors.bottomMargin {
+        Behavior on anchors.leftMargin {
             NumberAnimation {
                 duration: Config.animDuration
                 easing.type: Easing.OutCubic
@@ -131,13 +130,6 @@ WlSessionLockSurface {
         }
 
         Behavior on opacity {
-            NumberAnimation {
-                duration: Config.animDuration
-                easing.type: Easing.OutCubic
-            }
-        }
-
-        Behavior on scale {
             NumberAnimation {
                 duration: Config.animDuration
                 easing.type: Easing.OutCubic
