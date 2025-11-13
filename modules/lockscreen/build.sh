@@ -5,10 +5,10 @@ set -e
 
 cd "$(dirname "$0")"
 
-echo "Compiling pam-auth..."
-gcc -o pam-auth auth.c -lpam -Wall -Wextra -O2
+echo "Compiling ambxst-auth..."
+gcc -o ambxst-auth auth.c -lpam -Wall -Wextra -O2
 
-echo "✓ Binary compiled: modules/lockscreen/pam-auth"
+echo "✓ Binary compiled: modules/lockscreen/ambxst-auth"
 echo ""
 echo "IMPORTANT: The binary must run with permissions for PAM."
 echo "For local testing it may work directly."

@@ -50,6 +50,25 @@
           '';
         };
 
+      # Build the ambxst-auth binary for lockscreen
+      ambxst-auth = pkgs.stdenv.mkDerivation {
+        pname = "ambxst-auth";
+        version = "1.0.0";
+        src = ./modules/lockscreen;
+        
+        nativeBuildInputs = [ pkgs.gcc ];
+        buildInputs = [ pkgs.pam ];
+        
+        buildPhase = ''
+          gcc -o ambxst-auth auth.c -lpam -Wall -Wextra -O2
+        '';
+        
+        installPhase = ''
+          mkdir -p $out/bin
+          cp ambxst-auth $out/bin/
+        '';
+      };
+
       baseEnv = with pkgs; [
         (wrapWithNixGL quickshell)
         (wrapWithNixGL gpu-screen-recorder)
@@ -59,6 +78,7 @@
         ddcutil
         wl-clipboard
         cliphist
+        ambxst-auth
       ] ++ (if isNixOS then [ power-profiles-daemon networkmanager ] else [ nixGL ]) ++ (with pkgs; [
         mesa
         libglvnd
@@ -91,6 +111,8 @@
       };
 
       launcher = pkgs.writeShellScriptBin "ambxst" ''
+        # Ensure ambxst-auth is in PATH for lockscreen
+        export PATH="${ambxst-auth}/bin:$PATH"
         exec ${lib.optionalString (!isNixOS) "${nixGL}/bin/nixGL "}${pkgs.quickshell}/bin/qs -p ${self}/shell.qml
       '';
 

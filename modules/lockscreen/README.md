@@ -29,12 +29,12 @@ Binario en C que maneja la autenticación usando PAM (Pluggable Authentication M
 - `103`: Timeout esperando contraseña
 - `104`: Error en poll()
 
-### `pam-auth-stdin.sh` - Wrapper del binario PAM
+### `ambxst-auth-stdin.sh` - Wrapper del binario PAM
 Script bash que facilita la integración con QuickShell usando variables de entorno.
 
 **Uso:**
 ```bash
-PAM_USER="username" PAM_PASSWORD="password" ./pam-auth-stdin.sh
+PAM_USER="username" PAM_PASSWORD="password" ./ambxst-auth-stdin.sh
 ```
 
 ### `LockScreen.qml` - Interfaz del lockscreen
@@ -57,7 +57,7 @@ cd modules/lockscreen
 
 O manualmente:
 ```bash
-gcc -o pam-auth auth.c -lpam -Wall -Wextra -O2
+gcc -o ambxst-auth auth.c -lpam -Wall -Wextra -O2
 ```
 
 ## Uso
@@ -67,8 +67,8 @@ El lockscreen se activa automáticamente cuando `GlobalStates.lockscreenVisible`
 La autenticación funciona de la siguiente manera:
 1. Usuario ingresa contraseña
 2. Se almacena temporalmente en `authPasswordHolder.password`
-3. Se ejecuta `pam-auth-stdin.sh` con variables de entorno PAM_USER y PAM_PASSWORD
-4. El script pasa la contraseña por stdin al binario PAM
+3. Se ejecuta `ambxst-auth-stdin.sh` con variables de entorno PAM_USER y PAM_PASSWORD
+4. El script pasa la contraseña por stdin al binario PAM `ambxst-auth`
 5. El binario detecta faillock comparando `auth_ret` y `acct_ret`
 6. El proceso retorna código de salida
 7. QML interpreta el código y muestra mensaje apropiado

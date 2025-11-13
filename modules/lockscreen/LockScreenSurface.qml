@@ -80,6 +80,7 @@ WlSessionLockSurface {
 
     // Overlay for dimming
     Rectangle {
+        id: dimOverlay
         anchors.fill: parent
         color: "black"
         opacity: startAnim ? 0.25 : 0
@@ -87,10 +88,10 @@ WlSessionLockSurface {
         property real zoomScale: startAnim ? 1.1 : 1.0
 
         transform: Scale {
-            origin.x: parent.width / 2
-            origin.y: parent.height / 2
-            xScale: parent.zoomScale
-            yScale: parent.zoomScale
+            origin.x: dimOverlay.width / 2
+            origin.y: dimOverlay.height / 2
+            xScale: dimOverlay.zoomScale
+            yScale: dimOverlay.zoomScale
         }
 
         Behavior on opacity {
@@ -488,7 +489,7 @@ WlSessionLockSurface {
     // PAM authentication process
     Process {
         id: pamAuth
-        command: ["modules/lockscreen/pam-auth-stdin.sh"]
+        command: [Qt.resolvedUrl("ambxst-auth-stdin.sh").toString().replace("file://", "")]
         running: false
         environment: {
             "PAM_USER": usernameCollector.text.trim(),

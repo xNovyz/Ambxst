@@ -528,7 +528,7 @@ PanelWindow {
     // PAM authentication process
     Process {
         id: pamAuth
-        command: ["modules/lockscreen/pam-auth-stdin.sh"]
+        command: [Qt.resolvedUrl("ambxst-auth-stdin.sh").toString().replace("file://", "")]
         running: false
         environment: {
             "PAM_USER": usernameCollector.text.trim(),

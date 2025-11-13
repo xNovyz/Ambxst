@@ -1,3 +1,4 @@
 AGENTS.md
 .qmlls.ini
 scripts/__pycache__
+modules/lockscreen/ambxst-auth
