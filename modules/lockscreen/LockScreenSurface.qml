@@ -22,14 +22,8 @@ WlSessionLockSurface {
     property string errorMessage: ""
     property int failLockSecondsLeft: 0
 
-    color: startAnim ? "transparent" : "black"
-    
-    Behavior on color {
-        ColorAnimation {
-            duration: Config.animDuration
-            easing.type: Easing.OutCubic
-        }
-    }
+    // Always transparent - blur background handles the visuals
+    color: "transparent"
 
     // Screen capture background
     ScreencopyView {
@@ -38,7 +32,7 @@ WlSessionLockSurface {
         captureSource: root.screen
         live: false
         paintCursor: false
-        visible: false
+        visible: true
     }
 
     // Blur effect
@@ -51,7 +45,7 @@ WlSessionLockSurface {
         blur: startAnim ? 1 : 0
         blurMax: 64
         visible: true
-        opacity: startAnim ? 1 : 0
+        opacity: 1
 
         property real zoomScale: startAnim ? 1.1 : 1.0
 
