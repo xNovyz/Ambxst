@@ -215,14 +215,14 @@ WlSessionLockSurface {
 
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Config.animDuration * 1.1
+                        duration: Config.animDuration * 2
                         easing.type: Easing.OutExpo
                     }
                 }
 
                 Behavior on slideOffset {
                     NumberAnimation {
-                        duration: Config.animDuration * 1.3
+                        duration: Config.animDuration * 2
                         easing.type: Easing.OutExpo
                     }
                 }
@@ -252,14 +252,14 @@ WlSessionLockSurface {
 
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Config.animDuration * 1.1
+                        duration: Config.animDuration * 2
                         easing.type: Easing.OutExpo
                     }
                 }
 
                 Behavior on slideOffset {
                     NumberAnimation {
-                        duration: Config.animDuration * 1.3
+                        duration: Config.animDuration * 2
                         easing.type: Easing.OutExpo
                     }
                 }
@@ -299,14 +299,14 @@ WlSessionLockSurface {
 
         Behavior on anchors.leftMargin {
             NumberAnimation {
-                duration: Config.animDuration * 1.1
+                duration: Config.animDuration * 2
                 easing.type: Easing.OutExpo
             }
         }
 
         Behavior on opacity {
             NumberAnimation {
-                duration: Config.animDuration * 0.8
+                duration: Config.animDuration * 2
                 easing.type: Easing.OutQuad
             }
         }
@@ -339,28 +339,28 @@ WlSessionLockSurface {
 
         Behavior on anchors.topMargin {
             NumberAnimation {
-                duration: Config.animDuration * 1.2
+                duration: Config.animDuration * 2
                 easing.type: Easing.OutExpo
             }
         }
 
         Behavior on anchors.bottomMargin {
             NumberAnimation {
-                duration: Config.animDuration * 1.2
+                duration: Config.animDuration * 2
                 easing.type: Easing.OutExpo
             }
         }
 
         Behavior on opacity {
             NumberAnimation {
-                duration: Config.animDuration * 0.9
+                duration: Config.animDuration * 2
                 easing.type: Easing.OutQuad
             }
         }
 
         Behavior on scale {
             NumberAnimation {
-                duration: Config.animDuration * 1.2
+                duration: Config.animDuration * 2
                 easing.type: Easing.OutBack
                 easing.overshoot: 1.2
             }
