@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 import qs.config
 import qs.modules.theme
 import qs.modules.bar
@@ -132,6 +133,16 @@ QtObject {
         }
         function onLoaded() {
             applyHyprlandConfig();
+        }
+    }
+
+    property Connections hyprlandConnections: Connections {
+        target: Hyprland
+        function onRawEvent(event) {
+            if (event.name === "configreloaded") {
+                console.log("HyprlandConfig: Detectado configreloaded, reaplicando configuración...");
+                applyHyprlandConfig();
+            }
         }
     }
 

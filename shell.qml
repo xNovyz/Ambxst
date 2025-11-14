@@ -122,4 +122,8 @@ ShellRoot {
     HyprlandConfig {
         id: hyprlandConfig
     }
+
+    HyprlandKeybinds {
+        id: hyprlandKeybinds
+    }
 }
