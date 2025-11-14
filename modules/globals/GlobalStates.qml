@@ -10,6 +10,12 @@ Singleton {
 
     property var wallpaperManager: null
 
+    // Ensure LockscreenService singleton is loaded
+    Component.onCompleted: {
+        // Reference the singleton to ensure it loads
+        LockscreenService.toString();
+    }
+
     // Persistent launcher state across monitors
     property string launcherSearchText: ""
     property int launcherSelectedIndex: -1

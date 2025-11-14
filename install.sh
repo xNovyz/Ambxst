@@ -3,136 +3,123 @@ set -e
 
 FLAKE_URI="${1:-github:Axenide/Ambxst}"
 
-echo "🚀 Initiating Ambxst installation..."
+echo "🚀 Ambxst installer/updater"
 
-# This script is ONLY for non-NixOS
+# === Helper: check if a profile already includes Ambxst ===
+profile_has_ambxst() {
+  nix profile list | grep -q "Ambxst"
+}
+
+# === Helper: ensure a nixpkgs package is available (install or skip) ===
+ensure_pkg() {
+  local pkg="$1"
+  local cmd="$2"
+
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "📦 Installing $pkg..."
+    nix profile install "nixpkgs#$pkg"
+  else
+    echo "✔ $pkg already installed"
+  fi
+}
+
+# === Detect NixOS ===
 if [ -f /etc/NIXOS ]; then
-  echo "🟦 NixOS detected: Skipping system package handling"
-else
-  echo "🟢 Non-NixOS system detected"
+  echo "🟦 NixOS detected"
 
-  # === Install system tools via Nix profiles (not flakes) ===
-
-  echo "📦 Ensuring ddcutil is available (Nix profile)..."
-  if ! command -v ddcutil >/dev/null 2>&1; then
-    nix profile install nixpkgs#ddcutil
-    echo "✅ ddcutil installed via Nix profile"
+  echo "🔁 Checking if Ambxst is already in the Nix profile..."
+  if profile_has_ambxst; then
+    echo "🔼 Updating Ambxst..."
+    nix profile upgrade Ambxst --impure
   else
-    echo "✅ ddcutil already available"
+    echo "✨ Installing Ambxst..."
+    nix profile add "$FLAKE_URI" --impure
   fi
 
-  echo "📦 Ensuring powerprofilesctl is available (Nix profile)..."
-  if ! command -v powerprofilesctl >/dev/null 2>&1; then
-    nix profile install nixpkgs#power-profiles-daemon
-    echo "✅ power-profiles-daemon client installed via Nix profile"
-  else
-    echo "✅ power-profiles-daemon client already available"
-  fi
-
-  echo "📦 Ensuring nmcli/nmtui are available (Nix profile)..."
-  if ! command -v nmcli >/dev/null 2>&1; then
-    nix profile install nixpkgs#networkmanager
-    echo "✅ NetworkManager tools installed via Nix profile"
-  else
-    echo "✅ NetworkManager tools already available"
-  fi
-
-  # === Warn user about daemons ===
-
-  echo "🔍 Checking for NetworkManager daemon..."
-  if command -v systemctl >/dev/null 2>&1; then
-    if systemctl is-active --quiet NetworkManager; then
-      echo "✅ NetworkManager daemon is running"
-    else
-      echo "⚠️ NetworkManager daemon is NOT running"
-      echo "   Please enable/start it manually:"
-      echo "   sudo systemctl enable --now NetworkManager"
-    fi
-  fi
-
-  echo "🔍 Checking for power-profiles-daemon daemon..."
-  if command -v systemctl >/dev/null 2>&1; then
-    if systemctl is-active --quiet power-profiles-daemon; then
-      echo "✅ power-profiles-daemon is running"
-    else
-      echo "⚠️ power-profiles-daemon is NOT running"
-      echo "   If your distro supports it, enable it manually:"
-      echo "   sudo systemctl enable --now power-profiles-daemon"
-    fi
-  fi
-
-  echo "🔍 Remember: ddcutil requires correct i2c group + udev rules:"
-  echo "   sudo groupadd -f i2c"
-  echo "   sudo gpasswd -a \$USER i2c"
-  echo "   sudo tee /etc/udev/rules.d/60-ddcutil.rules >/dev/null <<EOF"
-  echo "KERNEL==\"i2c-[0-9]*\", GROUP=\"i2c\""
-  echo "EOF"
+  echo "🎉 Done!"
+  exit 0
 fi
+
+echo "🟢 Non-NixOS detected"
 
 # === Install Nix if missing ===
 if ! command -v nix >/dev/null 2>&1; then
   echo "📥 Installing Nix..."
-  curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate
+  curl -fsSL https://install.determinate.systems/nix |
+    sh -s -- install --determinate
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 else
-  echo "✅ Nix already installed"
+  echo "✔ Nix already installed"
 fi
 
 # === Enable allowUnfree ===
-echo "🔑 Enable unfree packages in Nix..."
 mkdir -p ~/.config/nixpkgs
-
-if [ ! -f ~/.config/nixpkgs/config.nix ]; then
-  cat >~/.config/nixpkgs/config.nix <<'EOF'
+if ! grep -q "allowUnfree" ~/.config/nixpkgs/config.nix 2>/dev/null; then
+  echo "🔑 Enabling allowUnfree"
+  cat >~/.config/nixpkgs/config.nix <<EOF
 {
   allowUnfree = true;
 }
 EOF
-  echo "✅ ~/.config/nixpkgs/config.nix created"
 else
-  echo "ℹ️ config.nix already exists; confirm allowUnfree = true"
+  echo "✔ allowUnfree already enabled"
 fi
 
-# === Ambxst installation ===
-if [ -f /etc/NIXOS ]; then
-  echo "🟦 NixOS detected: Installing Ambxst via flake"
-  echo "⚠️ Add the module in your NixOS config:"
-  echo ""
-  echo "  { inputs.ambxst.url = \"github:Axenide/Ambxst\";"
-  echo "    imports = [ inputs.ambxst.nixosModules.default ];"
-  echo "  }"
-  echo ""
-  nix profile add "$FLAKE_URI" --impure
+# === Ensure system-level tools via Nix profile ===
+ensure_pkg ddcutil ddcutil
+ensure_pkg power-profiles-daemon powerprofilesctl
+ensure_pkg networkmanager nmcli
+
+# === Warn about daemons ===
+if command -v systemctl >/dev/null 2>&1; then
+  for svc in NetworkManager power-profiles-daemon; do
+    if systemctl is-active --quiet "$svc"; then
+      echo "✔ $svc daemon running"
+    else
+      echo "⚠ $svc daemon NOT running. Start it with:"
+      echo "   sudo systemctl enable --now $svc"
+    fi
+  done
+fi
+
+echo "ℹ ddcutil requires i2c group + udev rules if not already set."
+
+# === Compile ambxst-auth if missing OR if source updated ===
+INSTALL_DIR="$HOME/.local/bin"
+mkdir -p "$INSTALL_DIR"
+
+if [ ! -f "$INSTALL_DIR/ambxst-auth" ]; then
+  echo "🔨 ambxst-auth missing — compiling..."
+  NEED_COMPILE=1
 else
-  echo "📦 Non-NixOS: Building ambxst-auth locally..."
+  echo "✔ ambxst-auth already exists"
+fi
 
-  # Clone if remote
-  if [[ "$FLAKE_URI" == github:* ]]; then
-    TEMP_DIR=$(mktemp -d)
-    echo "📥 Cloning Ambxst repository..."
-    git clone --depth 1 https://github.com/Axenide/Ambxst.git "$TEMP_DIR"
-    AUTH_SRC="$TEMP_DIR/modules/lockscreen"
-  else
-    AUTH_SRC="$FLAKE_URI/modules/lockscreen"
-  fi
+TEMP_DIR="$(mktemp -d)"
+echo "📥 Fetching Ambxst repo to extract auth..."
+git clone --depth 1 https://github.com/Axenide/Ambxst.git "$TEMP_DIR"
+AUTH_SRC="$TEMP_DIR/modules/lockscreen"
 
-  echo "🔨 Compiling ambxst-auth..."
+if [ -n "$NEED_COMPILE" ]; then
+  echo "🔨 Building ambxst-auth..."
   cd "$AUTH_SRC"
   gcc -o ambxst-auth auth.c -lpam -Wall -Wextra -O2
+  cp ambxst-auth "$INSTALL_DIR/"
+  chmod +x "$INSTALL_DIR/ambxst-auth"
+  echo "✔ ambxst-auth installed"
+fi
 
-  mkdir -p ~/.local/bin
-  cp ambxst-auth ~/.local/bin/
-  chmod +x ~/.local/bin/ambxst-auth
+rm -rf "$TEMP_DIR"
 
-  echo "✅ ambxst-auth installed to ~/.local/bin/"
-
-  if [[ "$FLAKE_URI" == github:* ]]; then
-    rm -rf "$TEMP_DIR"
-  fi
-
-  echo "📦 Installing Ambxst environment..."
+# === Install/update Ambxst flake ===
+echo "🔁 Checking Ambxst in Nix profile..."
+if profile_has_ambxst; then
+  echo "🔼 Updating Ambxst..."
+  nix profile upgrade Ambxst --impure
+else
+  echo "✨ Installing Ambxst..."
   nix profile add "$FLAKE_URI" --impure
 fi
 
-echo "🎉 Ambxst installed successfully!"
+echo "🎉 Ambxst installed/updated successfully!"
 echo "👉 Run 'ambxst' to start."
