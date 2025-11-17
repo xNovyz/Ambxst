@@ -305,9 +305,15 @@ QtObject {
                 root.imageDataById = {};
                 root.revision++;
                 root.listCompleted();
-                cleanBinaryDataDir();
+                cleanBinaryDataDirProcess.running = true;
             }
         }
+    }
+    
+    // Clean binary data directory
+    property Process cleanBinaryDataDirProcess: Process {
+        running: false
+        command: ["sh", "-c", "rm -f " + binaryDataDir + "/*"]
     }
 
     // Load image data
@@ -425,13 +431,6 @@ QtObject {
         if (!_initialized) return;
         clearProcess.command = ["sqlite3", dbPath, "DELETE FROM clipboard_items;"];
         clearProcess.running = true;
-    }
-
-    function cleanBinaryDataDir() {
-        var cleanProc = Process({
-            command: ["sh", "-c", "rm -f " + binaryDataDir + "/*"],
-            running: true
-        });
     }
 
     function decodeToDataUrl(id, mime) {
