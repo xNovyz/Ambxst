@@ -185,8 +185,20 @@ Item {
     }
 
     function copyToClipboard(itemId) {
-        copyProcess.command = ["bash", "-c", "cliphist decode \"" + itemId + "\" | wl-copy"];
-        copyProcess.running = true;
+        // Find the item to determine if it's an image
+        for (var i = 0; i < root.allItems.length; i++) {
+            if (root.allItems[i].id === itemId) {
+                var item = root.allItems[i];
+                if (item.isImage && item.binaryPath) {
+                    copyProcess.command = ["sh", "-c", "cat '" + item.binaryPath + "' | wl-copy"];
+                } else {
+                    copyProcess.command = ["sh", "-c",
+                                          "sqlite3 '" + ClipboardService.dbPath + "' \"SELECT full_content FROM clipboard_items WHERE id = " + itemId + ";\" | wl-copy"];
+                }
+                copyProcess.running = true;
+                break;
+            }
+        }
     }
 
     // MouseArea global para detectar clicks en cualquier espacio vacío
@@ -493,11 +505,15 @@ Item {
                         property string displayText: {
                             if (isInDeleteMode) {
                                 let preview = modelData.preview || "";
+                                // Replace newlines with spaces for single-line display
+                                preview = preview.replace(/\n/g, ' ').replace(/\r/g, '');
                                 return "Delete \"" + preview.substring(0, 20) + (preview.length > 20 ? '...' : '') + "\"?";
                             } else if (modelData.isImage) {
                                 return "Image";
                             } else {
-                                return modelData.preview || "";
+                                let preview = modelData.preview || "";
+                                // Replace newlines with spaces for single-line display
+                                return preview.replace(/\n/g, ' ').replace(/\r/g, '');
                             }
                         }
 
@@ -888,6 +904,8 @@ Item {
                                 font.pixelSize: Config.theme.fontSize
                                 font.weight: Font.Bold
                                 elide: Text.ElideRight
+                                maximumLineCount: 1
+                                wrapMode: Text.NoWrap
 
                                 Behavior on color {
                                     enabled: Config.animDuration > 0
