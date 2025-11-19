@@ -75,7 +75,7 @@ Item {
                 maskEnabled: true
                 maskSource: leftCornerMask
                 maskThresholdMin: 0.5
-                maskSpreadAtMin: 0.0
+                maskSpreadAtMin: 1.0
             }
         }
 
@@ -323,7 +323,7 @@ Item {
                 maskEnabled: true
                 maskSource: rightCornerMask
                 maskThresholdMin: 0.5
-                maskSpreadAtMin: 0.0
+                maskSpreadAtMin: 1.0
             }
         }
 

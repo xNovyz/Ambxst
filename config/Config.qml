@@ -177,7 +177,7 @@ Singleton {
             }
 
             property JsonObject lockscreen: JsonObject {
-                property string position: "top"
+                property string position: "bottom"
             }
         }
     }
