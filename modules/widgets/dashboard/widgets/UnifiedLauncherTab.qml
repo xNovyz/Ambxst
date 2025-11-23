@@ -21,6 +21,7 @@ Rectangle {
     implicitHeight: 300
 
     property int currentTab: 0  // 0=launcher, 1=clip, 2=emoji, 3=tmux, 4=wall
+    property bool prefixDisabled: false  // Flag to prevent re-activation after backspace
     
     // Function to focus app search when tab becomes active
     function focusAppSearch() {
@@ -43,13 +44,31 @@ Rectangle {
 
     // Handle prefix detection in launcher
     function detectPrefix(text) {
-        if (text === "clip " || text.startsWith("clip ")) {
+        // If prefix was manually disabled, don't re-enable until conditions are met
+        if (prefixDisabled) {
+            // Only re-enable prefix if user deletes the prefix text or adds valid content
+            if (text === "clip " || text === "emoji " || text === "tmux " || text === "wall ") {
+                // Still at exact prefix - keep disabled
+                return 0;
+            } else if (!text.startsWith("clip ") && !text.startsWith("emoji ") && 
+                       !text.startsWith("tmux ") && !text.startsWith("wall ")) {
+                // User deleted the prefix - re-enable detection
+                prefixDisabled = false;
+                return 0;
+            } else {
+                // User typed something after the prefix but it's still disabled
+                return 0;
+            }
+        }
+        
+        // Normal prefix detection - only activate if exactly "prefix " (nothing after)
+        if (text === "clip ") {
             return 1;
-        } else if (text === "emoji " || text.startsWith("emoji ")) {
+        } else if (text === "emoji ") {
             return 2;
-        } else if (text === "tmux " || text.startsWith("tmux ")) {
+        } else if (text === "tmux ") {
             return 3;
-        } else if (text === "wall " || text.startsWith("wall ")) {
+        } else if (text === "wall ") {
             return 4;
         }
         return 0;
@@ -497,6 +516,7 @@ Rectangle {
                     prefixText: "clip "
                     onBackspaceOnEmpty: {
                         // Return to launcher with prefix text + space
+                        prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = "clip ";
                         appLauncher.focusSearchInput();
@@ -511,6 +531,7 @@ Rectangle {
                 sourceComponent: EmojiTab {
                     prefixText: "emoji "
                     onBackspaceOnEmpty: {
+                        prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = "emoji ";
                         appLauncher.focusSearchInput();
@@ -525,6 +546,7 @@ Rectangle {
                 sourceComponent: TmuxTab {
                     prefixText: "tmux "
                     onBackspaceOnEmpty: {
+                        prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = "tmux ";
                         appLauncher.focusSearchInput();
@@ -539,6 +561,7 @@ Rectangle {
                 sourceComponent: WallpapersTab {
                     prefixText: "wall "
                     onBackspaceOnEmpty: {
+                        prefixDisabled = true;
                         currentTab = 0;
                         GlobalStates.launcherSearchText = "wall ";
                         appLauncher.focusSearchInput();
