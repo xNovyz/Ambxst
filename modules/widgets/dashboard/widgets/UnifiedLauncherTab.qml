@@ -496,9 +496,9 @@ Rectangle {
                 sourceComponent: ClipboardTab {
                     prefixText: "clip "
                     onBackspaceOnEmpty: {
-                        // Return to launcher with just the prefix text
+                        // Return to launcher with prefix text + space
                         currentTab = 0;
-                        GlobalStates.launcherSearchText = "clip";
+                        GlobalStates.launcherSearchText = "clip ";
                         appLauncher.focusSearchInput();
                     }
                 }
@@ -512,7 +512,7 @@ Rectangle {
                     prefixText: "emoji "
                     onBackspaceOnEmpty: {
                         currentTab = 0;
-                        GlobalStates.launcherSearchText = "emoji";
+                        GlobalStates.launcherSearchText = "emoji ";
                         appLauncher.focusSearchInput();
                     }
                 }
@@ -526,7 +526,7 @@ Rectangle {
                     prefixText: "tmux "
                     onBackspaceOnEmpty: {
                         currentTab = 0;
-                        GlobalStates.launcherSearchText = "tmux";
+                        GlobalStates.launcherSearchText = "tmux ";
                         appLauncher.focusSearchInput();
                     }
                 }
@@ -540,7 +540,7 @@ Rectangle {
                     prefixText: "wall "
                     onBackspaceOnEmpty: {
                         currentTab = 0;
-                        GlobalStates.launcherSearchText = "wall";
+                        GlobalStates.launcherSearchText = "wall ";
                         appLauncher.focusSearchInput();
                     }
                 }

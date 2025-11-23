@@ -377,12 +377,11 @@ Rectangle {
                         prefixText: root.prefixText
 
                         onSearchTextChanged: text => {
-                            // Handle backspace on empty to go back to launcher
-                            if (text === "" && root.prefixText !== "") {
-                                root.backspaceOnEmpty();
-                            } else {
-                                root.searchText = text;
-                            }
+                            root.searchText = text;
+                        }
+
+                        onBackspaceOnEmpty: {
+                            root.backspaceOnEmpty();
                         }
 
                         onAccepted: {
