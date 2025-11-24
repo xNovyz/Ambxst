@@ -189,9 +189,11 @@ PanelWindow {
                                     bar: QtObject {
                                         property var screen: panel.screen
                                     }
+                                    layer.enabled: false
                                 }
                                 OverviewButton {
                                     id: overviewButton
+                                    enableShadow: false
                                 }
                             }
 
@@ -251,24 +253,25 @@ PanelWindow {
                                 Bar.PowerProfileSelector {
                                     id: powerProfileSelector
                                     orientation: "horizontal"
+                                    layer.enabled: false
                                 }
 
                                 MicSlider {
                                     id: micSlider
                                     bar: panel
-                                    layerEnabled: Config.bar.showBackground
+                                    layerEnabled: false
                                 }
 
                                 VolumeSlider {
                                     id: volume
                                     bar: panel
-                                    layerEnabled: Config.bar.showBackground
+                                    layerEnabled: false
                                 }
 
                                 BrightnessSlider {
                                     id: brightnessSlider
                                     bar: panel
-                                    layerEnabled: Config.bar.showBackground
+                                    layerEnabled: false
                                 }
 
                                 Weather {
@@ -283,13 +286,13 @@ PanelWindow {
 
                 SysTray {
                     bar: panel
-                    layer.enabled: false
+                    layer.enabled: Config.bar.showBackground
                 }
 
                 Clock {
                     id: clockComponent
                     bar: panel
-                    layer.enabled: false
+                    layer.enabled: Config.bar.showBackground
                 }
             }
 
@@ -352,10 +355,12 @@ PanelWindow {
                                     bar: QtObject {
                                         property var screen: panel.screen
                                     }
+                                    layer.enabled: false
                                 }
                                 OverviewButton {
                                     id: overviewButtonVert
                                     Layout.preferredHeight: 36
+                                    enableShadow: false
                                 }
                             }
 
@@ -415,24 +420,25 @@ PanelWindow {
                                 Bar.PowerProfileSelector {
                                     id: powerProfileSelectorVert
                                     orientation: "vertical"
+                                    layer.enabled: false
                                 }
 
                                 MicSlider {
                                     id: micSliderVert
                                     bar: panel
-                                    layerEnabled: Config.bar.showBackground
+                                    layerEnabled: false
                                 }
 
                                 VolumeSlider {
                                     id: volumeVert
                                     bar: panel
-                                    layerEnabled: Config.bar.showBackground
+                                    layerEnabled: false
                                 }
 
                                 BrightnessSlider {
                                     id: brightnessSliderVert
                                     bar: panel
-                                    layerEnabled: Config.bar.showBackground
+                                    layerEnabled: false
                                 }
 
                                 Weather {
@@ -447,13 +453,13 @@ PanelWindow {
 
                 SysTray {
                     bar: panel
-                    layer.enabled: false
+                    layer.enabled: Config.bar.showBackground
                 }
 
                 Clock {
                     id: clockComponentVert
                     bar: panel
-                    layer.enabled: false
+                    layer.enabled: Config.bar.showBackground
                 }
             }
 

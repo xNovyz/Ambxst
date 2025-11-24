@@ -103,7 +103,7 @@ Item {
         anchors.margins: 8
         spacing: 4
         layer.enabled: true
-        layer.effect: BgShadow {}
+        layer.effect: Shadow {}
 
         Item {
             Layout.alignment: Qt.AlignHCenter

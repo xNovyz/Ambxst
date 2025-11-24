@@ -5,6 +5,7 @@ import qs.config
 import qs.modules.components
 
 Rectangle {
+    id: root
     radius: Config.roundness
     border.color: Config.resolveColor(Config.theme.borderColor)
     border.width: Config.theme.borderSize
@@ -43,6 +44,6 @@ Rectangle {
         }
     }
 
-    layer.enabled: true
+    // Shadow is now controlled externally via layer.enabled property
     layer.effect: Shadow {}
 }

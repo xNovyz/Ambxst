@@ -16,6 +16,7 @@ Button {
     property bool iconTint: false
     property bool iconFullTint: false
     property int iconSize: 22
+    property bool enableShadow: true
 
     implicitWidth: 36
     implicitHeight: 36
@@ -24,7 +25,7 @@ Button {
     readonly property bool isIconPath: buttonIcon.length > 1
 
     background: BgRect {
-        layer.enabled: Config.bar.showBackground
+        layer.enabled: root.enableShadow && Config.bar.showBackground
         Rectangle {
             anchors.fill: parent
             color: Colors.primary
