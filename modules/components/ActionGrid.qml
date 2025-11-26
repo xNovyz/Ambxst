@@ -81,8 +81,6 @@ FocusScope {
             variant: "primary"
             id: highlight
             radius: Config.roundness > 0 ? Config.roundness + 4 : 0
-            border.width: 0
-            border.color: Colors.primary
             z: 0 // Por debajo de los botones
             visible: repeater.count > 0
 

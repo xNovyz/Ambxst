@@ -31,19 +31,13 @@ Item {
     property real workspaceIconSizeShrinked: Math.round(workspaceButtonWidth * 0.5)
     property real workspaceIconOpacityShrinked: 1
     property real workspaceIconMarginShrinked: -4
-    property int workspaceIndexInGroup: Config.workspaces.dynamic 
-        ? dynamicWorkspaceIds.indexOf(monitor?.activeWorkspace?.id || 1)
-        : (monitor?.activeWorkspace?.id - 1 || 0) % Config.workspaces.shown
+    property int workspaceIndexInGroup: Config.workspaces.dynamic ? dynamicWorkspaceIds.indexOf(monitor?.activeWorkspace?.id || 1) : (monitor?.activeWorkspace?.id - 1 || 0) % Config.workspaces.shown
 
     function updateWorkspaceOccupied() {
         if (Config.workspaces.dynamic) {
             // Get occupied workspace IDs, sorted and limited by 'shown'
-            const occupiedIds = Hyprland.workspaces.values
-                .filter(ws => HyprlandData.windowList.some(w => w.workspace.id === ws.id))
-                .map(ws => ws.id)
-                .sort((a, b) => a - b)
-                .slice(0, Config.workspaces.shown);
-            
+            const occupiedIds = Hyprland.workspaces.values.filter(ws => HyprlandData.windowList.some(w => w.workspace.id === ws.id)).map(ws => ws.id).sort((a, b) => a - b).slice(0, Config.workspaces.shown);
+
             // Include active workspace if not already in list
             const activeId = monitor?.activeWorkspace?.id || 1;
             if (!occupiedIds.includes(activeId)) {
@@ -53,9 +47,11 @@ Item {
                     occupiedIds.pop();
                 }
             }
-            
+
             dynamicWorkspaceIds = occupiedIds;
-            workspaceOccupied = Array.from({length: dynamicWorkspaceIds.length}, () => true);
+            workspaceOccupied = Array.from({
+                length: dynamicWorkspaceIds.length
+            }, () => true);
         } else {
             workspaceOccupied = Array.from({
                 length: Config.workspaces.shown
@@ -111,8 +107,8 @@ Item {
     implicitHeight: orientation === "vertical" ? workspaceButtonSize * effectiveWorkspaceCount + widgetPadding * 2 : baseSize
 
     StyledRect {
-        variant: "bg"
         id: bgRect
+        variant: "bg"
         anchors.fill: parent
     }
 
@@ -150,7 +146,7 @@ Item {
             model: effectiveWorkspaceCount
 
             StyledRect {
-                variant: "common"
+                variant: "focus"
                 required property int index
                 z: 1
                 implicitWidth: workspaceButtonWidth
@@ -252,8 +248,8 @@ Item {
 
     // Horizontal active workspace highlight
     StyledRect {
-        variant: "primary"
         id: activeHighlightH
+        variant: "primary"
         visible: orientation === "horizontal"
         z: 2
         property real activeWorkspaceMargin: 4
@@ -266,19 +262,19 @@ Item {
 
         radius: {
             const currentWorkspaceHasWindows = Hyprland.workspaces.values.some(ws => ws.id === (monitor?.activeWorkspace?.id || 1) && HyprlandData.windowList.some(w => w.workspace.id === ws.id));
-            if (Config.roundness === 0) return 0;
+            if (Config.roundness === 0)
+                return 0;
             return currentWorkspaceHasWindows ? Config.roundness > 0 ? Math.max(Config.roundness - parent.widgetPadding - activeWorkspaceMargin, 0) : 0 : implicitHeight / 2;
         }
 
         Behavior on radius {
 
-
             enabled: Config.animDuration > 0
 
-
-            NumberAnimation { duration: Math.max(0, Config.animDuration - 100); easing.type: Easing.OutQuad }
-
-
+            NumberAnimation {
+                duration: Math.max(0, Config.animDuration - 100)
+                easing.type: Easing.OutQuad
+            }
         }
         anchors.verticalCenter: parent.verticalCenter
 
@@ -287,34 +283,37 @@ Item {
 
         Behavior on activeWorkspaceMargin {
 
-
             enabled: Config.animDuration > 0
 
-
-            NumberAnimation { duration: Config.animDuration / 2; easing.type: Easing.OutQuad }
-
-
+            NumberAnimation {
+                duration: Config.animDuration / 2
+                easing.type: Easing.OutQuad
+            }
         }
         Behavior on idx1 {
 
             enabled: Config.animDuration > 0
 
-            NumberAnimation { duration: Config.animDuration / 3; easing.type: Easing.OutSine }
-
+            NumberAnimation {
+                duration: Config.animDuration / 3
+                easing.type: Easing.OutSine
+            }
         }
         Behavior on idx2 {
 
             enabled: Config.animDuration > 0
 
-            NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutSine }
-
+            NumberAnimation {
+                duration: Config.animDuration
+                easing.type: Easing.OutSine
+            }
         }
     }
 
     // Vertical active workspace highlight
     StyledRect {
-        variant: "primary"
         id: activeHighlightV
+        variant: "primary"
         visible: orientation === "vertical"
         z: 2
         property real activeWorkspaceMargin: 4
@@ -327,19 +326,19 @@ Item {
 
         radius: {
             const currentWorkspaceHasWindows = Hyprland.workspaces.values.some(ws => ws.id === (monitor?.activeWorkspace?.id || 1) && HyprlandData.windowList.some(w => w.workspace.id === ws.id));
-            if (Config.roundness === 0) return 0;
+            if (Config.roundness === 0)
+                return 0;
             return currentWorkspaceHasWindows ? Config.roundness > 0 ? Math.max(Config.roundness - parent.widgetPadding - activeWorkspaceMargin, 0) : 0 : implicitWidth / 2;
         }
 
         Behavior on radius {
 
-
             enabled: Config.animDuration > 0
 
-
-            NumberAnimation { duration: Math.max(0, Config.animDuration - 100); easing.type: Easing.OutQuad }
-
-
+            NumberAnimation {
+                duration: Math.max(0, Config.animDuration - 100)
+                easing.type: Easing.OutQuad
+            }
         }
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -348,27 +347,30 @@ Item {
 
         Behavior on activeWorkspaceMargin {
 
-
             enabled: Config.animDuration > 0
 
-
-            NumberAnimation { duration: Config.animDuration / 2; easing.type: Easing.OutQuad }
-
-
+            NumberAnimation {
+                duration: Config.animDuration / 2
+                easing.type: Easing.OutQuad
+            }
         }
         Behavior on idx1 {
 
             enabled: Config.animDuration > 0
 
-            NumberAnimation { duration: Config.animDuration / 3; easing.type: Easing.OutSine }
-
+            NumberAnimation {
+                duration: Config.animDuration / 3
+                easing.type: Easing.OutSine
+            }
         }
         Behavior on idx2 {
 
             enabled: Config.animDuration > 0
 
-            NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutSine }
-
+            NumberAnimation {
+                duration: Config.animDuration
+                easing.type: Easing.OutSine
+            }
         }
     }
 
