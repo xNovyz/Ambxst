@@ -147,13 +147,14 @@ Item {
         implicitHeight: workspaceButtonWidth
 
         Repeater {
-            model: Config.workspaces.shown
+            model: effectiveWorkspaceCount
 
-            Rectangle {
+            StyledRect {
+                variant: "common"
+                required property int index
                 z: 1
                 implicitWidth: workspaceButtonWidth
                 implicitHeight: workspaceButtonWidth
-                radius: Config.roundness > 0 ? Math.max(Config.roundness - widgetPadding, 0) : 0
                 property var leftOccupied: (workspaceOccupied[index - 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index))
                 property var rightOccupied: (workspaceOccupied[index + 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 2))
                 property var radiusLeft: leftOccupied ? 0 : Config.roundness > 0 ? Math.max(Config.roundness - widgetPadding, 0) : 0
@@ -164,7 +165,6 @@ Item {
                 topRightRadius: radiusRight
                 bottomRightRadius: radiusRight
 
-                color: Colors.surfaceBright
                 opacity: (workspaceOccupied[index] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 1)) ? Config.opacity : 0
 
                 Behavior on opacity {
@@ -206,11 +206,12 @@ Item {
         Repeater {
             model: effectiveWorkspaceCount
 
-            Rectangle {
+            StyledRect {
+                variant: "common"
+                required property int index
                 z: 1
                 implicitWidth: workspaceButtonWidth
                 implicitHeight: workspaceButtonWidth
-                radius: Config.roundness > 0 ? Math.max(Config.roundness - widgetPadding, 0) : 0
                 property var topOccupied: (workspaceOccupied[index - 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index))
                 property var bottomOccupied: (workspaceOccupied[index + 1] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 2))
                 property var radiusTop: topOccupied ? 0 : Config.roundness > 0 ? Math.max(Config.roundness - widgetPadding, 0) : 0
@@ -221,7 +222,6 @@ Item {
                 bottomLeftRadius: radiusBottom
                 bottomRightRadius: radiusBottom
 
-                color: Colors.surfaceBright
                 opacity: (workspaceOccupied[index] && !(!activeWindow?.activated && monitor?.activeWorkspace?.id === index + 1)) ? Config.opacity : 0
 
                 Behavior on opacity {
