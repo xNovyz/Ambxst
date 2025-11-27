@@ -828,11 +828,11 @@ Item {
                         property bool isDraggingForReorder: false
                         property color textColor: {
                             if (isInDeleteMode) {
-                                return Config.resolveColor(Config.theme.srError.itemColor);
+                                return Colors.overError;
                             } else if (isSelected) {
-                                return Config.resolveColor(Config.theme.srPrimary.itemColor);
+                                return Colors.overPrimary;
                             } else {
-                                return Config.resolveColor(Config.theme.srCommon.itemColor);
+                                return Colors.overSurface;
                             }
                         }
                         property string displayText: {
@@ -1068,7 +1068,7 @@ Item {
                                         Text {
                                             anchors.centerIn: parent
                                             text: Icons.cancel
-                                            color: cancelButton.isHighlighted ? Colors[Config.theme.srOverError.itemColor] : Colors[Config.theme.srError.itemColor]
+                                            color: cancelButton.isHighlighted ? Colors.overErrorContainer : Colors.overError
                                             font.pixelSize: 14
                                             font.family: Icons.font
                                             textFormat: Text.RichText
@@ -1106,7 +1106,7 @@ Item {
                                         Text {
                                             anchors.centerIn: parent
                                             text: Icons.accept
-                                            color: confirmButton.isHighlighted ? Colors[Config.theme.srOverError.itemColor] : Colors[Config.theme.srError.itemColor]
+                                            color: confirmButton.isHighlighted ? Colors.overErrorContainer : Colors.overError
                                             font.pixelSize: 14
                                             font.family: Icons.font
                                             textFormat: Text.RichText
@@ -1224,7 +1224,7 @@ Item {
                                         Text {
                                             anchors.centerIn: parent
                                             text: Icons.cancel
-                                            color: aliasCancelButton.isHighlighted ? Colors[Config.theme.srOverSecondary.itemColor] : Colors[Config.theme.srSecondary.itemColor]
+                                            color: aliasCancelButton.isHighlighted ? Colors.overSecondaryContainer : Colors.overSecondary
                                             font.pixelSize: 14
                                             font.family: Icons.font
                                             textFormat: Text.RichText
@@ -1262,7 +1262,7 @@ Item {
                                         Text {
                                             anchors.centerIn: parent
                                             text: Icons.accept
-                                            color: aliasConfirmButton.isHighlighted ? Colors[Config.theme.srOverSecondary.itemColor] : Colors[Config.theme.srSecondary.itemColor]
+                                            color: aliasConfirmButton.isHighlighted ? Colors.overSecondaryContainer : Colors.overSecondary
                                             font.pixelSize: 14
                                             font.family: Icons.font
                                             textFormat: Text.RichText
@@ -1676,30 +1676,36 @@ Item {
                                     return root.getIconForItem(modelData);
                                 }
 
-                                property string faviconUrl: iconType === "link" ? root.getFaviconUrl(modelData) : ""
+                                property string faviconUrl: {
+                                    if (iconType !== "link") return "";
+                                    var url = root.getFaviconUrl(modelData);
+                                    return (url !== undefined && url !== null) ? url : "";
+                                }
 
                                 // Favicon for URLs
-                                Image {
-                                    id: faviconImage
+                                Loader {
+                                    id: faviconLoader
                                     anchors.centerIn: parent
-                                    width: 20
-                                    height: 20
-                                    visible: parent.iconType === "link" && parent.faviconUrl !== ""
-                                    source: parent.faviconUrl
-                                    fillMode: Image.PreserveAspectFit
-                                    asynchronous: true
-                                    cache: true
+                                    active: parent.iconType === "link" && parent.faviconUrl !== ""
+                                    sourceComponent: Image {
+                                        width: 20
+                                        height: 20
+                                        source: parent.parent.faviconUrl
+                                        fillMode: Image.PreserveAspectFit
+                                        asynchronous: true
+                                        cache: true
 
-                                    onStatusChanged: {
-                                        if (status === Image.Error) {
-                                            visible = false;
+                                        onStatusChanged: {
+                                            if (status === Image.Error) {
+                                                faviconLoader.active = false;
+                                            }
                                         }
                                     }
                                 }
 
                                 Text {
                                     anchors.centerIn: parent
-                                    visible: parent.iconType !== "link" || parent.faviconUrl === "" || faviconImage.status === Image.Error
+                                    visible: parent.iconType !== "link" || parent.faviconUrl === "" || !faviconLoader.active
                                     text: {
                                         if (isInDeleteMode) {
                                             return Icons.trash;

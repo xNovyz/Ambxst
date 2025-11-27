@@ -671,13 +671,13 @@ Item {
                 property bool isInRenameMode: root.renameMode && modelData.name === root.sessionToRename
                 property color textColor: {
                     if (isInDeleteMode) {
-                        return Config.resolveColor(Config.theme.srError.itemColor);
+                        return Colors.overError;
                     } else if (isInRenameMode) {
-                        return Config.resolveColor(Config.theme.srSecondary.itemColor);
+                        return Colors.overSecondary;
                     } else if (root.selectedIndex === index) {
-                        return Config.resolveColor(Config.theme.srPrimary.itemColor);
+                        return Colors.overPrimary;
                     } else {
-                        return Config.resolveColor(Config.theme.srCommon.itemColor);
+                        return Colors.overSurface;
                     }
                 }
 
@@ -936,7 +936,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: Icons.cancel
-                                color: renameCancelButton.isHighlighted ? Colors[Config.theme.srOverSecondary.itemColor] : Colors[Config.theme.srSecondary.itemColor]
+                                color: renameCancelButton.isHighlighted ? Colors.overSecondaryContainer : Colors.overSecondary
                                 font.pixelSize: 14
                                 font.family: Icons.font
                                 textFormat: Text.RichText
@@ -974,7 +974,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: Icons.accept
-                                color: renameConfirmButton.isHighlighted ? Colors[Config.theme.srOverSecondary.itemColor] : Colors[Config.theme.srSecondary.itemColor]
+                                color: renameConfirmButton.isHighlighted ? Colors.overSecondaryContainer : Colors.overSecondary
                                 font.pixelSize: 14
                                 font.family: Icons.font
                                 textFormat: Text.RichText
@@ -1222,7 +1222,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: Icons.cancel
-                                color: cancelButton.isHighlighted ? Colors[Config.theme.srOverError.itemColor] : Colors[Config.theme.srError.itemColor]
+                                color: cancelButton.isHighlighted ? Colors.overErrorContainer : Colors.overError
                                 font.pixelSize: 14
                                 font.family: Icons.font
                                 textFormat: Text.RichText
@@ -1260,7 +1260,7 @@ Item {
                             Text {
                                 anchors.centerIn: parent
                                 text: Icons.accept
-                                color: confirmButton.isHighlighted ? Colors[Config.theme.srOverError.itemColor] : Colors[Config.theme.srError.itemColor]
+                                color: confirmButton.isHighlighted ? Colors.overErrorContainer : Colors.overError
                                 font.pixelSize: 14
                                 font.family: Icons.font
                                 textFormat: Text.RichText
@@ -1375,6 +1375,7 @@ Item {
                         Repeater {
                             model: root.sessionPanes
                             delegate: StyledRect {
+                                id: paneRect
                                 required property var modelData
                                 property bool hovered: false
                                 variant: hovered ? "focus" : "pane"
@@ -1384,25 +1385,7 @@ Item {
                                 width: modelData.width * parent.scaleX
                                 height: modelData.height * parent.scaleY
                                 
-                                border.width: modelData.active ? 2 : 0
-                                border.color: modelData.active ? Colors.primary : "transparent"
                                 radius: Config.roundness > 0 ? Math.max(Config.roundness - 2, 0) : 0
-                                
-                                Behavior on border.width {
-                                    enabled: Config.animDuration > 0
-                                    NumberAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutQuart
-                                    }
-                                }
-                                
-                                Behavior on border.color {
-                                    enabled: Config.animDuration > 0
-                                    ColorAnimation {
-                                        duration: Config.animDuration / 2
-                                        easing.type: Easing.OutQuart
-                                    }
-                                }
                                 
                                 MouseArea {
                                     anchors.fill: parent
@@ -1410,11 +1393,11 @@ Item {
                                     cursorShape: Qt.PointingHandCursor
                                     
                                     onEntered: {
-                                        parent.hovered = true;
+                                        paneRect.hovered = true;
                                     }
                                     
                                     onExited: {
-                                        parent.hovered = false;
+                                        paneRect.hovered = false;
                                     }
                                     
                                     onClicked: {
@@ -1431,6 +1414,31 @@ Item {
                                         }
                                     }
                                 }
+                                
+                                // Active border overlay
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: "transparent"
+                                    border.width: modelData.active ? 2 : 0
+                                    border.color: modelData.active ? Colors.primary : "transparent"
+                                    radius: paneRect.radius
+                                    
+                                    Behavior on border.width {
+                                        enabled: Config.animDuration > 0
+                                        NumberAnimation {
+                                            duration: Config.animDuration / 2
+                                            easing.type: Easing.OutQuart
+                                        }
+                                    }
+                                    
+                                    Behavior on border.color {
+                                        enabled: Config.animDuration > 0
+                                        ColorAnimation {
+                                            duration: Config.animDuration / 2
+                                            easing.type: Easing.OutQuart
+                                        }
+                                    }
+                                }
 
                                 Column {
                                     anchors.centerIn: parent
@@ -1444,7 +1452,7 @@ Item {
                                         font.family: Config.theme.font
                                         font.pixelSize: Config.theme.fontSize
                                         font.weight: Font.Bold
-                                        color: Colors[Config.theme.srPane.itemColor]
+                                        color: Colors.overSurfaceVariant
                                         horizontalAlignment: Text.AlignHCenter
                                         elide: Text.ElideMiddle
                                         visible: parent.parent.height > 35
@@ -1576,6 +1584,7 @@ Item {
                             Repeater {
                                 model: root.sessionWindows
                                 delegate: StyledRect {
+                                    id: windowRect
                                     required property var modelData
                                     property bool hovered: false
                                     variant: {
@@ -1595,11 +1604,11 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
                                         
                                         onEntered: {
-                                            parent.hovered = true;
+                                            windowRect.hovered = true;
                                         }
                                         
                                         onExited: {
-                                            parent.hovered = false;
+                                            windowRect.hovered = false;
                                         }
                                         
                                         onClicked: {
@@ -1627,7 +1636,7 @@ Item {
                                             font.family: Config.theme.font
                                             font.pixelSize: Config.theme.fontSize
                                             font.weight: modelData.active ? Font.Bold : Font.Normal
-                                            color: modelData.active ? Colors[Config.theme.srPrimary.itemColor] : Colors[Config.theme.srCommon.itemColor]
+                                            color: modelData.active ? Colors.overPrimary : Colors.overSurface
 
                                             Behavior on color {
                                                 enabled: Config.animDuration > 0

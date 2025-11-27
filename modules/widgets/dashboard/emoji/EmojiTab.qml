@@ -545,9 +545,9 @@ Rectangle {
                         
                         property color textColor: {
                             if (root.selectedIndex === index && !root.isRecentFocused) {
-                                return Config.resolveColor(Config.theme.srPrimary.itemColor);
+                                return Colors.overPrimary;
                             } else {
-                                return Config.resolveColor(Config.theme.srCommon.itemColor);
+                                return Colors.overSurface;
                             }
                         }
 
@@ -664,9 +664,9 @@ Rectangle {
                         
                         property color textColor: {
                             if (root.selectedRecentIndex === index && root.isRecentFocused) {
-                                return Config.resolveColor(Config.theme.srPrimary.itemColor);
+                                return Colors.overPrimary;
                             } else {
-                                return Config.resolveColor(Config.theme.srCommon.itemColor);
+                                return Colors.overSurface;
                             }
                         }
 
