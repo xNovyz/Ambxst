@@ -93,7 +93,6 @@ Singleton {
                 property real gradBgHalftoneDotMax: 8.0
                 property real gradBgHalftoneStart: 0.0
                 property real gradBgHalftoneEnd: 1.0
-                property real gradBgHalftoneSpread: 2.5
                 property string gradBgHalftoneDotColor: "primary"
                 property string gradBgHalftoneBackgroundColor: "surface"
                 property list<var> gradPane: [["surface", 0.0]]
@@ -105,7 +104,6 @@ Singleton {
                 property real gradPaneHalftoneDotMax: 8.0
                 property real gradPaneHalftoneStart: 0.0
                 property real gradPaneHalftoneEnd: 1.0
-                property real gradPaneHalftoneSpread: 2.5
                 property string gradPaneHalftoneDotColor: "primary"
                 property string gradPaneHalftoneBackgroundColor: "surface"
                 property list<var> gradCommon: [["surface", 0.0]]
@@ -117,7 +115,6 @@ Singleton {
                 property real gradCommonHalftoneDotMax: 8.0
                 property real gradCommonHalftoneStart: 0.0
                 property real gradCommonHalftoneEnd: 1.0
-                property real gradCommonHalftoneSpread: 2.5
                 property string gradCommonHalftoneDotColor: "primary"
                 property string gradCommonHalftoneBackgroundColor: "surface"
                 property list<var> gradFocus: [["surfaceBright", 0.0]]
@@ -129,7 +126,6 @@ Singleton {
                 property real gradFocusHalftoneDotMax: 8.0
                 property real gradFocusHalftoneStart: 0.0
                 property real gradFocusHalftoneEnd: 1.0
-                property real gradFocusHalftoneSpread: 2.5
                 property string gradFocusHalftoneDotColor: "primary"
                 property string gradFocusHalftoneBackgroundColor: "surfaceBright"
                 property list<var> gradPrimary: [["primary", 0.0]]
@@ -141,7 +137,6 @@ Singleton {
                 property real gradPrimaryHalftoneDotMax: 8.0
                 property real gradPrimaryHalftoneStart: 0.0
                 property real gradPrimaryHalftoneEnd: 1.0
-                property real gradPrimaryHalftoneSpread: 2.5
                 property string gradPrimaryHalftoneDotColor: "overPrimary"
                 property string gradPrimaryHalftoneBackgroundColor: "primary"
                 property list<var> gradPrimaryFocus: [["overBackground", 0.0]]
@@ -153,7 +148,6 @@ Singleton {
                 property real gradPrimaryFocusHalftoneDotMax: 8.0
                 property real gradPrimaryFocusHalftoneStart: 0.0
                 property real gradPrimaryFocusHalftoneEnd: 1.0
-                property real gradPrimaryFocusHalftoneSpread: 2.5
                 property string gradPrimaryFocusHalftoneDotColor: "primary"
                 property string gradPrimaryFocusHalftoneBackgroundColor: "overBackground"
                 property list<var> gradOverPrimary: [["overPrimary", 0.0]]
@@ -165,7 +159,6 @@ Singleton {
                 property real gradOverPrimaryHalftoneDotMax: 8.0
                 property real gradOverPrimaryHalftoneStart: 0.0
                 property real gradOverPrimaryHalftoneEnd: 1.0
-                property real gradOverPrimaryHalftoneSpread: 2.5
                 property string gradOverPrimaryHalftoneDotColor: "primary"
                 property string gradOverPrimaryHalftoneBackgroundColor: "overPrimary"
                 property list<var> gradSecondary: [["secondary", 0.0]]
@@ -177,7 +170,6 @@ Singleton {
                 property real gradSecondaryHalftoneDotMax: 8.0
                 property real gradSecondaryHalftoneStart: 0.0
                 property real gradSecondaryHalftoneEnd: 1.0
-                property real gradSecondaryHalftoneSpread: 2.5
                 property string gradSecondaryHalftoneDotColor: "overSecondary"
                 property string gradSecondaryHalftoneBackgroundColor: "secondary"
                 property list<var> gradSecondaryFocus: [["overBackground", 0.0]]
@@ -189,7 +181,6 @@ Singleton {
                 property real gradSecondaryFocusHalftoneDotMax: 8.0
                 property real gradSecondaryFocusHalftoneStart: 0.0
                 property real gradSecondaryFocusHalftoneEnd: 1.0
-                property real gradSecondaryFocusHalftoneSpread: 2.5
                 property string gradSecondaryFocusHalftoneDotColor: "secondary"
                 property string gradSecondaryFocusHalftoneBackgroundColor: "overBackground"
                 property list<var> gradOverSecondary: [["overSecondary", 0.0]]
@@ -201,7 +192,6 @@ Singleton {
                 property real gradOverSecondaryHalftoneDotMax: 8.0
                 property real gradOverSecondaryHalftoneStart: 0.0
                 property real gradOverSecondaryHalftoneEnd: 1.0
-                property real gradOverSecondaryHalftoneSpread: 2.5
                 property string gradOverSecondaryHalftoneDotColor: "secondary"
                 property string gradOverSecondaryHalftoneBackgroundColor: "overSecondary"
                 property list<var> gradTertiary: [["tertiary", 0.0]]
@@ -213,7 +203,6 @@ Singleton {
                 property real gradTertiaryHalftoneDotMax: 8.0
                 property real gradTertiaryHalftoneStart: 0.0
                 property real gradTertiaryHalftoneEnd: 1.0
-                property real gradTertiaryHalftoneSpread: 2.5
                 property string gradTertiaryHalftoneDotColor: "overTertiary"
                 property string gradTertiaryHalftoneBackgroundColor: "tertiary"
                 property list<var> gradTertiaryFocus: [["overBackground", 0.0]]
@@ -225,7 +214,6 @@ Singleton {
                 property real gradTertiaryFocusHalftoneDotMax: 8.0
                 property real gradTertiaryFocusHalftoneStart: 0.0
                 property real gradTertiaryFocusHalftoneEnd: 1.0
-                property real gradTertiaryFocusHalftoneSpread: 2.5
                 property string gradTertiaryFocusHalftoneDotColor: "tertiary"
                 property string gradTertiaryFocusHalftoneBackgroundColor: "overBackground"
                 property list<var> gradOverTertiary: [["overTertiary", 0.0]]
@@ -237,7 +225,6 @@ Singleton {
                 property real gradOverTertiaryHalftoneDotMax: 8.0
                 property real gradOverTertiaryHalftoneStart: 0.0
                 property real gradOverTertiaryHalftoneEnd: 1.0
-                property real gradOverTertiaryHalftoneSpread: 2.5
                 property string gradOverTertiaryHalftoneDotColor: "tertiary"
                 property string gradOverTertiaryHalftoneBackgroundColor: "overTertiary"
                 property list<var> gradError: [["error", 0.0]]
@@ -249,7 +236,6 @@ Singleton {
                 property real gradErrorHalftoneDotMax: 8.0
                 property real gradErrorHalftoneStart: 0.0
                 property real gradErrorHalftoneEnd: 1.0
-                property real gradErrorHalftoneSpread: 2.5
                 property string gradErrorHalftoneDotColor: "overError"
                 property string gradErrorHalftoneBackgroundColor: "error"
                 property list<var> gradErrorFocus: [["overBackground", 0.0]]
@@ -261,7 +247,6 @@ Singleton {
                 property real gradErrorFocusHalftoneDotMax: 8.0
                 property real gradErrorFocusHalftoneStart: 0.0
                 property real gradErrorFocusHalftoneEnd: 1.0
-                property real gradErrorFocusHalftoneSpread: 2.5
                 property string gradErrorFocusHalftoneDotColor: "error"
                 property string gradErrorFocusHalftoneBackgroundColor: "overBackground"
                 property list<var> gradOverError: [["overError", 0.0]]
@@ -273,7 +258,6 @@ Singleton {
                 property real gradOverErrorHalftoneDotMax: 8.0
                 property real gradOverErrorHalftoneStart: 0.0
                 property real gradOverErrorHalftoneEnd: 1.0
-                property real gradOverErrorHalftoneSpread: 2.5
                 property string gradOverErrorHalftoneDotColor: "error"
                 property string gradOverErrorHalftoneBackgroundColor: "overError"
 

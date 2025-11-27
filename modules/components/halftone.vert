@@ -15,7 +15,6 @@ layout(std140, binding = 0) uniform buf {
     vec4 backgroundColor;
     float canvasWidth;
     float canvasHeight;
-    float dotSpread;
 } ubuf;
 
 void main() {

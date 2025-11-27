@@ -446,45 +446,6 @@ ClippingRectangle {
         }
     }
 
-    readonly property real halftoneSpread: {
-        switch (variant) {
-        case "bg":
-            return Config.theme.gradBgHalftoneSpread;
-        case "pane":
-            return Config.theme.gradPaneHalftoneSpread;
-        case "common":
-            return Config.theme.gradCommonHalftoneSpread;
-        case "focus":
-            return Config.theme.gradFocusHalftoneSpread;
-        case "primary":
-            return Config.theme.gradPrimaryHalftoneSpread;
-        case "primaryfocus":
-            return Config.theme.gradPrimaryFocusHalftoneSpread;
-        case "overprimary":
-            return Config.theme.gradOverPrimaryHalftoneSpread;
-        case "secondary":
-            return Config.theme.gradSecondaryHalftoneSpread;
-        case "secondaryfocus":
-            return Config.theme.gradSecondaryFocusHalftoneSpread;
-        case "oversecondary":
-            return Config.theme.gradOverSecondaryHalftoneSpread;
-        case "tertiary":
-            return Config.theme.gradTertiaryHalftoneSpread;
-        case "tertiaryfocus":
-            return Config.theme.gradTertiaryFocusHalftoneSpread;
-        case "overtertiary":
-            return Config.theme.gradOverTertiaryHalftoneSpread;
-        case "error":
-            return Config.theme.gradErrorHalftoneSpread;
-        case "errorfocus":
-            return Config.theme.gradErrorFocusHalftoneSpread;
-        case "overerror":
-            return Config.theme.gradOverErrorHalftoneSpread;
-        default:
-            return Config.theme.gradCommonHalftoneSpread;
-        }
-    }
-
     readonly property var borderData: {
         switch (variant) {
         case "bg":
@@ -711,7 +672,6 @@ ClippingRectangle {
         }
         property real canvasWidth: width
         property real canvasHeight: height
-        property real dotSpread: halftoneSpread
 
         vertexShader: "halftone.vert.qsb"
         fragmentShader: "halftone.frag.qsb"
