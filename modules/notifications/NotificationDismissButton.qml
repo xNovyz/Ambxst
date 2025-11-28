@@ -14,11 +14,31 @@ Button {
     hoverEnabled: true
     visible: visibleWhen
 
-    background: StyledRect {
-        property bool isCritical: urgency == NotificationUrgency.Critical
-        variant: isCritical ? "" : "common"
-        color: isCritical ? (parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed) : (parent.pressed ? Colors.error : (parent.hovered ? Colors.surfaceBright : Colors.surface))
-        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+    background: Item {
+        id: buttonBg
+        property color iconColor: urgency == NotificationUrgency.Critical ? Colors.shadow : (root.pressed ? Colors.overError : Colors.error)
+        
+        Rectangle {
+            anchors.fill: parent
+            visible: urgency == NotificationUrgency.Critical
+            color: parent.parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed
+            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+
+            Behavior on color {
+                enabled: Config.animDuration > 0
+                ColorAnimation {
+                    duration: Config.animDuration
+                }
+            }
+        }
+
+        StyledRect {
+            id: styledBg
+            anchors.fill: parent
+            visible: urgency != NotificationUrgency.Critical
+            variant: parent.parent.pressed ? "error" : (parent.parent.hovered ? "focus" : "common")
+            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+        }
     }
 
     contentItem: Text {
@@ -26,7 +46,7 @@ Button {
         textFormat: Text.RichText
         font.family: Icons.font
         font.pixelSize: 16
-        color: urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overError : (parent.hovered ? Colors.overBackground : Colors.error))
+        color: root.background.iconColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }

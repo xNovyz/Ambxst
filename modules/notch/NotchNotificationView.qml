@@ -621,10 +621,31 @@ Item {
                                                 hoverEnabled: true
                                                 z: 200
 
-                                                background: Rectangle {
-                                                    property bool isCritical: notification && notification.urgency == NotificationUrgency.Critical
-                                                    color: isCritical ? (parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed) : (parent.pressed ? Colors.error : (parent.hovered ? Colors.surfaceBright : Colors.surface))
-                                                    radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                                                background: Item {
+                                                    id: notchDismissBg
+                                                    property color iconColor: notification && notification.urgency == NotificationUrgency.Critical ? Colors.shadow : (dismissButton.pressed ? Colors.overError : Colors.error)
+                                                    
+                                                    Rectangle {
+                                                        anchors.fill: parent
+                                                        visible: notification && notification.urgency == NotificationUrgency.Critical
+                                                        color: parent.parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed
+                                                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+
+                                                        Behavior on color {
+                                                            enabled: Config.animDuration > 0
+                                                            ColorAnimation {
+                                                                duration: Config.animDuration
+                                                            }
+                                                        }
+                                                    }
+
+                                                    StyledRect {
+                                                        id: notchDismissStyled
+                                                        anchors.fill: parent
+                                                        visible: !(notification && notification.urgency == NotificationUrgency.Critical)
+                                                        variant: parent.parent.pressed ? "error" : (parent.parent.hovered ? "focus" : "common")
+                                                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                                                    }
                                                 }
 
                                                 contentItem: Text {
@@ -632,7 +653,7 @@ Item {
                                                     textFormat: Text.RichText
                                                     font.family: Icons.font
                                                     font.pixelSize: 16
-                                                    color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overError : (parent.hovered ? Colors.overBackground : Colors.error))
+                                                    color: notchDismissBg.iconColor
                                                     horizontalAlignment: Text.AlignHCenter
                                                     verticalAlignment: Text.AlignVCenter
                                                 }
@@ -672,36 +693,57 @@ Item {
                                     Repeater {
                                         model: notification ? notification.actions : []
 
-                                        Button {
-                                            Layout.fillWidth: true
-                                            Layout.preferredHeight: 32
-                                            z: 200
+                                            Button {
+                                                Layout.fillWidth: true
+                                                Layout.preferredHeight: 32
+                                                z: 200
 
-                                            text: modelData.text
-                                            font.family: Config.theme.font
-                                            font.pixelSize: Config.theme.fontSize
-                                            font.weight: Font.Bold
-                                            hoverEnabled: true
+                                                text: modelData.text
+                                                font.family: Config.theme.font
+                                                font.pixelSize: Config.theme.fontSize
+                                                font.weight: Font.Bold
+                                                hoverEnabled: true
 
-                                            background: Rectangle {
-                                                property bool isCritical: notification && notification.urgency == NotificationUrgency.Critical
-                                                color: isCritical ? (parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed) : (parent.pressed ? Colors.primary : (parent.hovered ? Colors.surfaceBright : Colors.surface))
-                                                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                                                background: Item {
+                                                    id: notchActionBg
+                                                    property color textColor: notification && notification.urgency == NotificationUrgency.Critical ? Colors.shadow : notchActionStyled.itemColor
+                                                    
+                                                    Rectangle {
+                                                        anchors.fill: parent
+                                                        visible: notification && notification.urgency == NotificationUrgency.Critical
+                                                        color: parent.parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed
+                                                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+
+                                                        Behavior on color {
+                                                            enabled: Config.animDuration > 0
+                                                            ColorAnimation {
+                                                                duration: Config.animDuration
+                                                            }
+                                                        }
+                                                    }
+
+                                                    StyledRect {
+                                                        id: notchActionStyled
+                                                        anchors.fill: parent
+                                                        visible: !(notification && notification.urgency == NotificationUrgency.Critical)
+                                                        variant: parent.parent.pressed ? "primary" : (parent.parent.hovered ? "focus" : "common")
+                                                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                                                    }
+                                                }
+
+                                                contentItem: Text {
+                                                    text: parent.text
+                                                    font: parent.font
+                                                    color: notchActionBg.textColor
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    elide: Text.ElideRight
+                                                }
+
+                                                onClicked: {
+                                                    Notifications.attemptInvokeAction(notification.id, modelData.identifier);
+                                                }
                                             }
-
-                                            contentItem: Text {
-                                                text: parent.text
-                                                font: parent.font
-                                                color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overPrimary : (parent.hovered ? Colors.primary : Colors.overBackground))
-                                                horizontalAlignment: Text.AlignHCenter
-                                                verticalAlignment: Text.AlignVCenter
-                                                elide: Text.ElideRight
-                                            }
-
-                                            onClicked: {
-                                                Notifications.attemptInvokeAction(notification.id, modelData.identifier);
-                                            }
-                                        }
                                     }
                                 }
                             }

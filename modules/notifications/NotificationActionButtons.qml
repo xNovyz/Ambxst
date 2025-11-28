@@ -36,23 +36,37 @@ Item {
                 font.weight: Font.Bold
                 hoverEnabled: true
 
-                background: StyledRect {
-                    variant: root.urgency == NotificationUrgency.Critical ? "" : "common"
-                    color: root.urgency == NotificationUrgency.Critical ? Colors.criticalRed : (parent.pressed ? Colors.primary : (parent.hovered ? Colors.surfaceBright : Colors.surface))
-                    radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                background: Item {
+                    id: buttonBg
+                    property color textColor: root.urgency == NotificationUrgency.Critical ? Colors.shadow : styledBg.itemColor
+                    
+                    Rectangle {
+                        anchors.fill: parent
+                        visible: root.urgency == NotificationUrgency.Critical
+                        color: parent.parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed
+                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
 
-                    Behavior on color {
-                        enabled: Config.animDuration > 0
-                        ColorAnimation {
-                            duration: Config.animDuration
+                        Behavior on color {
+                            enabled: Config.animDuration > 0
+                            ColorAnimation {
+                                duration: Config.animDuration
+                            }
                         }
+                    }
+
+                    StyledRect {
+                        id: styledBg
+                        anchors.fill: parent
+                        visible: root.urgency != NotificationUrgency.Critical
+                        variant: parent.parent.pressed ? "primary" : (parent.parent.hovered ? "focus" : "common")
+                        radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                     }
                 }
 
                 contentItem: Text {
                     text: parent.text
                     font: parent.font
-                    color: root.urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overPrimary : (parent.hovered ? Colors.primary : Colors.overBackground))
+                    color: parent.background.textColor
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight

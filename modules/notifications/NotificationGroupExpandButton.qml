@@ -15,16 +15,9 @@ Button {
     implicitHeight: 24
 
     background: StyledRect {
-        variant: root.expanded ? "primary" : "common"
-        color: root.expanded ? Colors.primary : (root.pressed ? Colors.primary : (root.hovered ? Colors.surfaceBright : Colors.surfaceContainerHigh))
+        id: buttonBackground
+        variant: root.expanded ? (root.hovered ? "primaryfocus" : "primary") : (root.hovered ? "focus" : "common")
         radius: Config.roundness
-
-        Behavior on color {
-            enabled: Config.animDuration > 0
-            ColorAnimation {
-                duration: Config.animDuration / 4
-            }
-        }
     }
 
     contentItem: Row {
@@ -37,7 +30,7 @@ Button {
             font.family: Config.theme.font
             font.pixelSize: Config.theme.fontSize
             font.weight: Font.Bold
-            color: root.expanded ? Colors.overPrimary : (root.pressed ? Colors.overPrimary : (root.hovered ? Colors.overBackground : Colors.primary))
+            color: buttonBackground.itemColor
             anchors.verticalCenter: parent.verticalCenter
             leftPadding: 4
             rightPadding: 4
@@ -48,7 +41,7 @@ Button {
             textFormat: Text.RichText
             font.family: Icons.font
             font.pixelSize: Config.theme.fontSize
-            color: root.expanded ? Colors.overPrimary : (root.pressed ? Colors.overPrimary : (root.hovered ? Colors.overBackground : Colors.primary))
+            color: buttonBackground.itemColor
             anchors.verticalCenter: parent.verticalCenter
         }
     }

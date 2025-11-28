@@ -418,16 +418,38 @@ Item {
                         font.weight: Font.Bold
                         hoverEnabled: true
 
-                        background: Rectangle {
+                        background: Item {
+                            id: delegateBtnBg
                             property bool isCritical: latestNotification && latestNotification.urgency == NotificationUrgency.Critical
-                            color: isCritical ? (parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed) : (parent.pressed ? Colors.primary : (parent.hovered ? Colors.surfaceBright : Colors.surface))
-                            radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                            property color textColor: isCritical ? Colors.shadow : styledBg.itemColor
+                            
+                            Rectangle {
+                                anchors.fill: parent
+                                visible: parent.isCritical
+                                color: parent.parent.hovered ? Qt.lighter(Colors.criticalRed, 1.3) : Colors.criticalRed
+                                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+
+                                Behavior on color {
+                                    enabled: Config.animDuration > 0
+                                    ColorAnimation {
+                                        duration: Config.animDuration
+                                    }
+                                }
+                            }
+
+                            StyledRect {
+                                id: styledBg
+                                anchors.fill: parent
+                                visible: !parent.isCritical
+                                variant: parent.parent.pressed ? "primary" : (parent.parent.hovered ? "focus" : "common")
+                                radius: Config.roundness > 0 ? Config.roundness + 4 : 0
+                            }
                         }
 
                         contentItem: Text {
                             text: parent.text
                             font: parent.font
-                            color: latestNotification && latestNotification.urgency == NotificationUrgency.Critical ? Colors.shadow : (parent.pressed ? Colors.overPrimary : (parent.hovered ? Colors.primary : Colors.overBackground))
+                            color: parent.background.textColor
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
