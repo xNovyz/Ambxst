@@ -24,7 +24,7 @@ StyledRect {
         return "pane";
     }
 
-    radius: root.isActive ? Config.roundness : Config.roundness * 1.25
+    radius: root.isActive ? Config.roundness : (Config.roundness > 0 ? Config.roundness + 4 : 0)
 
     Behavior on radius {
         enabled: Config.animDuration > 0

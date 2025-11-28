@@ -4,8 +4,8 @@ import qs.modules.theme
 import qs.config
 
 StyledRect {
-    variant: "pane"
     id: root
+    variant: "pane"
 
     required property string icon
     required property real value
@@ -25,6 +25,7 @@ StyledRect {
     property real lineWidth: 4
     property real gapAngle: 45
 
+    radius: Config.roundness > 0 ? Config.roundness + 4 : 0
     width: 48
     height: 48
 
