@@ -175,6 +175,7 @@ Singleton {
                     property string halftoneBackgroundColor: "surfaceBright"
                     property list<var> border: ["surfaceBright", 0]
                     property string itemColor: "overBackground"
+                    property real opacity: 1.0
                 }
 
                 // SR: Primary variants
