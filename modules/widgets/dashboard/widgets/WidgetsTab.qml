@@ -19,7 +19,7 @@ import "calendar"
 Rectangle {
     color: "transparent"
     implicitWidth: 600
-    implicitHeight: 300
+    implicitHeight: 750
 
     property int leftPanelWidth: 0
 
@@ -272,15 +272,15 @@ Rectangle {
                 }
             }
 
-            ColumnLayout {
+            Item {
                 id: mainLayout
                 anchors.fill: parent
-                spacing: 8
 
                 // Search input
                 SearchInput {
                     id: searchInput
-                    Layout.fillWidth: true
+                    width: parent.width
+                    anchors.top: parent.top
                     text: GlobalStates.launcherSearchText
                     placeholderText: "Search applications..."
                     iconText: ""
@@ -400,9 +400,12 @@ Rectangle {
                 // Results list
                 ListView {
                     id: resultsList
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 7 * 48
+                    width: parent.width
+                    anchors.top: searchInput.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.topMargin: 8
                     visible: true
+
                     clip: true
                     interactive: !appLauncher.optionsMenuOpen
                     cacheBuffer: 96
@@ -762,9 +765,12 @@ Rectangle {
             // Tab 2: Emoji (with prefix from config)
             Loader {
                 id: emojiLoader
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 active: currentTab === 2
                 sourceComponent: Component {
                     EmojiTab {
+                        anchors.fill: parent
                         leftPanelWidth: root.leftPanelWidth
                         prefixIcon: Icons.emoji
                         onBackspaceOnEmpty: {

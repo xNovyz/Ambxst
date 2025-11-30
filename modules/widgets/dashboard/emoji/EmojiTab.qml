@@ -508,15 +508,16 @@ Rectangle {
             spacing: 8
 
             // Columna izquierda: Search + Lista normal de emojis
-            Column {
+            Item {
                 Layout.preferredWidth: root.leftPanelWidth
                 Layout.fillHeight: true
-                spacing: 8
 
                 // Barra de búsqueda con botón de limpiar
                 Row {
+                    id: searchRow
                     width: parent.width
                     height: 48
+                    anchors.top: parent.top
                     spacing: 8
 
                     SearchInput {
@@ -690,8 +691,12 @@ Rectangle {
                 ListView {
                     id: emojiList
                     width: parent.width
-                    height: 7 * 48
+                    anchors.top: searchRow.bottom
+                    anchors.bottom: infoText.visible ? infoText.top : parent.bottom
+                    anchors.topMargin: 8
+                    anchors.bottomMargin: infoText.visible ? 8 : 0
                     clip: true
+
                     cacheBuffer: 96
                     reuseItems: false
 
@@ -894,8 +899,7 @@ Rectangle {
                     Text {
                         id: infoText
                         width: parent.width
-                        height: 20
-                        anchors.bottom: parent.bottom
+                        height: visible ? 20 : 0
                         visible: searchText.length > 0 && filteredEmojis.length >= maxResults
 
                     text: `Showing first ${maxResults} results - refine search for more`
