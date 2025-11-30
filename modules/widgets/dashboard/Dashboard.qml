@@ -18,7 +18,7 @@ import qs.config
 NotchAnimationBehavior {
     id: root
 
-    readonly property int leftPanelWidth: 300
+    property int leftPanelWidth
 
     property var state: QtObject {
         property int currentTab: GlobalStates.dashboardCurrentTab
@@ -145,8 +145,8 @@ NotchAnimationBehavior {
 
             // Background highlight que se desplaza verticalmente con efecto elástico
             StyledRect {
-                variant: "primary"
                 id: tabHighlight
+                variant: "primary"
                 width: parent.width
                 radius: Config.roundness > 0 ? Config.roundness + 4 : 0
                 z: 0

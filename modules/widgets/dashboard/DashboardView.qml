@@ -6,9 +6,12 @@ Item {
     implicitWidth: 1000
     implicitHeight: 394 + 48 * 0
 
+    readonly property int leftPanelWidth: 270
+
     Dashboard {
         id: dashboardItem
         anchors.fill: parent
+        leftPanelWidth: parent.leftPanelWidth
 
         Keys.onPressed: event => {
             if (event.key === Qt.Key_Escape) {
