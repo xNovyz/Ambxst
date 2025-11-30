@@ -609,7 +609,7 @@ Item {
 
         // Columna izquierda: Search + Lista
         Column {
-            Layout.preferredWidth: 300
+            Layout.preferredWidth: LayoutMetrics.leftPanelWidth
             Layout.fillHeight: true
             spacing: 8
 

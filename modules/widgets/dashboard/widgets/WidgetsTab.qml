@@ -91,7 +91,7 @@ Rectangle {
         // App Launcher - shown only when currentTab === 0
         Rectangle {
             id: appLauncher
-            Layout.preferredWidth: LayoutMetrics.calculateLeftPanelWidth(parent.width, parent.height, parent.spacing)
+            Layout.preferredWidth: LayoutMetrics.leftPanelWidth
             Layout.fillHeight: true
             visible: currentTab === 0
             color: "transparent"

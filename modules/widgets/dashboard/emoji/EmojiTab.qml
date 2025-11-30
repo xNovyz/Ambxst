@@ -505,7 +505,7 @@ Rectangle {
 
             // Columna izquierda: Search + Lista normal de emojis
             Column {
-                Layout.preferredWidth: 300
+                Layout.preferredWidth: LayoutMetrics.leftPanelWidth
                 Layout.fillHeight: true
                 spacing: 8
 
