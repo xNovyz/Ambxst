@@ -169,6 +169,8 @@ Rectangle {
                         Separator {
                             width: parent.width
                             height: 2
+                            gradient: null
+                            color: Colors.surface
                         }
 
                         // Disks
@@ -197,22 +199,23 @@ Rectangle {
                                         text: modelData
                                         font.family: Config.theme.font
                                         font.pixelSize: Config.theme.fontSize - 2
-                                        color: Colors.outline
+                                        color: Colors.surfaceBright
                                         elide: Text.ElideMiddle
                                     }
 
                                     Separator {
-                                        vert: false
                                         Layout.preferredHeight: 2
                                         Layout.fillWidth: true
+                                        gradient: null
+                                        color: Colors.surface
                                     }
 
                                     Text {
                                         text: `${Math.round((SystemResources.diskUsage[modelData] || 0))}%`
                                         font.family: Config.theme.font
-                                        font.pixelSize: Config.theme.fontSize - 2
+                                        font.pixelSize: Math.max(8, Config.theme.fontSize - 2)
                                         font.weight: Font.Medium
-                                        color: Colors.outline
+                                        color: Colors.surfaceBright
                                     }
                                 }
                             }
@@ -223,27 +226,27 @@ Rectangle {
         }
 
         // Right panel - Chart
-        StyledRect {
+        ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: Styling.radius(4)
-            variant: "pane"
+            spacing: 8
 
             StyledRect {
-                anchors.fill: parent
-                anchors.margins: 4
-                radius: Styling.radius(0)
-                variant: "internalbg"
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                radius: Styling.radius(4)
+                variant: "pane"
 
-                ColumnLayout {
+                StyledRect {
                     anchors.fill: parent
-                    spacing: 0
+                    anchors.margins: 4
+                    radius: Styling.radius(0)
+                    variant: "internalbg"
 
                     // Chart area
                     Canvas {
                         id: chartCanvas
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        anchors.fill: parent
 
                         onPaint: {
                             const ctx = getContext("2d");
@@ -320,11 +323,27 @@ Rectangle {
                             }
                         }
                     }
+                }
+            }
 
-                    // Controls at bottom right
+            // Controls panel
+            StyledRect {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 48
+                radius: Styling.radius(4)
+                variant: "pane"
+
+                StyledRect {
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    radius: Styling.radius(0)
+                    variant: "internalbg"
+
+                    // Controls at right
                     RowLayout {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                        Layout.margins: 4
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.rightMargin: 4
                         spacing: 8
 
                         // Decrease interval button
