@@ -67,7 +67,7 @@ Item {
                 Text {
                     text: root.showOutput ? "Output Device" : "Input Device"
                     font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 1
+                    font.pixelSize: Styling.fontSize(-1)
                     font.weight: Font.Medium
                     color: Colors.overSurfaceVariant
                 }
@@ -97,7 +97,7 @@ Item {
                 Text {
                     text: "Volume Mixer"
                     font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 1
+                    font.pixelSize: Styling.fontSize(-1)
                     font.weight: Font.Medium
                     color: Colors.overSurfaceVariant
                 }
@@ -127,7 +127,7 @@ Item {
                     visible: (root.showOutput ? Audio.outputAppNodes : Audio.inputAppNodes).length === 0
                     text: "No applications using audio"
                     font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 1
+                    font.pixelSize: Styling.fontSize(-1)
                     color: Colors.outline
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: 16

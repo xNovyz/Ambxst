@@ -29,19 +29,13 @@ Item {
 
     // Computed dimensions
     readonly property real mainRowContentWidth: 200 + userInfo.width + separator1.width + separator2.width + notifIndicator.width + (mainRow.spacing * 4) + 16
-    readonly property real mainRowHeight: Config.bar.showBackground
-        ? (Config.notchTheme === "island" ? 36 : 44)
-        : (Config.notchTheme === "island" ? 36 : 40)
+    readonly property real mainRowHeight: Config.bar.showBackground ? (Config.notchTheme === "island" ? 36 : 44) : (Config.notchTheme === "island" ? 36 : 40)
     readonly property real notificationMinWidth: expandedState ? 420 : 320
     readonly property real notificationContainerHeight: notificationView.implicitHeight + notificationPaddingTop + notificationPadding
 
-    implicitWidth: Math.round(hasActiveNotifications
-        ? Math.max(notificationMinWidth + (notificationPadding * 2), mainRowContentWidth)
-        : mainRowContentWidth)
+    implicitWidth: Math.round(hasActiveNotifications ? Math.max(notificationMinWidth + (notificationPadding * 2), mainRowContentWidth) : mainRowContentWidth)
 
-    implicitHeight: hasActiveNotifications
-        ? mainRowHeight + notificationContainerHeight
-        : mainRowHeight
+    implicitHeight: hasActiveNotifications ? mainRowHeight + notificationContainerHeight : mainRowHeight
 
     Behavior on implicitWidth {
         enabled: Config.animDuration > 0
@@ -92,6 +86,7 @@ Item {
 
             Separator {
                 id: separator1
+                vert: true
                 anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -105,6 +100,7 @@ Item {
 
             Separator {
                 id: separator2
+                vert: true
                 anchors.verticalCenter: parent.verticalCenter
             }
 

@@ -5,8 +5,8 @@ import qs.modules.theme
 import qs.modules.components
 
 StyledRect {
-    variant: "bg"
     id: clockContainer
+    variant: "bg"
 
     property string currentTime: ""
     property string currentDayAbbrev: ""
@@ -37,6 +37,7 @@ StyledRect {
 
         Separator {
             id: separator
+            vert: true
         }
 
         Text {

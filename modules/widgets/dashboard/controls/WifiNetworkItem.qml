@@ -110,7 +110,7 @@ Item {
                         return "Open";
                     }
                     font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 2
+                    font.pixelSize: Styling.fontSize(-2)
                     color: Colors.overSurfaceVariant
                     elide: Text.ElideRight
 
@@ -160,6 +160,7 @@ Item {
                 placeholderText: "Enter password..."
                 passwordMode: true
                 implicitHeight: 40
+                variant: "internalbg"
                 
                 onAccepted: {
                     if (text.length > 0) {
@@ -183,16 +184,16 @@ Item {
                     implicitHeight: 32
 
                     background: StyledRect {
-                        variant: root.network?.active ? "common" : "primary"
+                        variant: root.network?.active ? "internalbg" : "primary"
                         radius: Styling.radius(4)
                     }
 
                     contentItem: Text {
                         text: root.network?.active ? "Disconnect" : "Connect"
                         font.family: Config.theme.font
-                        font.pixelSize: Config.theme.fontSize - 1
+                        font.pixelSize: Styling.fontSize(-1)
                         color: root.network?.active 
-                            ? Colors.overBackground 
+                            ? Colors.overSurfaceVariant 
                             : Config.resolveColor(Config.theme.srPrimary.itemColor)
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter

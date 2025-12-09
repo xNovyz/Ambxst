@@ -2208,8 +2208,7 @@ Item {
         }
 
         Separator {
-            Layout.preferredWidth: 2
-            Layout.fillHeight: true
+            vert: true
         }
 
         // Preview panel (toda la altura, resto del ancho)
@@ -2476,7 +2475,7 @@ Item {
                                     }
 
                                     // Video thumbnail with play overlay
-                                    Rectangle {
+                                    ClippingRectangle {
                                         width: parent.width
                                         height: width * 9 / 16  // 16:9 aspect ratio
                                         color: Colors.surfaceBright

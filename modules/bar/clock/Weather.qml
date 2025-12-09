@@ -49,6 +49,7 @@ StyledRect {
 
         Separator {
             id: separator
+            vert: true
         }
 
         Text {

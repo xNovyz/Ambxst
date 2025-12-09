@@ -78,7 +78,7 @@ Item {
                     Text {
                         text: "Output Presets"
                         font.family: Config.theme.font
-                        font.pixelSize: Config.theme.fontSize - 1
+                        font.pixelSize: Styling.fontSize(-1)
                         font.weight: Font.Medium
                         color: Colors.overSurfaceVariant
                     }
@@ -105,7 +105,7 @@ Item {
                                 contentItem: Text {
                                     text: presetButton.modelData
                                     font.family: Config.theme.font
-                                    font.pixelSize: Config.theme.fontSize - 1
+                                    font.pixelSize: Styling.fontSize(-1)
                                     color: presetButton.isActive 
                                         ? Config.resolveColor(Config.theme.srPrimary.itemColor)
                                         : Colors.overBackground
@@ -132,7 +132,7 @@ Item {
                     Text {
                         text: "Input Presets"
                         font.family: Config.theme.font
-                        font.pixelSize: Config.theme.fontSize - 1
+                        font.pixelSize: Styling.fontSize(-1)
                         font.weight: Font.Medium
                         color: Colors.overSurfaceVariant
                     }
@@ -159,7 +159,7 @@ Item {
                                 contentItem: Text {
                                     text: inputPresetButton.modelData
                                     font.family: Config.theme.font
-                                    font.pixelSize: Config.theme.fontSize - 1
+                                    font.pixelSize: Styling.fontSize(-1)
                                     color: inputPresetButton.isActive 
                                         ? Config.resolveColor(Config.theme.srPrimary.itemColor)
                                         : Colors.overBackground
@@ -198,7 +198,7 @@ Item {
                     Text {
                         text: "Active"
                         font.family: Config.theme.font
-                        font.pixelSize: Config.theme.fontSize - 1
+                        font.pixelSize: Styling.fontSize(-1)
                         font.weight: Font.Medium
                         color: Colors.overSurfaceVariant
                     }
@@ -216,7 +216,7 @@ Item {
                         Text {
                             text: EasyEffectsService.activeOutputPreset
                             font.family: Config.theme.font
-                            font.pixelSize: Config.theme.fontSize - 1
+                            font.pixelSize: Styling.fontSize(-1)
                             color: Colors.overBackground
                         }
                     }
@@ -234,7 +234,7 @@ Item {
                         Text {
                             text: EasyEffectsService.activeInputPreset
                             font.family: Config.theme.font
-                            font.pixelSize: Config.theme.fontSize - 1
+                            font.pixelSize: Styling.fontSize(-1)
                             color: Colors.overBackground
                         }
                     }

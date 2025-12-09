@@ -109,7 +109,7 @@ Item {
                         return status;
                     }
                     font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 2
+                    font.pixelSize: Styling.fontSize(-2)
                     color: Colors.overSurfaceVariant
                     elide: Text.ElideRight
 
@@ -175,7 +175,7 @@ Item {
                 contentItem: Text {
                     text: "Forget"
                     font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 1
+                    font.pixelSize: Styling.fontSize(-1)
                     color: Config.resolveColor(Config.theme.srError.itemColor)
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -194,16 +194,16 @@ Item {
                 implicitHeight: 32
 
                 background: StyledRect {
-                    variant: root.device?.connected ? "common" : "primary"
+                    variant: root.device?.connected ? "internalbg" : "primary"
                     radius: Styling.radius(4)
                 }
 
                 contentItem: Text {
                     text: root.device?.connected ? "Disconnect" : "Connect"
                     font.family: Config.theme.font
-                    font.pixelSize: Config.theme.fontSize - 1
+                    font.pixelSize: Styling.fontSize(-1)
                     color: root.device?.connected 
-                        ? Colors.overBackground 
+                        ? Colors.overSurfaceVariant 
                         : Config.resolveColor(Config.theme.srPrimary.itemColor)
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter

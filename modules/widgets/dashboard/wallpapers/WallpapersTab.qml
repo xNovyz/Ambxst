@@ -529,10 +529,7 @@ FocusScope {
             }
 
             Separator {
-                Layout.fillHeight: true
-                Layout.preferredWidth: 2
-                gradient: null
-                color: Colors.surface
+                vert: true
             }
 
             // Contenedor para la cuadrícula de fondos de pantalla.

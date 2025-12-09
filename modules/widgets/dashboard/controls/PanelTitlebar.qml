@@ -44,7 +44,7 @@ RowLayout {
         visible: root.statusText !== ""
         text: root.statusText
         font.family: Config.theme.font
-        font.pixelSize: Config.theme.fontSize - 2
+        font.pixelSize: Styling.fontSize(-2)
         color: root.statusColor
     }
 
