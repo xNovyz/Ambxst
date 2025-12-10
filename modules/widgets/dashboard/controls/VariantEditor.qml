@@ -163,6 +163,7 @@ Item {
             // Item Color
             ColorButton {
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 colorNames: root.colorNames
                 currentColor: (root.variantConfig && root.variantConfig.itemColor) ? root.variantConfig.itemColor : "surface"
                 label: "Item Color"
@@ -175,143 +176,150 @@ Item {
                 }
             }
 
-            // Opacity Control
-            StyledRect {
-                id: opacityControl
-                variant: "pane"
+            // Opacity + Border Controls Container
+            RowLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 56
-                radius: Styling.radius(-1)
+                Layout.preferredWidth: 1
+                spacing: 8
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 4
-                    anchors.rightMargin: 12
-                    spacing: 8
+                // Opacity Control
+                StyledRect {
+                    id: opacityControl
+                    variant: "pane"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 56
+                    radius: Styling.radius(-1)
 
-                    // CircularControl
-                    CircularControl {
-                        icon: Icons.circleHalf
-                        value: root.variantConfig ? root.variantConfig.opacity : 1.0
-                        accentColor: Colors.primary
-                        isToggleable: false
-                        isToggled: false
-                        onControlValueChanged: newValue => root.updateProp("opacity", newValue)
-                    }
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 4
+                        anchors.rightMargin: 12
+                        spacing: 8
 
-                    // Label + Value
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: "Opacity"
-                            font.family: Styling.defaultFont
-                            font.pixelSize: Styling.fontSize(-2)
-                            font.bold: true
-                            color: opacityControl.itemColor
-                            opacity: 0.6
+                        // CircularControl
+                        CircularControl {
+                            icon: Icons.circleHalf
+                            value: root.variantConfig ? root.variantConfig.opacity : 1.0
+                            accentColor: Colors.primary
+                            isToggleable: false
+                            isToggled: false
+                            onControlValueChanged: newValue => root.updateProp("opacity", newValue)
                         }
 
-                        Text {
+                        // Label + Value
+                        ColumnLayout {
                             Layout.fillWidth: true
-                            text: root.variantConfig ? (root.variantConfig.opacity * 100).toFixed(0) + "%" : "100%"
-                            font.family: Styling.defaultFont
-                            font.pixelSize: Styling.fontSize(1)
-                            font.bold: true
-                            color: opacityControl.itemColor
+                            spacing: 2
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Opacity"
+                                font.family: Styling.defaultFont
+                                font.pixelSize: Styling.fontSize(-2)
+                                font.bold: true
+                                color: opacityControl.itemColor
+                                opacity: 0.6
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: root.variantConfig ? (root.variantConfig.opacity * 100).toFixed(0) + "%" : "100%"
+                                font.family: Styling.defaultFont
+                                font.pixelSize: Styling.fontSize(1)
+                                font.bold: true
+                                color: opacityControl.itemColor
+                            }
                         }
                     }
                 }
-            }
 
-            // Border Control
-            StyledRect {
-                id: borderControl
-                variant: "pane"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 56
-                radius: Styling.radius(-1)
+                // Border Control
+                StyledRect {
+                    id: borderControl
+                    variant: "pane"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 56
+                    radius: Styling.radius(-1)
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 4
-                    anchors.rightMargin: 12
-                    spacing: 8
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 4
+                        anchors.rightMargin: 12
+                        spacing: 8
 
-                    // CircularControl with ColorButton as center
-                    Item {
-                        width: 48
-                        height: 48
+                        // CircularControl with ColorButton as center
+                        Item {
+                            width: 48
+                            height: 48
 
-                        CircularControl {
-                            id: borderCircular
-                            anchors.fill: parent
-                            icon: ""
-                            value: root.variantConfig ? root.variantConfig.border[1] / 16 : 0
-                            accentColor: root.variantConfig ? Colors.getColor(root.variantConfig.border[0]) : Colors.outline
-                            isToggleable: false
-                            isToggled: false
-                            onControlValueChanged: newValue => {
-                                if (root.variantConfig) {
-                                    const newWidth = Math.round(newValue * 16);
-                                    root.updateProp("border", [root.variantConfig.border[0], newWidth]);
-                                }
-                            }
-                        }
-
-                        // Color button in center
-                        Rectangle {
-                            id: borderColorButton
-                            anchors.centerIn: parent
-                            width: 20
-                            height: 20
-                            radius: width / 2
-                            color: root.variantConfig ? Colors.getColor(root.variantConfig.border[0]) : Colors.outline
-                            border.width: 2
-                            border.color: Colors.overBackground
-
-                            MouseArea {
+                            CircularControl {
+                                id: borderCircular
                                 anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    root.openColorPickerRequested(
-                                        root.colorNames,
-                                        root.variantConfig ? root.variantConfig.border[0] : "outline",
-                                        "Select Border Color",
-                                        function(color) {
-                                            if (!root.variantConfig) return;
-                                            root.updateProp("border", [color, root.variantConfig.border[1]]);
-                                        }
-                                    );
+                                icon: ""
+                                value: root.variantConfig ? root.variantConfig.border[1] / 16 : 0
+                                accentColor: root.variantConfig ? Colors.getColor(root.variantConfig.border[0]) : Colors.outline
+                                isToggleable: false
+                                isToggled: false
+                                onControlValueChanged: newValue => {
+                                    if (root.variantConfig) {
+                                        const newWidth = Math.round(newValue * 16);
+                                        root.updateProp("border", [root.variantConfig.border[0], newWidth]);
+                                    }
+                                }
+                            }
+
+                            // Color button in center
+                            Rectangle {
+                                id: borderColorButton
+                                anchors.centerIn: parent
+                                width: 20
+                                height: 20
+                                radius: width / 2
+                                color: root.variantConfig ? Colors.getColor(root.variantConfig.border[0]) : Colors.outline
+                                border.width: 2
+                                border.color: Colors.overBackground
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        root.openColorPickerRequested(
+                                            root.colorNames,
+                                            root.variantConfig ? root.variantConfig.border[0] : "outline",
+                                            "Select Border Color",
+                                            function(color) {
+                                                if (!root.variantConfig) return;
+                                                root.updateProp("border", [color, root.variantConfig.border[1]]);
+                                            }
+                                        );
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // Label + Value
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        Text {
+                        // Label + Value
+                        ColumnLayout {
                             Layout.fillWidth: true
-                            text: "Border"
-                            font.family: Styling.defaultFont
-                            font.pixelSize: Styling.fontSize(-2)
-                            font.bold: true
-                            color: borderControl.itemColor
-                            opacity: 0.6
-                        }
+                            spacing: 2
 
-                        Text {
-                            Layout.fillWidth: true
-                            text: root.variantConfig ? root.variantConfig.border[1] + "px" : "0px"
-                            font.family: Styling.defaultFont
-                            font.pixelSize: Styling.fontSize(1)
-                            font.bold: true
-                            color: borderControl.itemColor
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Border"
+                                font.family: Styling.defaultFont
+                                font.pixelSize: Styling.fontSize(-2)
+                                font.bold: true
+                                color: borderControl.itemColor
+                                opacity: 0.6
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: root.variantConfig ? root.variantConfig.border[1] + "px" : "0px"
+                                font.family: Styling.defaultFont
+                                font.pixelSize: Styling.fontSize(1)
+                                font.bold: true
+                                color: borderControl.itemColor
+                            }
                         }
                     }
                 }
