@@ -5,7 +5,6 @@ import qs.modules.theme
 import qs.modules.components
 import qs.modules.services
 import qs.modules.notifications
-import qs.modules.corners
 import qs.config
 
 Item {
@@ -70,207 +69,127 @@ Item {
         anchors.fill: parent
         spacing: 0
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 40
-            spacing: 4
-
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 40
-                color: {
-                    const stopData = notificationPane.gradientStops[0] || ["surface", 0.0]
-                    const colorValue = stopData[0]
-                    return Config.resolveColor(colorValue)
-                }
-                topLeftRadius: Config.roundness > 0 ? Config.roundness + 4 : 0
-                topRightRadius: Config.roundness > 0 ? Config.roundness + 4 : 0
-                StyledRect {
-                    variant: "internalbg"
-                    anchors.fill: parent
-                    anchors.margins: 4
-                    anchors.bottomMargin: 0
-                    color: Colors.background
-                    radius: Styling.radius(0)
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Notifications"
-                        font.family: Config.defaultFont
-                        font.pixelSize: Config.theme.fontSize
-                        font.weight: Font.Bold
-                        color: Colors.overSurface
-                        horizontalAlignment: Text.AlignHCenter
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                Layout.leftMargin: -4
-                color: "transparent"
-
-                RoundCorner {
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    size: Styling.radius(4)
-                    corner: RoundCorner.CornerEnum.BottomLeft
-                    color: {
-                        const stopData = notificationPane.gradientStops[0] || ["surface", 0.0]
-                        const colorValue = stopData[0]
-                        return Config.resolveColor(colorValue)
-                    }
-                }
-
-                Rectangle {
-                    id: dndToggle
-                    radius: Notifications.silent ? Styling.radius(-4) : Styling.radius(0)
-                    bottomLeftRadius: Config.roundness
-                    color: {
-                        if (Notifications.silent) {
-                            return dndHover.containsMouse ? Colors.overBackground : Colors.primary
-                        }
-                        if (dndHover.containsMouse) return Colors.surfaceBright
-                        const stopData = notificationPane.gradientStops[0] || ["surface", 0.0]
-                        const colorValue = stopData[0]
-                        return Config.resolveColor(colorValue)
-                    }
-                    width: 36
-                    height: 36
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-
-                    Behavior on color {
-                        enabled: Config.animDuration > 0
-                        ColorAnimation {
-                            duration: Config.animDuration / 4
-                        }
-                    }
-
-                    Behavior on radius {
-                        enabled: Config.animDuration > 0
-                        NumberAnimation {
-                            duration: Config.animDuration / 4
-                        }
-                    }
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: Notifications.silent ? Icons.bellZ : Icons.bell
-                        textFormat: Text.RichText
-                        font.family: Icons.font
-                        font.pixelSize: 18
-                        color: Notifications.silent ? Colors.overPrimary : Colors.primary
-
-                        Behavior on color {
-                            enabled: Config.animDuration > 0
-                            ColorAnimation {
-                                duration: Config.animDuration / 4
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        id: dndHover
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        hoverEnabled: true
-                        onClicked: Notifications.silent = !Notifications.silent
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 36
-                Layout.preferredHeight: 36
-                Layout.bottomMargin: 4
-                radius: broomHover.pressed ? Styling.radius(0) : (broomHover.containsMouse ? Styling.radius(-4) : Styling.radius(0))
-                color: {
-                    if (broomHover.pressed) return Colors.error
-                    if (broomHover.containsMouse) return Colors.overError
-                    const stopData = notificationPane.gradientStops[0] || ["surface", 0.0]
-                    const colorValue = stopData[0]
-                    return Config.resolveColor(colorValue)
-                }
-
-                Behavior on color {
-                    enabled: Config.animDuration > 0
-                    ColorAnimation {
-                        duration: Config.animDuration / 4
-                    }
-                }
-
-                Behavior on radius {
-                    enabled: Config.animDuration > 0
-                    NumberAnimation {
-                        duration: Config.animDuration / 4
-                    }
-                }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: Icons.broom
-                    textFormat: Text.RichText
-                    font.family: Icons.font
-                    font.pixelSize: 18
-                    color: broomHover.pressed ? Colors.overError : Colors.error
-
-                    Behavior on color {
-                        enabled: Config.animDuration > 0
-                        ColorAnimation {
-                            duration: Config.animDuration / 4
-                        }
-                    }
-                }
-
-                MouseArea {
-                    id: broomHover
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-                    onClicked: discardAllWithAnimation()
-                }
-            }
-        }
-
         StyledRect {
             id: notificationPane
             variant: "pane"
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: Colors.surface
             radius: Styling.radius(4)
-            topLeftRadius: 0
             clip: true
 
-            ClippingRectangle {
+            ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 4
-                color: "transparent"
-                radius: Styling.radius(0)
-                Flickable {
-                    anchors.fill: parent
-                    contentWidth: width
-                    contentHeight: notificationList.contentHeight
-                    clip: true
+                spacing: 4
 
-                    ListView {
-                        id: notificationList
-                        width: parent.width
-                        height: contentHeight
-                        spacing: 4
-                        model: Notifications.appNameList
-                        interactive: false
-                        cacheBuffer: 200
-                        reuseItems: true
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.maximumHeight: 32
+                    spacing: 4
 
-                        delegate: NotificationGroup {
-                            required property int index
-                            required property string modelData
-                            width: notificationList.width
-                            notificationGroup: Notifications.groupsByAppName[modelData]
-                            expanded: false
-                            popup: false
+                    StyledRect {
+                        id: titleRect
+                        variant: "internalbg"
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        radius: Styling.radius(0)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "Notifications"
+                            font.family: Config.defaultFont
+                            font.pixelSize: Config.theme.fontSize
+                            font.weight: Font.Bold
+                            color: titleRect.itemColor
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+
+                    StyledRect {
+                        id: dndToggle
+                        variant: Notifications.silent ? "primary" : (dndHover.containsMouse ? "focus" : "internalbg")
+                        Layout.preferredWidth: 32
+                        Layout.fillHeight: true
+                        radius: Notifications.silent ? Styling.radius(-4) : Styling.radius(0)
+
+                        readonly property color dndItemColor: Notifications.silent ? itemColor : Config.resolveColor(Config.theme.srOverPrimary.itemColor)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: Notifications.silent ? Icons.bellZ : Icons.bell
+                            textFormat: Text.RichText
+                            font.family: Icons.font
+                            font.pixelSize: 18
+                            color: dndToggle.dndItemColor
+                        }
+
+                        MouseArea {
+                            id: dndHover
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onClicked: Notifications.silent = !Notifications.silent
+                        }
+                    }
+
+                    StyledRect {
+                        id: clearButton
+                        variant: broomHover.pressed ? "error" : (broomHover.containsMouse ? "focus" : "internalbg")
+                        Layout.preferredWidth: 32
+                        Layout.fillHeight: true
+                        radius: Styling.radius(0)
+
+                        readonly property color clearItemColor: broomHover.pressed ? itemColor : Config.resolveColor(Config.theme.srOverError.itemColor)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: Icons.broom
+                            textFormat: Text.RichText
+                            font.family: Icons.font
+                            font.pixelSize: 18
+                            color: clearButton.clearItemColor
+                        }
+
+                        MouseArea {
+                            id: broomHover
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onClicked: discardAllWithAnimation()
+                        }
+                    }
+                }
+
+                ClippingRectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    color: "transparent"
+                    radius: Styling.radius(0)
+
+                    Flickable {
+                        anchors.fill: parent
+                        contentWidth: width
+                        contentHeight: notificationList.contentHeight
+                        clip: true
+
+                        ListView {
+                            id: notificationList
+                            width: parent.width
+                            height: contentHeight
+                            spacing: 4
+                            model: Notifications.appNameList
+                            interactive: false
+                            cacheBuffer: 200
+                            reuseItems: true
+
+                            delegate: NotificationGroup {
+                                required property int index
+                                required property string modelData
+                                width: notificationList.width
+                                notificationGroup: Notifications.groupsByAppName[modelData]
+                                expanded: false
+                                popup: false
+                            }
                         }
                     }
                 }
