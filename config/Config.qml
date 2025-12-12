@@ -91,7 +91,11 @@ Singleton {
         path: root.configDir + "/theme.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.themeReady && !root.pauseAutoSave) {
@@ -453,7 +457,11 @@ Singleton {
         path: root.configDir + "/bar.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.barReady && !root.pauseAutoSave) {
@@ -504,7 +512,11 @@ Singleton {
         path: root.configDir + "/workspaces.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.workspacesReady && !root.pauseAutoSave) {
@@ -552,7 +564,11 @@ Singleton {
         path: root.configDir + "/overview.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.overviewReady && !root.pauseAutoSave) {
@@ -599,7 +615,11 @@ Singleton {
         path: root.configDir + "/notch.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.notchReady && !root.pauseAutoSave) {
@@ -643,7 +663,11 @@ Singleton {
         path: root.configDir + "/hyprland.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.hyprlandReady && !root.pauseAutoSave) {
@@ -726,7 +750,11 @@ Singleton {
         path: root.configDir + "/performance.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.performanceReady && !root.pauseAutoSave) {
@@ -772,7 +800,11 @@ Singleton {
         path: root.configDir + "/weather.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.weatherReady && !root.pauseAutoSave) {
@@ -817,7 +849,11 @@ Singleton {
         path: root.configDir + "/desktop.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.desktopReady && !root.pauseAutoSave) {
@@ -864,7 +900,11 @@ Singleton {
         path: root.configDir + "/lockscreen.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.lockscreenReady && !root.pauseAutoSave) {
@@ -908,7 +948,11 @@ Singleton {
         path: root.configDir + "/prefix.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.prefixReady && !root.pauseAutoSave) {
@@ -956,7 +1000,11 @@ Singleton {
         path: root.configDir + "/system.json"
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.systemReady && !root.pauseAutoSave) {
@@ -991,7 +1039,11 @@ Singleton {
         path: keybindsPath
         atomicWrites: true
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
         onPathChanged: reload()
         onAdapterUpdated: {
             if (root.keybindsInitialLoadComplete) {
