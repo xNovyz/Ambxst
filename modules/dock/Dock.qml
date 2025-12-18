@@ -302,8 +302,8 @@ Scope {
                             size: Math.max(dockContainer.cornerSize, 1)
                             corner: {
                                 if (root.isBottom) return RoundCorner.CornerEnum.BottomRight;
-                                if (root.isLeft) return RoundCorner.CornerEnum.BottomRight;  // Curves down-right
-                                if (root.isRight) return RoundCorner.CornerEnum.BottomLeft;  // Curves down-left
+                                if (root.isLeft) return RoundCorner.CornerEnum.BottomLeft;  // Curves down toward dock
+                                if (root.isRight) return RoundCorner.CornerEnum.BottomRight;  // Curves down toward dock
                                 return RoundCorner.CornerEnum.BottomRight;
                             }
                             color: "white"
@@ -322,8 +322,8 @@ Scope {
                             size: Math.max(dockContainer.cornerSize, 1)
                             corner: {
                                 if (root.isBottom) return RoundCorner.CornerEnum.BottomLeft;
-                                if (root.isLeft) return RoundCorner.CornerEnum.TopRight;  // Curves up-right
-                                if (root.isRight) return RoundCorner.CornerEnum.TopLeft;  // Curves up-left
+                                if (root.isLeft) return RoundCorner.CornerEnum.TopLeft;  // Curves up toward dock
+                                if (root.isRight) return RoundCorner.CornerEnum.TopRight;  // Curves up toward dock
                                 return RoundCorner.CornerEnum.BottomLeft;
                             }
                             color: "white"
