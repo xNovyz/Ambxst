@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 import Quickshell.Widgets
 import qs.modules.theme
 import qs.modules.components
@@ -200,13 +201,18 @@ Item {
                 spacing: 16
                 visible: Notifications.appNameList.length === 0
 
-                Text {
-                    text: Icons.bellZ
-                    textFormat: Text.RichText
-                    font.family: Icons.font
-                    font.pixelSize: 64
-                    color: Colors.surfaceBright
+                Image {
+                    source: Qt.resolvedUrl("../../../../assets/ambxst-logo.svg")
+                    sourceSize.width: 64
+                    sourceSize.height: 64
+                    fillMode: Image.PreserveAspectFit
                     anchors.horizontalCenter: parent.horizontalCenter
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        brightness: 1.0
+                        colorization: 1.0
+                        colorizationColor: Colors.surfaceBright
+                    }
                 }
             }
         }
