@@ -836,6 +836,8 @@ Rectangle {
                             wavy: false
                             icon: ""
                             iconPos: "start"
+                            stepSize: 0.1
+                            snapMode: "always"
                             onValueChanged: {
                                 const newZoom = 0.2 + (value * 2.8);  // Map 0-1 to 0.2-3.0
                                 root.chartZoom = newZoom;
