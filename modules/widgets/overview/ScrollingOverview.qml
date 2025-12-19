@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
@@ -176,12 +175,26 @@ Item {
     property int draggingFromWorkspace: -1
     property int draggingTargetWorkspace: -1
 
+    // Calculate which workspace is at a given Y position (relative to flickable content)
+    function getWorkspaceAtY(globalY) {
+        // Convert global Y to content Y (accounting for flickable position and margins)
+        const flickableGlobalY = workspaceFlickable.mapToItem(null, 0, 0).y;
+        const contentY = globalY - flickableGlobalY + workspaceFlickable.contentY;
+        
+        // Calculate workspace index
+        const wsIndex = Math.floor(contentY / workspaceRowHeight);
+        if (wsIndex >= 0 && wsIndex < totalWorkspaces) {
+            return wsIndex + 1;  // Workspace IDs are 1-based
+        }
+        return -1;
+    }
+
     // Size for the overview
-    implicitWidth: workspaceWidth + workspacePadding * 2 + 8
+    implicitWidth: workspaceWidth + workspacePadding * 2
     implicitHeight: Math.min(
-        (workspaceHeight + workspacePadding + workspaceSpacing) * visibleWorkspaces,
-        (workspaceHeight + workspacePadding + workspaceSpacing) * totalWorkspaces
-    ) + 8
+        (workspaceHeight + workspacePadding * 2 + workspaceSpacing) * visibleWorkspaces,
+        (workspaceHeight + workspacePadding * 2 + workspaceSpacing) * totalWorkspaces
+    )
 
     // Expose flickable for external scrollbar
     property alias flickable: workspaceFlickable
@@ -189,7 +202,7 @@ Item {
 
     // Calculate target scroll position to center active workspace
     readonly property int activeWorkspaceId: monitor?.activeWorkspace?.id || 1
-    readonly property real workspaceRowHeight: workspaceHeight + workspacePadding + workspaceSpacing
+    readonly property real workspaceRowHeight: workspaceHeight + workspaceSpacing
 
     // Scroll to center active workspace when it changes
     onActiveWorkspaceIdChanged: workspaceFlickable.scrollToActiveWorkspace()
@@ -198,7 +211,7 @@ Item {
     Flickable {
         id: workspaceFlickable
         anchors.fill: parent
-        anchors.margins: 4
+        anchors.margins: workspacePadding
         contentWidth: width
         contentHeight: workspaceColumn.implicitHeight
         clip: true
@@ -217,7 +230,7 @@ Item {
 
         function scrollToActiveWorkspace() {
             const targetY = (scrollingOverviewRoot.activeWorkspaceId - 1) * scrollingOverviewRoot.workspaceRowHeight;
-            const centeredY = targetY - (height - workspaceHeight - workspacePadding) / 2;
+            const centeredY = targetY - (height - workspaceHeight) / 2;
             contentY = Math.max(0, Math.min(centeredY, contentHeight - height));
         }
 
@@ -227,9 +240,10 @@ Item {
             width: parent.width
             height: workspaceColumn.implicitHeight
 
-            ColumnLayout {
+            Column {
                 id: workspaceColumn
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.right: parent.right
                 spacing: workspaceSpacing
 
                 Repeater {
@@ -256,14 +270,26 @@ Item {
                         checkWindowMatched: scrollingOverviewRoot.isWindowMatched
                         checkWindowSelected: scrollingOverviewRoot.isWindowSelected
 
-                        // Dragging
+                        // Dragging - use bidirectional binding
                         draggingFromWorkspace: scrollingOverviewRoot.draggingFromWorkspace
-                        onDraggingFromWorkspaceChanged: scrollingOverviewRoot.draggingFromWorkspace = draggingFromWorkspace
+                        onDraggingFromWorkspaceChanged: {
+                            if (draggingFromWorkspace !== scrollingOverviewRoot.draggingFromWorkspace) {
+                                scrollingOverviewRoot.draggingFromWorkspace = draggingFromWorkspace;
+                            }
+                        }
                         draggingTargetWorkspace: scrollingOverviewRoot.draggingTargetWorkspace
-                        onDraggingTargetWorkspaceChanged: scrollingOverviewRoot.draggingTargetWorkspace = draggingTargetWorkspace
+                        onDraggingTargetWorkspaceChanged: {
+                            if (draggingTargetWorkspace !== scrollingOverviewRoot.draggingTargetWorkspace) {
+                                scrollingOverviewRoot.draggingTargetWorkspace = draggingTargetWorkspace;
+                            }
+                        }
 
-                        Layout.preferredWidth: implicitWidth
-                        Layout.preferredHeight: implicitHeight
+                        // Provide drag overlay reference
+                        dragOverlay: dragOverlayItem
+                        overviewRoot: scrollingOverviewRoot
+
+                        width: scrollingOverviewRoot.workspaceWidth
+                        height: scrollingOverviewRoot.workspaceHeight
                     }
                 }
             }
@@ -274,9 +300,9 @@ Item {
                 readonly property int activeWorkspaceId: scrollingOverviewRoot.monitor?.activeWorkspace?.id || 1
                 
                 x: 0
-                y: (activeWorkspaceId - 1) * (workspaceHeight + workspacePadding + workspaceSpacing)
-                width: workspaceWidth + workspacePadding
-                height: workspaceHeight + workspacePadding
+                y: (activeWorkspaceId - 1) * (workspaceHeight + workspaceSpacing)
+                width: workspaceWidth
+                height: workspaceHeight
                 color: "transparent"
                 radius: Styling.radius(1)
                 border.width: 2
@@ -292,5 +318,12 @@ Item {
                 }
             }
         }
+    }
+
+    // Drag overlay - windows being dragged are reparented here to escape clipping
+    Item {
+        id: dragOverlayItem
+        anchors.fill: parent
+        z: 1000
     }
 }

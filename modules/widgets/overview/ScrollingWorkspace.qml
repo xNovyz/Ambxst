@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
@@ -32,6 +31,8 @@ Item {
     property string searchQuery: ""
     property int draggingFromWorkspace: -1
     property int draggingTargetWorkspace: -1
+    property Item dragOverlay: null  // Reference to overlay for dragging windows
+    property Item overviewRoot: null  // Reference to parent overview for coordinate calculations
 
     // Callbacks for search matching (set by parent)
     property var checkWindowMatched: function(addr) { return false; }
@@ -41,8 +42,8 @@ Item {
     // This is the SCALED monitor viewport width - the actual visible area
     readonly property real displayWidth: workspaceWidth
 
-    implicitWidth: displayWidth + workspacePadding
-    implicitHeight: workspaceHeight + workspacePadding
+    implicitWidth: displayWidth
+    implicitHeight: workspaceHeight
     
     // Monitor viewport width in real (unscaled) pixels
     // Note: workspaceWidth is already tripled in the overview, so we divide by 3 first
@@ -127,66 +128,75 @@ Item {
     }
 
     // Main workspace container with horizontal scroll
-    Rectangle {
+    Item {
         id: workspaceContainer
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: workspaceHeight + workspacePadding
-        color: "transparent"
-        radius: Styling.radius(1)
-        border.width: dropArea.containsDrag ? 2 : 0
-        border.color: dropArea.containsDrag ? Colors.outline : "transparent"
-        clip: true
+        anchors.fill: parent
 
-        // Wallpaper background
-        Image {
-            id: workspaceWallpaper
+        // Background layer (clipped)
+        Item {
+            id: backgroundLayer
             anchors.fill: parent
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            smooth: true
+            clip: true
 
-            property string lockscreenFramePath: {
-                if (!GlobalStates.wallpaperManager) return "";
-                return GlobalStates.wallpaperManager.getLockscreenFramePath(GlobalStates.wallpaperManager.currentWallpaper);
-            }
-            source: lockscreenFramePath ? "file://" + lockscreenFramePath : ""
+            // Wallpaper background
+            Image {
+                id: workspaceWallpaper
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                smooth: true
 
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskThresholdMin: 0.5
-                maskSpreadAtMin: 1.0
-                maskSource: ShaderEffectSource {
-                    sourceItem: Rectangle {
-                        width: workspaceWallpaper.width
-                        height: workspaceWallpaper.height
-                        radius: Styling.radius(1)
+                property string lockscreenFramePath: {
+                    if (!GlobalStates.wallpaperManager) return "";
+                    return GlobalStates.wallpaperManager.getLockscreenFramePath(GlobalStates.wallpaperManager.currentWallpaper);
+                }
+                source: lockscreenFramePath ? "file://" + lockscreenFramePath : ""
+
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    maskEnabled: true
+                    maskThresholdMin: 0.5
+                    maskSpreadAtMin: 1.0
+                    maskSource: ShaderEffectSource {
+                        sourceItem: Rectangle {
+                            width: workspaceWallpaper.width
+                            height: workspaceWallpaper.height
+                            radius: Styling.radius(1)
+                        }
                     }
                 }
             }
+
+            // Semi-transparent overlay
+            Rectangle {
+                anchors.fill: parent
+                radius: Styling.radius(1)
+                color: Colors.background
+                opacity: 0.3
+            }
         }
 
-        // Semi-transparent overlay
+        // Border indicator for drag target
         Rectangle {
             anchors.fill: parent
+            color: "transparent"
             radius: Styling.radius(1)
-            color: Colors.background
-            opacity: 0.3
+            border.width: root.draggingTargetWorkspace === root.workspaceId && root.draggingFromWorkspace !== root.workspaceId ? 2 : 0
+            border.color: Colors.outline
+            z: 100
         }
 
-        // Horizontal flickable for windows tape - drag with left click to navigate
+        // Horizontal flickable for windows tape - drag with right click to navigate
         Flickable {
             id: windowsFlickable
             anchors.fill: parent
             anchors.margins: 2
             contentWidth: Math.max(width, scaledContentWidth)
             contentHeight: height
-            clip: true
+            clip: false  // Allow windows to be dragged outside
             boundsBehavior: Flickable.StopAtBounds
             flickableDirection: Flickable.HorizontalFlick
-            interactive: contentWidth > width  // Only enable drag when content overflows
+            interactive: false  // Disable default interaction, we handle it manually
             
             // Auto-scroll to center the focused window (or center of windows)
             Component.onCompleted: scrollToCenter()
@@ -224,6 +234,34 @@ Item {
                 // Center horizontally when content is smaller than flickable
                 x: scaledContentWidth < windowsFlickable.width ? (windowsFlickable.width - scaledContentWidth) / 2 : 0
                 
+                // Right-click drag to pan horizontally
+                MouseArea {
+                    id: panArea
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    
+                    property real startX: 0
+                    property real startContentX: 0
+                    
+                    onPressed: mouse => {
+                        if (windowsFlickable.contentWidth <= windowsFlickable.width) return;
+                        startX = mouse.x;
+                        startContentX = windowsFlickable.contentX;
+                        cursorShape = Qt.ClosedHandCursor;
+                    }
+                    
+                    onPositionChanged: mouse => {
+                        if (!pressed || windowsFlickable.contentWidth <= windowsFlickable.width) return;
+                        const delta = startX - mouse.x;
+                        const newContentX = startContentX + delta;
+                        windowsFlickable.contentX = Math.max(0, Math.min(newContentX, windowsFlickable.contentWidth - windowsFlickable.width));
+                    }
+                    
+                    onReleased: {
+                        cursorShape = Qt.ArrowCursor;
+                    }
+                }
+                
                 // Double-click on empty space to switch workspace
                 TapHandler {
                     acceptedButtons: Qt.LeftButton
@@ -240,7 +278,7 @@ Item {
                     visible: root.hasContentOutsideViewport
                     x: root.contentOffsetX
                     y: 0
-                    width: root.scaledMonitorWidth - workspacePadding
+                    width: root.scaledMonitorWidth
                     height: parent.height
                     color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.08)
                     border.width: root.isActive ? 2 : 1
@@ -286,23 +324,27 @@ Item {
                         y: baseY
                         width: targetWidth
                         height: targetHeight
-                        z: dragArea.drag.active ? 1000 : 1
+                        z: dragging ? 1000 : 1
 
                         property bool hovered: false
-                        property bool pressed: false
+                        property bool dragging: false
                         property real initX: baseX
                         property real initY: baseY
+                        property Item originalParent: null
+                        property point pressPos: Qt.point(0, 0)
+                        readonly property real dragThreshold: 5
 
-                        Drag.active: dragArea.drag.active
+                        Drag.active: dragging
+                        Drag.source: windowDelegate
                         Drag.hotSpot.x: width / 2
                         Drag.hotSpot.y: height / 2
 
                         Behavior on x {
-                            enabled: Config.animDuration > 0 && !dragArea.drag.active
+                            enabled: Config.animDuration > 0 && !windowDelegate.dragging
                             NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
                         }
                         Behavior on y {
-                            enabled: Config.animDuration > 0 && !dragArea.drag.active
+                            enabled: Config.animDuration > 0 && !windowDelegate.dragging
                             NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
                         }
 
@@ -324,7 +366,7 @@ Item {
                             id: previewBackground
                             anchors.fill: parent
                             radius: windowDelegate.calculatedRadius
-                            color: windowDelegate.pressed ? Colors.surfaceBright : windowDelegate.hovered ? Colors.surface : Colors.background
+                            color: windowDelegate.dragging ? Colors.surfaceBright : windowDelegate.hovered ? Colors.surface : Colors.background
                             border.color: windowDelegate.isSelected ? Colors.tertiary : windowDelegate.isMatched ? Colors.primary : Colors.primary
                             border.width: windowDelegate.isSelected ? 3 : windowDelegate.isMatched ? 2 : (windowDelegate.hovered ? 2 : 0)
                             visible: !windowPreview.hasContent || !Config.performance.windowPreview
@@ -354,7 +396,7 @@ Item {
                             id: previewOverlay
                             anchors.fill: parent
                             radius: windowDelegate.calculatedRadius
-                            color: windowDelegate.pressed ? Qt.rgba(Colors.surfaceContainerHighest.r, Colors.surfaceContainerHighest.g, Colors.surfaceContainerHighest.b, 0.5)
+                            color: windowDelegate.dragging ? Qt.rgba(Colors.surfaceContainerHighest.r, Colors.surfaceContainerHighest.g, Colors.surfaceContainerHighest.b, 0.5)
                                  : windowDelegate.hovered ? Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.2)
                                  : "transparent"
                             border.color: windowDelegate.isSelected ? Colors.tertiary : windowDelegate.isMatched ? Colors.primary : Colors.primary
@@ -396,36 +438,90 @@ Item {
                             anchors.fill: parent
                             hoverEnabled: true
                             acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-                            drag.target: parent
+                            drag.target: windowDelegate.dragging ? windowDelegate : null
+                            drag.threshold: 0
 
                             onEntered: windowDelegate.hovered = true
                             onExited: windowDelegate.hovered = false
 
                             onPressed: mouse => {
-                                windowDelegate.pressed = true;
-                                windowDelegate.initX = windowDelegate.x;
-                                windowDelegate.initY = windowDelegate.y;
-                                root.draggingFromWorkspace = root.workspaceId;
+                                if (mouse.button === Qt.LeftButton) {
+                                    windowDelegate.pressPos = Qt.point(mouse.x, mouse.y);
+                                    windowDelegate.initX = windowDelegate.x;
+                                    windowDelegate.initY = windowDelegate.y;
+                                }
+                            }
+
+                            onPositionChanged: mouse => {
+                                if (!(mouse.buttons & Qt.LeftButton)) return;
+                                
+                                // Check if we should start dragging
+                                if (!windowDelegate.dragging) {
+                                    const dx = mouse.x - windowDelegate.pressPos.x;
+                                    const dy = mouse.y - windowDelegate.pressPos.y;
+                                    const distance = Math.sqrt(dx * dx + dy * dy);
+                                    
+                                    if (distance > windowDelegate.dragThreshold) {
+                                        // Start dragging
+                                        windowDelegate.dragging = true;
+                                        root.draggingFromWorkspace = root.workspaceId;
+                                        
+                                        // Reparent to drag overlay
+                                        if (root.dragOverlay) {
+                                            windowDelegate.originalParent = windowDelegate.parent;
+                                            const globalPos = windowDelegate.mapToItem(root.dragOverlay, 0, 0);
+                                            windowDelegate.parent = root.dragOverlay;
+                                            windowDelegate.x = globalPos.x;
+                                            windowDelegate.y = globalPos.y;
+                                        }
+                                    }
+                                } else {
+                                    // Update target workspace indicator while dragging
+                                    if (root.overviewRoot && root.overviewRoot.getWorkspaceAtY) {
+                                        const globalPos = dragArea.mapToItem(null, mouse.x, mouse.y);
+                                        const targetWs = root.overviewRoot.getWorkspaceAtY(globalPos.y);
+                                        if (targetWs !== -1 && targetWs !== root.workspaceId) {
+                                            root.draggingTargetWorkspace = targetWs;
+                                        } else {
+                                            root.draggingTargetWorkspace = -1;
+                                        }
+                                    }
+                                }
                             }
 
                             onReleased: mouse => {
-                                windowDelegate.pressed = false;
-                                const targetWs = root.draggingTargetWorkspace;
-                                
-                                if (targetWs !== -1 && targetWs !== root.workspaceId) {
-                                    Hyprland.dispatch(`movetoworkspacesilent ${targetWs}, address:${windowDelegate.windowData?.address}`);
+                                if (mouse.button === Qt.LeftButton) {
+                                    if (windowDelegate.dragging) {
+                                        windowDelegate.dragging = false;
+                                        
+                                        // Calculate target workspace from cursor position
+                                        let targetWs = -1;
+                                        if (root.overviewRoot && root.overviewRoot.getWorkspaceAtY) {
+                                            const globalPos = dragArea.mapToItem(null, mouse.x, mouse.y);
+                                            targetWs = root.overviewRoot.getWorkspaceAtY(globalPos.y);
+                                        }
+                                        
+                                        if (targetWs !== -1 && targetWs !== root.workspaceId) {
+                                            Hyprland.dispatch(`movetoworkspacesilent ${targetWs}, address:${windowDelegate.windowData?.address}`);
+                                        }
+                                        
+                                        // Restore original parent and position
+                                        if (windowDelegate.originalParent) {
+                                            windowDelegate.parent = windowDelegate.originalParent;
+                                            windowDelegate.originalParent = null;
+                                        }
+                                        windowDelegate.x = windowDelegate.initX;
+                                        windowDelegate.y = windowDelegate.initY;
+                                        
+                                        root.draggingFromWorkspace = -1;
+                                        root.draggingTargetWorkspace = -1;
+                                    }
                                 }
-                                
-                                // Reset position
-                                windowDelegate.x = windowDelegate.initX;
-                                windowDelegate.y = windowDelegate.initY;
-                                root.draggingFromWorkspace = -1;
-                                root.draggingTargetWorkspace = -1;
                             }
 
                             onClicked: mouse => {
                                 if (!windowDelegate.windowData) return;
-                                if (mouse.button === Qt.LeftButton) {
+                                if (mouse.button === Qt.LeftButton && !windowDelegate.dragging) {
                                     Hyprland.dispatch(`focuswindow address:${windowDelegate.windowData.address}`);
                                 } else if (mouse.button === Qt.MiddleButton) {
                                     Hyprland.dispatch(`closewindow address:${windowDelegate.windowData.address}`);
@@ -445,7 +541,7 @@ Item {
 
                         // Tooltip
                         Rectangle {
-                            visible: dragArea.containsMouse && !dragArea.drag.active && windowDelegate.windowData
+                            visible: dragArea.containsMouse && !windowDelegate.dragging && windowDelegate.windowData
                             anchors.bottom: parent.top
                             anchors.bottomMargin: 8
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -467,24 +563,6 @@ Item {
                             }
                         }
                     }
-                }
-            }
-        }
-
-        // Drop area for window dragging between workspaces
-        DropArea {
-            id: dropArea
-            anchors.fill: parent
-            
-            onEntered: drag => {
-                if (root.draggingFromWorkspace !== root.workspaceId) {
-                    root.draggingTargetWorkspace = root.workspaceId;
-                }
-            }
-            
-            onExited: {
-                if (root.draggingTargetWorkspace === root.workspaceId) {
-                    root.draggingTargetWorkspace = -1;
                 }
             }
         }
