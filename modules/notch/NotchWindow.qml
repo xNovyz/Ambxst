@@ -7,7 +7,6 @@ import Quickshell.Hyprland
 import qs.modules.globals
 import qs.modules.theme
 import qs.modules.widgets.defaultview
-import qs.modules.widgets.overview
 import qs.modules.widgets.dashboard
 import qs.modules.widgets.powermenu
 import qs.modules.services
@@ -47,7 +46,7 @@ PanelWindow {
     }
 
     // Notch state properties
-    readonly property bool screenNotchOpen: screenVisibilities ? (screenVisibilities.dashboard || screenVisibilities.overview || screenVisibilities.powermenu) : false
+    readonly property bool screenNotchOpen: screenVisibilities ? (screenVisibilities.dashboard || screenVisibilities.powermenu) : false
     readonly property bool hasActiveNotifications: Notifications.popupList.length > 0
 
     // Hover state with delay to prevent flickering
@@ -93,7 +92,7 @@ PanelWindow {
             let windowList = [notchPanel];
             // Agregar la barra de esta pantalla al focus grab cuando el notch esté abierto
             let barPanel = Visibilities.panels[screen.name];
-            if (barPanel && (screenVisibilities.dashboard || screenVisibilities.overview || screenVisibilities.powermenu)) {
+            if (barPanel && (screenVisibilities.dashboard || screenVisibilities.powermenu)) {
                 windowList.push(barPanel);
             }
             return windowList;
@@ -125,14 +124,6 @@ PanelWindow {
     Component {
         id: defaultViewComponent
         DefaultView {}
-    }
-
-    // Overview view component
-    Component {
-        id: overviewViewComponent
-        OverviewView {
-            currentScreen: notchPanel.screen
-        }
     }
 
     // Dashboard view component
@@ -224,7 +215,6 @@ PanelWindow {
 
                 defaultViewComponent: defaultViewComponent
                 dashboardViewComponent: dashboardViewComponent
-                overviewViewComponent: overviewViewComponent
                 powermenuViewComponent: powermenuViewComponent
                 notificationViewComponent: notificationViewComponent
                 visibilities: screenVisibilities
@@ -330,26 +320,13 @@ PanelWindow {
         }
     }
 
-    // Listen for dashboard, overview and powermenu state changes
+    // Listen for dashboard and powermenu state changes
     Connections {
         target: screenVisibilities
 
         function onDashboardChanged() {
             if (screenVisibilities.dashboard) {
                 notchContainer.stackView.push(dashboardViewComponent);
-                Qt.callLater(() => notchContainer.forceActiveFocus());
-            } else {
-                if (notchContainer.stackView.depth > 1) {
-                    notchContainer.stackView.replace(defaultViewComponent);
-                    notchContainer.isShowingDefault = true;
-                    notchContainer.isShowingNotifications = false;
-                }
-            }
-        }
-
-        function onOverviewChanged() {
-            if (screenVisibilities.overview) {
-                notchContainer.stackView.push(overviewViewComponent);
                 Qt.callLater(() => notchContainer.forceActiveFocus());
             } else {
                 if (notchContainer.stackView.depth > 1) {

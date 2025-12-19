@@ -12,6 +12,7 @@ import qs.modules.notifications
 import qs.modules.widgets.dashboard.wallpapers
 import qs.modules.widgets.settings
 import qs.modules.notch
+import qs.modules.widgets.overview
 import qs.modules.services
 import qs.modules.corners
 import qs.modules.components
@@ -90,6 +91,26 @@ ShellRoot {
             required property ShellScreen modelData
             sourceComponent: NotchWindow {
                 screen: notchLoader.modelData
+            }
+        }
+    }
+
+    // Overview popup window (separate from notch)
+    Variants {
+        model: {
+            const screens = Quickshell.screens;
+            const list = Config.bar.screenList;
+            if (!list || list.length === 0)
+                return screens;
+            return screens.filter(screen => list.includes(screen.name));
+        }
+
+        Loader {
+            id: overviewLoader
+            active: Config.overview?.enabled ?? true
+            required property ShellScreen modelData
+            sourceComponent: OverviewPopup {
+                screen: overviewLoader.modelData
             }
         }
     }
