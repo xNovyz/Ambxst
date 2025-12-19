@@ -168,7 +168,7 @@ Item {
         if (barPosition === "top" || barPosition === "bottom") {
             scaledHeight -= barReserved * scale;
         }
-        return Math.max(0, Math.round(scaledHeight));
+        return Math.max(0, Math.round(scaledHeight + workspacePadding * 2));
     }
 
     // Dragging state

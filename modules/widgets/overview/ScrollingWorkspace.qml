@@ -190,7 +190,7 @@ Item {
         Flickable {
             id: windowsFlickable
             anchors.fill: parent
-            anchors.margins: 2
+            anchors.margins: root.workspacePadding
             contentWidth: Math.max(width, scaledContentWidth)
             contentHeight: height
             clip: false  // Allow windows to be dragged outside
@@ -271,23 +271,6 @@ Item {
                     }
                 }
 
-                // Viewport indicator (shows the actual visible monitor area)
-                // Only visible when there are windows outside the monitor viewport
-                Rectangle {
-                    id: viewportIndicator
-                    visible: root.hasContentOutsideViewport
-                    x: root.contentOffsetX
-                    y: 0
-                    width: root.scaledMonitorWidth
-                    height: parent.height
-                    color: Qt.rgba(Colors.primary.r, Colors.primary.g, Colors.primary.b, 0.08)
-                    border.width: root.isActive ? 2 : 1
-                    border.color: root.isActive ? Colors.primary : Colors.outline
-                    opacity: root.isActive ? 0.6 : 0.3
-                    radius: Styling.radius(0)
-                    z: 0
-                }
-
                 Repeater {
                     model: root.workspaceWindows
 
@@ -351,6 +334,10 @@ Item {
                         ClippingRectangle {
                             anchors.fill: parent
                             radius: windowDelegate.calculatedRadius
+                            antialiasing: true
+                            color: "transparent"
+                            border.color: Colors.background
+                            border.width: windowPreview.hasContent && Config.performance.windowPreview ? 1 : 0
 
                             ScreencopyView {
                                 id: windowPreview
@@ -369,7 +356,7 @@ Item {
                             color: windowDelegate.dragging ? Colors.surfaceBright : windowDelegate.hovered ? Colors.surface : Colors.background
                             border.color: windowDelegate.isSelected ? Colors.tertiary : windowDelegate.isMatched ? Colors.primary : Colors.primary
                             border.width: windowDelegate.isSelected ? 3 : windowDelegate.isMatched ? 2 : (windowDelegate.hovered ? 2 : 0)
-                            visible: !windowPreview.hasContent || !Config.performance.windowPreview
+                            visible: !Config.performance.windowPreview
 
                             Behavior on color {
                                 enabled: Config.animDuration > 0
@@ -387,11 +374,11 @@ Item {
                             source: Quickshell.iconPath(windowDelegate.iconPath, "image-missing")
                             sourceSize: Qt.size(iconSize, iconSize)
                             asynchronous: true
-                            visible: !windowPreview.hasContent || !Config.performance.windowPreview
+                            visible: !Config.performance.windowPreview
                             z: 10
                         }
 
-                        // Overlay when preview is available
+                        // Overlay when preview is available (only show on interaction)
                         Rectangle {
                             id: previewOverlay
                             anchors.fill: parent
@@ -401,7 +388,7 @@ Item {
                                  : "transparent"
                             border.color: windowDelegate.isSelected ? Colors.tertiary : windowDelegate.isMatched ? Colors.primary : Colors.primary
                             border.width: windowDelegate.isSelected ? 3 : windowDelegate.isMatched ? 2 : (windowDelegate.hovered ? 2 : 0)
-                            visible: windowPreview.hasContent && Config.performance.windowPreview
+                            visible: Config.performance.windowPreview && (windowDelegate.hovered || windowDelegate.dragging || windowDelegate.isMatched || windowDelegate.isSelected)
                             z: 5
                         }
 
