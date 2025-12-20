@@ -139,6 +139,23 @@ Singleton {
                 property real opacity: 1.0
             }
 
+            property JsonObject srPopup: JsonObject {
+                property list<var> gradient: [["background", 0.0]]
+                property string gradientType: "linear"
+                property int gradientAngle: 0
+                property real gradientCenterX: 0.5
+                property real gradientCenterY: 0.5
+                property real halftoneDotMin: 0.0
+                property real halftoneDotMax: 2.0
+                property real halftoneStart: 0.0
+                property real halftoneEnd: 1.0
+                property string halftoneDotColor: "surface"
+                property string halftoneBackgroundColor: "background"
+                property list<var> border: ["surfaceBright", 2]
+                property string itemColor: "overBackground"
+                property real opacity: 1.0
+            }
+
             property JsonObject srInternalBg: JsonObject {
                 property list<var> gradient: [["background", 0.0]]
                 property string gradientType: "linear"

@@ -44,80 +44,84 @@ Item {
         colorPickerCurrentColor = color;
     }
 
-    readonly property var allVariants: [
-        {
-            id: "bg",
-            label: "Background"
-        },
-        {
-            id: "internalbg",
-            label: "Internal BG"
-        },
-        {
-            id: "barbg",
-            label: "Bar BG"
-        },
-        {
-            id: "pane",
-            label: "Pane"
-        },
-        {
-            id: "common",
-            label: "Common"
-        },
-        {
-            id: "focus",
-            label: "Focus"
-        },
-        {
-            id: "primary",
-            label: "Primary"
-        },
-        {
-            id: "primaryfocus",
-            label: "Primary Focus"
-        },
-        {
-            id: "overprimary",
-            label: "Over Primary"
-        },
-        {
-            id: "secondary",
-            label: "Secondary"
-        },
-        {
-            id: "secondaryfocus",
-            label: "Secondary Focus"
-        },
-        {
-            id: "oversecondary",
-            label: "Over Secondary"
-        },
-        {
-            id: "tertiary",
-            label: "Tertiary"
-        },
-        {
-            id: "tertiaryfocus",
-            label: "Tertiary Focus"
-        },
-        {
-            id: "overtertiary",
-            label: "Over Tertiary"
-        },
-        {
-            id: "error",
-            label: "Error"
-        },
-        {
-            id: "errorfocus",
-            label: "Error Focus"
-        },
-        {
-            id: "overerror",
-            label: "Over Error"
+    // Mapping from sr property names to display labels
+    readonly property var variantLabels: ({
+        "srBg": "Background",
+        "srPopup": "Popup",
+        "srInternalBg": "Internal BG",
+        "srBarBg": "Bar BG",
+        "srPane": "Pane",
+        "srCommon": "Common",
+        "srFocus": "Focus",
+        "srPrimary": "Primary",
+        "srPrimaryFocus": "Primary Focus",
+        "srOverPrimary": "Over Primary",
+        "srSecondary": "Secondary",
+        "srSecondaryFocus": "Secondary Focus",
+        "srOverSecondary": "Over Secondary",
+        "srTertiary": "Tertiary",
+        "srTertiaryFocus": "Tertiary Focus",
+        "srOverTertiary": "Over Tertiary",
+        "srError": "Error",
+        "srErrorFocus": "Error Focus",
+        "srOverError": "Over Error"
+    })
+
+    // Convert sr property name to variant id (srBg -> bg, srPrimaryFocus -> primaryfocus)
+    function srNameToId(srName: string): string {
+        return srName.substring(2).toLowerCase();
+    }
+
+    // Convert sr property name to display label
+    function srNameToLabel(srName: string): string {
+        return variantLabels[srName] || srName.substring(2);
+    }
+
+    // Dynamically generate allVariants from Config.theme properties starting with "sr"
+    readonly property var allVariants: {
+        let variants = [];
+        let theme = Config.theme;
+        
+        // Get all property names from theme that start with "sr"
+        for (let prop in theme) {
+            if (prop.startsWith("sr") && theme[prop] && typeof theme[prop] === "object") {
+                variants.push({
+                    id: srNameToId(prop),
+                    label: srNameToLabel(prop)
+                });
+            }
         }
-    ]
+        
+        // Sort by the order defined in variantLabels (to maintain consistent ordering)
+        let labelOrder = Object.keys(variantLabels);
+        variants.sort((a, b) => {
+            let aIndex = labelOrder.indexOf("sr" + a.id.charAt(0).toUpperCase() + a.id.slice(1));
+            let bIndex = labelOrder.indexOf("sr" + b.id.charAt(0).toUpperCase() + b.id.slice(1));
+            // Handle camelCase conversion for multi-word variants
+            if (aIndex === -1) {
+                for (let i = 0; i < labelOrder.length; i++) {
+                    if (srNameToId(labelOrder[i]) === a.id) {
+                        aIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (bIndex === -1) {
+                for (let i = 0; i < labelOrder.length; i++) {
+                    if (srNameToId(labelOrder[i]) === b.id) {
+                        bIndex = i;
+                        break;
+                    }
+                }
+            }
+            // Put unknown variants at the end
+            if (aIndex === -1) aIndex = 999;
+            if (bIndex === -1) bIndex = 999;
+            return aIndex - bIndex;
+        });
+        
+        return variants;
+    }
 
     function getVariantLabel(variantId: string): string {
         for (var i = 0; i < allVariants.length; i++) {
