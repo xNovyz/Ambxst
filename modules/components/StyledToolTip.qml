@@ -16,10 +16,8 @@ ToolTip {
     timeout: 5000
     visible: show && tooltipText.length > 0
 
-    background: Rectangle {
-        color: Colors.background
-        border.width: 2
-        border.color: Colors.surfaceBright
+    background: StyledRect {
+        variant: "popup"
         radius: Styling.radius(-8)
     }
     contentItem: Text {

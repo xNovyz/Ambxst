@@ -35,7 +35,7 @@ PopupWindow {
     property bool isOpen: false
 
     // Signal emitted when popup is closed externally (click outside)
-    signal closedExternally()
+    signal closedExternally
 
     // Animation state
     property real popupOpacity: 0
@@ -60,12 +60,8 @@ PopupWindow {
 
     // Calculate popup anchor point based on bar position
     anchor.item: anchorItem
-    anchor.rect.x: barVertical 
-        ? (barAtLeft ? anchorItem.width + visualMargin - shadowMargin : -totalWidth + shadowMargin - visualMargin)
-        : (anchorItem.width - totalWidth) / 2
-    anchor.rect.y: barVertical 
-        ? (anchorItem.height - totalHeight) / 2
-        : (barAtTop ? anchorItem.height + visualMargin - shadowMargin : -totalHeight + shadowMargin - visualMargin)
+    anchor.rect.x: barVertical ? (barAtLeft ? anchorItem.width + visualMargin - shadowMargin : -totalWidth + shadowMargin - visualMargin) : (anchorItem.width - totalWidth) / 2
+    anchor.rect.y: barVertical ? (anchorItem.height - totalHeight) / 2 : (barAtTop ? anchorItem.height + visualMargin - shadowMargin : -totalHeight + shadowMargin - visualMargin)
     anchor.rect.width: 0
     anchor.rect.height: 0
 
@@ -112,18 +108,23 @@ PopupWindow {
         opacity: root.popupOpacity
         scale: root.popupScale
         transformOrigin: {
-            if (root.barAtTop) return Item.Top;
-            if (root.barAtBottom) return Item.Bottom;
-            if (root.barAtLeft) return Item.Left;
-            if (root.barAtRight) return Item.Right;
+            if (root.barAtTop)
+                return Item.Top;
+            if (root.barAtBottom)
+                return Item.Bottom;
+            if (root.barAtLeft)
+                return Item.Left;
+            if (root.barAtRight)
+                return Item.Right;
             return Item.Center;
         }
 
         StyledRect {
             id: background
             anchors.fill: parent
-            variant: "bg"
+            variant: "popup"
             enableShadow: true
+            radius: Styling.radius(4)
 
             Item {
                 id: contentContainer
@@ -134,7 +135,8 @@ PopupWindow {
     }
 
     function open() {
-        if (visible) return;
+        if (visible)
+            return;
 
         // Set logical state immediately
         isOpen = true;
@@ -154,7 +156,8 @@ PopupWindow {
     }
 
     function close() {
-        if (!visible) return;
+        if (!visible)
+            return;
 
         // Set logical state immediately
         isOpen = false;
