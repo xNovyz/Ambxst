@@ -35,7 +35,7 @@ Popup {
         }
     }
 
-    property int selectedIndex: 0
+    property int selectedIndex: -1  // Start with no selection like App Launcher
     property var filteredModels: []
     
     function updateFilteredModels() {
@@ -60,8 +60,9 @@ Popup {
             selectedIndex = Math.max(0, filteredModels.length - 1);
         }
         
-        // Sync ListView current index
-        modelList.currentIndex = selectedIndex;
+        // Reset selection to -1 (no selection) when filter changes
+        selectedIndex = -1;
+        modelList.currentIndex = -1;
     }
 
     background: StyledRect {
@@ -86,13 +87,15 @@ Popup {
                 
                 onSearchTextChanged: text => {
                     root.updateFilteredModels();
-                    root.selectedIndex = 0;
-                    modelList.currentIndex = 0;
                 }
                 
                 onDownPressed: {
-                    if (root.selectedIndex < root.filteredModels.length - 1) {
-                        root.selectedIndex++;
+                    if (root.filteredModels.length > 0) {
+                        if (root.selectedIndex < root.filteredModels.length - 1) {
+                            root.selectedIndex++;
+                        } else if (root.selectedIndex === -1) {
+                            root.selectedIndex = 0;
+                        }
                         modelList.currentIndex = root.selectedIndex;
                     }
                 }
@@ -100,6 +103,9 @@ Popup {
                 onUpPressed: {
                     if (root.selectedIndex > 0) {
                         root.selectedIndex--;
+                        modelList.currentIndex = root.selectedIndex;
+                    } else if (root.selectedIndex === -1 && root.filteredModels.length > 0) {
+                        root.selectedIndex = root.filteredModels.length - 1;
                         modelList.currentIndex = root.selectedIndex;
                     }
                 }
@@ -254,8 +260,9 @@ Popup {
                     Item {
                         Layout.preferredWidth: 24
                         Layout.preferredHeight: 24
+                        Layout.alignment: Qt.AlignVCenter
                         
-                       Text {
+                        Text {
                             anchors.centerIn: parent
                             text: {
                                 switch(modelData.icon) {
@@ -280,6 +287,7 @@ Popup {
                     
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: 2
                         
                         Text {
@@ -318,6 +326,7 @@ Popup {
                         text: Icons.accept
                         font.family: Icons.font
                         font.pixelSize: 16
+                        Layout.alignment: Qt.AlignVCenter
                         // On primary highlight, color should be readable. srPrimary itemColor usually contrasts well.
                         color: delegateBtn.isSelected ? Config.resolveColor(Config.theme.srPrimary.itemColor) : Colors.primary
                         visible: delegateBtn.isActiveModel
@@ -342,6 +351,7 @@ Popup {
                 // Mouse hover updates selection
                 MouseArea {
                     anchors.fill: parent
+                    hoverEnabled: true
                     onEntered: {
                         root.selectedIndex = index;
                         modelList.currentIndex = index;
