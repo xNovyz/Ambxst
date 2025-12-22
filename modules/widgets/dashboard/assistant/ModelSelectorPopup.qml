@@ -176,21 +176,13 @@ Popup {
                         }
                         
                         // Spinner
-                        Rectangle {
+                        Text {
                             anchors.centerIn: parent
-                            width: 20; height: 20
-                            radius: 10
-                            color: "transparent"
-                            border.width: 2
-                            border.color: Colors.primary
+                            text: Icons.circleNotch
+                            font.family: Icons.font
+                            font.pixelSize: 20
+                            color: Colors.primary
                             visible: Ai.fetchingModels
-                            
-                            Rectangle {
-                                width: 8; height: 8
-                                radius: 4
-                                color: Colors.surface
-                                x: -2; y: -2
-                            }
                             
                             RotationAnimation on rotation {
                                 loops: Animation.Infinite
@@ -231,7 +223,7 @@ Popup {
                 }
                 
                 background: StyledRect {
-                    variant: parent.confirming ? "primary" : (parent.hovered || parent.activeFocus ? "focus" : "transparent")
+                    variant: parent.confirming ? "primary" : (parent.hovered || parent.activeFocus ? "focus" : "pane")
                     radius: Styling.radius(4)
                     
                     Behavior on color {
@@ -252,11 +244,9 @@ Popup {
                 Keys.onReturnPressed: clicked()
                 Keys.onEnterPressed: clicked()
                 Keys.onEscapePressed: {
-                    if (confirming) {
-                        confirming = false;
-                    } else {
-                        searchInput.forceActiveFocus();
-                    }
+                    event.accepted = true;
+                    // Focus back to search (losing focus will auto-collapse confirming state)
+                    searchInput.focusInput();
                 }
             }
         }
