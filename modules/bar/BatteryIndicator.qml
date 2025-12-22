@@ -200,10 +200,9 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 visible: Battery.available
-                variant: "pane"
+                variant: "common"
                 enableShadow: false
 
-                Layout.margins: 4
                 radius: Styling.radius(0)
 
                 RowLayout {
