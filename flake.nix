@@ -38,5 +38,21 @@
           Ambxst = Ambxst;
         }
       );
+
+      devShells = ambxstLib.forAllSystems (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+          Ambxst = self.packages.${system}.default;
+        in {
+          default = pkgs.mkShell {
+            packages = [ Ambxst ];
+            shellHook = ''
+              export QML2_IMPORT_PATH="${Ambxst}/lib/qt-6/qml:$QML2_IMPORT_PATH"
+              export QML_IMPORT_PATH="$QML2_IMPORT_PATH"
+              echo "Ambxst dev environment loaded."
+            '';
+          };
+        }
+      );
     };
 }

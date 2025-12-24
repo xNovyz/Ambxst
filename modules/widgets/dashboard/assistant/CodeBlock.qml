@@ -6,6 +6,7 @@ import Quickshell.Io
 import qs.modules.theme
 import qs.config
 import qs.modules.components
+import org.kde.syntaxhighlighting
 
 ColumnLayout {
     id: root
@@ -13,6 +14,8 @@ ColumnLayout {
     property string language: "txt"
     
     spacing: 0
+
+    // Repository { id: highlightRepo }
     
     // Header
     StyledRect {
@@ -107,6 +110,14 @@ ColumnLayout {
             readOnly: true
             selectByMouse: true
             wrapMode: TextEdit.Wrap
+            textFormat: TextEdit.PlainText
+
+            SyntaxHighlighter {
+                textEdit: codeText
+                repository: Repository
+                definition: Repository.definitionForName(root.language)
+                theme: Repository.theme("Breeze Dark")
+            }
         }
     }
 }
