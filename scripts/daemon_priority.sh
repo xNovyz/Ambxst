@@ -8,20 +8,6 @@ for daemon in dunst mako swaync; do
   fi
 done
 
-# hypridle
-if pgrep -x "hypridle" >/dev/null; then
-  echo "Stopping existing hypridle instances..."
-  pkill -x "hypridle"
-  sleep 0.5
-fi
-
-if command -v hypridle >/dev/null; then
-  echo "Starting hypridle from Ambxst environment..."
-  nohup hypridle >/dev/null 2>&1 &
-else
-  echo "Warning: hypridle not found in PATH"
-fi
-
 # wl-clip-persist
 if pgrep -x "wl-clip-persist" >/dev/null; then
   echo "Stopping existing wl-clip-persist instances..."
@@ -45,17 +31,17 @@ fi
 
 if command -v litellm >/dev/null; then
   echo "Starting litellm..."
-  
+
   # Resolve config path relative to script location
-  SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+  SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
   REPO_ROOT=$(dirname "$SCRIPT_DIR")
   CONFIG_PATH="$REPO_ROOT/modules/services/ai/litellm_config.yaml"
-  
+
   if [ -f "$CONFIG_PATH" ]; then
-      nohup litellm --config "$CONFIG_PATH" --port 4000 >/tmp/litellm.log 2>&1 &
-      echo "LiteLLM started on port 4000"
+    nohup litellm --config "$CONFIG_PATH" --port 4000 >/tmp/litellm.log 2>&1 &
+    echo "LiteLLM started on port 4000"
   else
-      echo "Warning: litellm_config.yaml not found at $CONFIG_PATH"
+    echo "Warning: litellm_config.yaml not found at $CONFIG_PATH"
   fi
 else
   echo "Warning: litellm not found in PATH"
