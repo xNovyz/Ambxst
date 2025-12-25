@@ -19,6 +19,23 @@ Item {
     property real length: player?.length ?? 1.0
     property bool hasArtwork: (player?.trackArtUrl ?? "") !== ""
 
+    function getPlayerIcon(player) {
+        if (!player)
+            return Icons.player;
+        const dbusName = (player.dbusName || "").toLowerCase();
+        const desktopEntry = (player.desktopEntry || "").toLowerCase();
+        const identity = (player.identity || "").toLowerCase();
+        if (dbusName.includes("spotify") || desktopEntry.includes("spotify") || identity.includes("spotify"))
+            return Icons.spotify;
+        if (dbusName.includes("chromium") || dbusName.includes("chrome") || desktopEntry.includes("chromium") || desktopEntry.includes("chrome"))
+            return Icons.chromium;
+        if (dbusName.includes("firefox") || desktopEntry.includes("firefox"))
+            return Icons.firefox;
+        if (dbusName.includes("telegram") || desktopEntry.includes("telegram") || identity.includes("telegram"))
+            return Icons.telegram;
+        return Icons.player;
+    }
+
     Timer {
         running: compactPlayer.isPlaying
         interval: 1000
@@ -421,22 +438,7 @@ Item {
 
             Text {
                 id: playerIcon
-                text: {
-                    if (!compactPlayer.player)
-                        return Icons.player;
-                    const dbusName = (compactPlayer.player.dbusName || "").toLowerCase();
-                    const desktopEntry = (compactPlayer.player.desktopEntry || "").toLowerCase();
-                    const identity = (compactPlayer.player.identity || "").toLowerCase();
-                    if (dbusName.includes("spotify") || desktopEntry.includes("spotify") || identity.includes("spotify"))
-                        return Icons.spotify;
-                    if (dbusName.includes("chromium") || dbusName.includes("chrome") || desktopEntry.includes("chromium") || desktopEntry.includes("chrome"))
-                        return Icons.chromium;
-                    if (dbusName.includes("firefox") || desktopEntry.includes("firefox"))
-                        return Icons.firefox;
-                    if (dbusName.includes("telegram") || desktopEntry.includes("telegram") || identity.includes("telegram"))
-                        return Icons.telegram;
-                    return Icons.player;
-                }
+                text: compactPlayer.getPlayerIcon(compactPlayer.player)
                 textFormat: Text.RichText
                 color: playerIconHover.hovered ? (hasArtwork ? PlayerColors.primary : Colors.primary) : (hasArtwork ? PlayerColors.overBackground : Colors.overBackground)
                 font.pixelSize: 20
@@ -470,73 +472,78 @@ Item {
                     id: playerIconHover
                 }
 
-                function getPlayerIcon(player) {
-                    if (!player)
-                        return Icons.player;
-                    const dbusName = (player.dbusName || "").toLowerCase();
-                    const desktopEntry = (player.desktopEntry || "").toLowerCase();
-                    const identity = (player.identity || "").toLowerCase();
-                    if (dbusName.includes("spotify") || desktopEntry.includes("spotify") || identity.includes("spotify"))
-                        return Icons.spotify;
-                    if (dbusName.includes("chromium") || dbusName.includes("chrome") || desktopEntry.includes("chromium") || desktopEntry.includes("chrome"))
-                        return Icons.chromium;
-                    if (dbusName.includes("firefox") || desktopEntry.includes("firefox"))
-                        return Icons.firefox;
-                    if (dbusName.includes("telegram") || desktopEntry.includes("telegram") || identity.includes("telegram"))
-                        return Icons.telegram;
-                    return Icons.player;
-                }
-
-                function buildMenuItems() {
-                    const players = MprisController.filteredPlayers;
-                    const menuItems = [];
-                    for (let i = 0; i < players.length; i++) {
-                        const player = players[i];
-                        menuItems.push({
-                            text: player.trackTitle || player.identity || "Unknown Player",
-                            icon: getPlayerIcon(player),
-                            highlightColor: hasArtwork ? PlayerColors.primary : Colors.primary,
-                            textColor: hasArtwork ? PlayerColors.overPrimary : Colors.overPrimary,
-                            onTriggered: () => {
-                                MprisController.setActivePlayer(player);
-                            }
-                        });
-                    }
-                    return menuItems;
-                }
-
-                Timer {
-                    id: pressAndHoldTimer
-                    interval: 1000
-                    repeat: false
-                    onTriggered: {
-                        const items = playerIcon.buildMenuItems();
-                        if (items.length > 0) {
-                            Visibilities.contextMenu.openCustomMenu(items, 200, 36, "player");
-                        }
-                    }
-                }
-
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    onPressed: mouse => {
-                        if (mouse.button === Qt.LeftButton) {
-                            pressAndHoldTimer.start();
-                        }
-                    }
-                    onReleased: {
-                        pressAndHoldTimer.stop();
-                    }
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton) {
                             MprisController.cyclePlayer(1);
                         } else if (mouse.button === Qt.RightButton) {
-                            const items = playerIcon.buildMenuItems();
-                            if (items.length > 0) {
-                                Visibilities.contextMenu.openCustomMenu(items, 200, 36, "player");
-                            }
+                            playerPopup.toggle();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    BarPopup {
+        id: playerPopup
+        anchorItem: playerIcon
+        bar: ({ position: Config.bar?.position ?? "top" })
+
+        contentWidth: 250
+        contentHeight: playersColumn.implicitHeight + playerPopup.popupPadding * 2
+
+        ColumnLayout {
+            id: playersColumn
+            anchors.fill: parent
+            spacing: 4
+
+            Repeater {
+                model: MprisController.filteredPlayers
+                delegate: StyledRect {
+                    id: playerItem
+                    required property var modelData
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 36
+                    variant: (compactPlayer.player === modelData) ? "primary" : (hoverHandler.hovered ? "focus" : "common")
+                    enableShadow: false
+                    radius: Styling.radius(4)
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 8
+                        spacing: 8
+
+                        Text {
+                            text: compactPlayer.getPlayerIcon(playerItem.modelData)
+                            font.family: Icons.font
+                            font.pixelSize: 16
+                            color: playerItem.itemColor
+                        }
+
+                        Text {
+                            text: playerItem.modelData.trackTitle || playerItem.modelData.identity || "Unknown Player"
+                            font.family: Styling.defaultFont
+                            font.pixelSize: Styling.fontSize(0)
+                            color: playerItem.itemColor
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    HoverHandler {
+                        id: hoverHandler
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            MprisController.setActivePlayer(playerItem.modelData);
                         }
                     }
                 }
