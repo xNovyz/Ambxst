@@ -44,7 +44,7 @@ PanelWindow {
         screenshotPopup.currentMode = "region"
         
         screenshotPopup.state = "loading"
-        screenshotService.freezeScreen()
+        Screenshot.freezeScreen()
     }
 
     function close() {
@@ -53,12 +53,12 @@ PanelWindow {
     
     function executeCapture() {
         if (screenshotPopup.currentMode === "screen") {
-            screenshotService.processFullscreen()
+            Screenshot.processFullscreen()
             screenshotPopup.close()
         } else if (screenshotPopup.currentMode === "region") {
             // Check if rect exists
             if (selectionRect.width > 0) {
-                screenshotService.processRegion(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height)
+                Screenshot.processRegion(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height)
                 screenshotPopup.close()
             }
         } else if (screenshotPopup.currentMode === "window") {
@@ -66,10 +66,10 @@ PanelWindow {
         }
     }
 
-    // Service
-    Screenshot {
-        id: screenshotService
-        onScreenshotCaptured: path => {
+    // Connect to global Screenshot singleton signals
+    Connections {
+        target: Screenshot
+        function onScreenshotCaptured(path) {
             previewImage.source = ""
             previewImage.source = "file://" + path
             screenshotPopup.state = "active"
@@ -77,15 +77,15 @@ PanelWindow {
             selectionRect.width = 0
             selectionRect.height = 0
             // Fetch windows if we are in window mode, or pre-fetch
-            screenshotService.fetchWindows()
+            Screenshot.fetchWindows()
             
             // Force focus on the overlay window content
             modeGrid.forceActiveFocus()
         }
-        onWindowListReady: windows => {
+        function onWindowListReady(windows) {
             screenshotPopup.activeWindows = windows
         }
-        onErrorOccurred: msg => {
+        function onErrorOccurred(msg) {
             console.warn("Screenshot Error:", msg)
             screenshotPopup.close()
         }
@@ -166,7 +166,7 @@ PanelWindow {
                     
                     TapHandler {
                         onTapped: {
-                            screenshotService.processRegion(parent.x, parent.y, parent.width, parent.height)
+                            Screenshot.processRegion(parent.x, parent.y, parent.width, parent.height)
                             screenshotPopup.close()
                         }
                     }
@@ -201,7 +201,7 @@ PanelWindow {
 
             onClicked: {
                 if (screenshotPopup.currentMode === "screen") {
-                    screenshotService.processFullscreen()
+                    Screenshot.processFullscreen()
                     screenshotPopup.close()
                 }
             }
@@ -227,7 +227,7 @@ PanelWindow {
                 // Auto capture on release? Or wait for confirm? 
                 // Usually region drag ends in capture.
                 if (selectionRect.width > 5 && selectionRect.height > 5) {
-                    screenshotService.processRegion(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height)
+                    Screenshot.processRegion(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height)
                     screenshotPopup.close()
                 }
             }

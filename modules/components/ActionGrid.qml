@@ -234,13 +234,13 @@ FocusScope {
 
                         Process {
                             id: commandProcess
-                            command: ["bash", "-c", modelData.command || ""]
+                            command: ["bash", "-c", delegateWrapper.actionModel.command || ""]
                             running: false
                         }
 
                         function triggerAction() {
-                            root.actionTriggered(modelData);
-                            if (modelData.command) {
+                            root.actionTriggered(delegateWrapper.actionModel);
+                            if (delegateWrapper.actionModel.command) {
                                 commandProcess.running = true;
                             }
                         }

@@ -12,11 +12,14 @@ ActionGrid {
 
     signal itemSelected
 
+    property bool recordAudioOutput: false
+    property bool recordAudioInput: false
+
     QtObject {
         id: recordAction
         property string icon: ScreenRecorder.isRecording ? Icons.stop : Icons.recordScreen
         property string text: ScreenRecorder.isRecording ? ScreenRecorder.duration : ""
-        property string tooltip: "Record Screen"
+        property string tooltip: ScreenRecorder.isRecording ? "Stop Recording" : "Start Recording"
         property string command: ""
         property string variant: ScreenRecorder.isRecording ? "error" : "primary"
         property string type: "button"
@@ -42,6 +45,18 @@ ActionGrid {
             type: "separator"
         },
         recordAction,
+        {
+            icon: root.recordAudioOutput ? Icons.speakerHigh : Icons.speakerSlash,
+            tooltip: "Toggle Audio Output",
+            variant: root.recordAudioOutput ? "primary" : "focus",
+            type: "toggle"
+        },
+        {
+            icon: root.recordAudioInput ? Icons.mic : Icons.micSlash,
+            tooltip: "Toggle Microphone",
+            variant: root.recordAudioInput ? "primary" : "focus",
+            type: "toggle"
+        },
         {
             icon: Icons.recordings,
             tooltip: "Open Recordings",
@@ -89,17 +104,31 @@ ActionGrid {
 
         if (action.tooltip === "Screenshot") {
             GlobalStates.screenshotToolVisible = true;
-        } else if (action.tooltip === "Record Screen") {
-            if (ScreenRecorder.isRecording) {
-                ScreenRecorder.toggleRecording(); // Stops it
-            } else {
-                GlobalStates.screenRecordToolVisible = true;
-            }
+            root.itemSelected();
+        } else if (action.tooltip === "Start Recording") {
+            ScreenRecorder.startRecording(root.recordAudioOutput, root.recordAudioInput);
+            root.itemSelected();
+        } else if (action.tooltip === "Stop Recording") {
+            ScreenRecorder.toggleRecording();
+            root.itemSelected();
+        } else if (action.tooltip === "Toggle Audio Output") {
+            root.recordAudioOutput = !root.recordAudioOutput;
+        } else if (action.tooltip === "Toggle Microphone") {
+            root.recordAudioInput = !root.recordAudioInput;
+        } else if (action.tooltip === "Open Screenshots") {
+            // Logic to open screenshots folder if implemented
+            Screenshot.openScreenshotsFolder();
+            root.itemSelected();
+        } else if (action.tooltip === "Open Recordings") {
+            // Logic to open recordings folder if implemented
+             ScreenRecorder.openRecordingsFolder();
+             root.itemSelected();
         } else if (action.tooltip === "Color Picker") {
             var scriptPath = Qt.resolvedUrl("../../../scripts/colorpicker.py").toString().replace("file://", "");
             // Run detached so it survives when the menu closes
             colorPickerProc.command = ["bash", "-c", "nohup python3 \"" + scriptPath + "\" > /dev/null 2>&1 &"];
             colorPickerProc.running = true;
+            root.itemSelected();
         } else if (action.tooltip === "OCR") {
             var scriptPath = Qt.resolvedUrl("../../../scripts/ocr.sh").toString().replace("file://", "");
             
@@ -124,14 +153,14 @@ ActionGrid {
 
             ocrProc.command = ["bash", "-c", "nohup \"" + scriptPath + "\" \"" + langString + "\" > /dev/null 2>&1 &"];
             ocrProc.running = true;
+            root.itemSelected();
         } else if (action.tooltip === "QR Code") {
             var scriptPath = Qt.resolvedUrl("../../../scripts/qr_scan.sh").toString().replace("file://", "");
             qrProc.command = ["bash", "-c", "nohup \"" + scriptPath + "\" > /dev/null 2>&1 &"];
             qrProc.running = true;
+            root.itemSelected();
         } else if (action.tooltip === "Mirror") {
             GlobalStates.mirrorWindowVisible = !GlobalStates.mirrorWindowVisible;
         }
-
-        root.itemSelected();
     }
 }

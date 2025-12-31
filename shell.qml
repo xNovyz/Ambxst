@@ -213,35 +213,12 @@ ShellRoot {
         }
     }
 
-    // Screen Record Tool
-    Loader {
-        id: screenRecordLoader
-        active: true
-        source: "modules/tools/ScreenRecordTool.qml"
-        
-        Connections {
-            target: GlobalStates
-            function onScreenRecordToolVisibleChanged() {
-                if (screenRecordLoader.status === Loader.Ready) {
-                    if (GlobalStates.screenRecordToolVisible) {
-                        screenRecordLoader.item.open();
-                    } else {
-                        screenRecordLoader.item.close();
-                    }
-                }
-            }
-        }
-        
-        Connections {
-            target: screenRecordLoader.item
-            ignoreUnknownSignals: true
-            function onVisibleChanged() {
-                if (!screenRecordLoader.item.visible && GlobalStates.screenRecordToolVisible) {
-                    GlobalStates.screenRecordToolVisible = false;
-                }
-            }
-        }
-    }
+    // Screen Record Tool (REMOVED: functionality moved to ToolsMenu)
+    // Loader {
+    //     id: screenRecordLoader
+    //     active: false // Disabled
+    // }
+
 
     // Mirror Tool
     Loader {

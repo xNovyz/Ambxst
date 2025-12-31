@@ -1,3 +1,5 @@
+pragma Singleton
+
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -200,5 +202,20 @@ QtObject {
         // Just copy the freeze file to final path
         cropProcess.command = ["cp", root.tempPath, root.finalPath]
         cropProcess.running = true
+    }
+
+    property Process openScreenshotsProcess: Process {
+        id: openScreenshotsProcess
+        command: ["xdg-open", root.screenshotsDir]
+    }
+
+    function openScreenshotsFolder() {
+        if (root.screenshotsDir === "") {
+             // Fallback attempt if not ready
+             openScreenshotsProcess.command = ["xdg-open", Quickshell.env("HOME") + "/Pictures/Screenshots"];
+        } else {
+             openScreenshotsProcess.command = ["xdg-open", root.screenshotsDir];
+        }
+        openScreenshotsProcess.running = true;
     }
 }

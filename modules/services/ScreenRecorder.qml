@@ -160,6 +160,15 @@ QtObject {
         command: ["notify-send", "Screen Recorder", "Recording saved to " + root.videosDir]
     }
     
+    property Process openVideosProcess: Process {
+        id: openVideosProcess
+        command: ["xdg-open", root.videosDir]
+    }
+
+    function openRecordingsFolder() {
+        openVideosProcess.running = true;
+    }
+
     property Process stopProcess: Process {
         id: stopProcess
         command: ["killall", "-SIGINT", "gpu-screen-recorder"]
