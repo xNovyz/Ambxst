@@ -10,6 +10,10 @@ QtObject {
 
     property Process hyprctlProcess: Process {}
 
+    property var previousAmbxstBinds: ({})
+    property var previousCustomBinds: []
+    property bool hasPreviousBinds: false
+
     property Timer applyTimer: Timer {
         interval: 100
         repeat: false
@@ -23,17 +27,76 @@ QtObject {
     // Helper function to check if an action is compatible with the current layout
     function isActionCompatibleWithLayout(action) {
         // If no compositor specified, action works everywhere
-        if (!action.compositor) return true;
-        
+        if (!action.compositor)
+            return true;
+
         // If compositor type is not hyprland, skip (future-proofing)
-        if (action.compositor.type && action.compositor.type !== "hyprland") return false;
-        
+        if (action.compositor.type && action.compositor.type !== "hyprland")
+            return false;
+
         // If no layouts specified or empty array, action works in all layouts
-        if (!action.compositor.layouts || action.compositor.layouts.length === 0) return true;
-        
+        if (!action.compositor.layouts || action.compositor.layouts.length === 0)
+            return true;
+
         // Check if current layout is in the allowed list
         const currentLayout = GlobalStates.hyprlandLayout;
         return action.compositor.layouts.indexOf(currentLayout) !== -1;
+    }
+
+    function cloneKeybind(keybind) {
+        return {
+            modifiers: keybind.modifiers ? keybind.modifiers.slice() : [],
+            key: keybind.key || ""
+        };
+    }
+
+    function storePreviousBinds() {
+        if (!Config.keybindsLoader.loaded)
+            return;
+
+        const ambxst = Config.keybindsLoader.adapter.ambxst;
+
+        // Store dashboard keybinds
+        previousAmbxstBinds = {
+            dashboard: {
+                widgets: cloneKeybind(ambxst.dashboard.widgets),
+                clipboard: cloneKeybind(ambxst.dashboard.clipboard),
+                emoji: cloneKeybind(ambxst.dashboard.emoji),
+                tmux: cloneKeybind(ambxst.dashboard.tmux),
+                wallpapers: cloneKeybind(ambxst.dashboard.wallpapers),
+                assistant: cloneKeybind(ambxst.dashboard.assistant),
+                notes: cloneKeybind(ambxst.dashboard.notes)
+            },
+            system: {
+                overview: cloneKeybind(ambxst.system.overview),
+                powermenu: cloneKeybind(ambxst.system.powermenu),
+                config: cloneKeybind(ambxst.system.config),
+                lockscreen: cloneKeybind(ambxst.system.lockscreen),
+                tools: cloneKeybind(ambxst.system.tools)
+            }
+        };
+
+        // Store custom keybinds
+        const customBinds = Config.keybindsLoader.adapter.custom;
+        previousCustomBinds = [];
+        if (customBinds && customBinds.length > 0) {
+            for (let i = 0; i < customBinds.length; i++) {
+                const bind = customBinds[i];
+                if (bind.keys) {
+                    let keys = [];
+                    for (let k = 0; k < bind.keys.length; k++) {
+                        keys.push(cloneKeybind(bind.keys[k]));
+                    }
+                    previousCustomBinds.push({
+                        keys: keys
+                    });
+                } else {
+                    previousCustomBinds.push(cloneKeybind(bind));
+                }
+            }
+        }
+
+        hasPreviousBinds = true;
     }
 
     function applyKeybindsInternal() {
@@ -53,10 +116,11 @@ QtObject {
 
         // Construir lista de unbinds
         let unbindCommands = [];
-        
+
         // Helper function para formatear modifiers
         function formatModifiers(modifiers) {
-            if (!modifiers || modifiers.length === 0) return "";
+            if (!modifiers || modifiers.length === 0)
+                return "";
             return modifiers.join(" ");
         }
 
@@ -106,9 +170,44 @@ QtObject {
         // Construir batch command con todos los binds
         let batchCommands = [];
 
+        // First, unbind previous keybinds if we have them stored
+        if (hasPreviousBinds) {
+            // Unbind previous ambxst dashboard keybinds
+            if (previousAmbxstBinds.dashboard) {
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.dashboard.widgets));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.dashboard.clipboard));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.dashboard.emoji));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.dashboard.tmux));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.dashboard.wallpapers));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.dashboard.assistant));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.dashboard.notes));
+            }
+
+            // Unbind previous ambxst system keybinds
+            if (previousAmbxstBinds.system) {
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.overview));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.powermenu));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.config));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.lockscreen));
+                unbindCommands.push(createUnbindCommand(previousAmbxstBinds.system.tools));
+            }
+
+            // Unbind previous custom keybinds
+            for (let i = 0; i < previousCustomBinds.length; i++) {
+                const prev = previousCustomBinds[i];
+                if (prev.keys) {
+                    for (let k = 0; k < prev.keys.length; k++) {
+                        unbindCommands.push(createUnbindFromKey(prev.keys[k]));
+                    }
+                } else {
+                    unbindCommands.push(createUnbindCommand(prev));
+                }
+            }
+        }
+
         // Procesar Ambxst keybinds (still use old format)
         const ambxst = Config.keybindsLoader.adapter.ambxst;
-        
+
         // Dashboard keybinds
         const dashboard = ambxst.dashboard;
         unbindCommands.push(createUnbindCommand(dashboard.widgets));
@@ -118,7 +217,7 @@ QtObject {
         unbindCommands.push(createUnbindCommand(dashboard.wallpapers));
         unbindCommands.push(createUnbindCommand(dashboard.assistant));
         unbindCommands.push(createUnbindCommand(dashboard.notes));
-        
+
         batchCommands.push(createBindCommand(dashboard.widgets));
         batchCommands.push(createBindCommand(dashboard.clipboard));
         batchCommands.push(createBindCommand(dashboard.emoji));
@@ -134,7 +233,7 @@ QtObject {
         unbindCommands.push(createUnbindCommand(system.config));
         unbindCommands.push(createUnbindCommand(system.lockscreen));
         unbindCommands.push(createUnbindCommand(system.tools));
-        
+
         batchCommands.push(createBindCommand(system.overview));
         batchCommands.push(createBindCommand(system.powermenu));
         batchCommands.push(createBindCommand(system.config));
@@ -146,14 +245,14 @@ QtObject {
         if (customBinds && customBinds.length > 0) {
             for (let i = 0; i < customBinds.length; i++) {
                 const bind = customBinds[i];
-                
+
                 // Check if bind has the new format
                 if (bind.keys && bind.actions) {
                     // Unbind all keys first (always unbind regardless of layout)
                     for (let k = 0; k < bind.keys.length; k++) {
                         unbindCommands.push(createUnbindFromKey(bind.keys[k]));
                     }
-                    
+
                     // Only create binds if enabled
                     if (bind.enabled !== false) {
                         // For each key, bind only compatible actions
@@ -177,6 +276,8 @@ QtObject {
                 }
             }
         }
+
+        storePreviousBinds();
 
         // Combinar unbind y bind en un solo batch
         const fullBatchCommand = unbindCommands.join("; ") + "; " + batchCommands.join("; ");
