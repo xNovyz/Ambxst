@@ -22,16 +22,17 @@ PanelWindow {
     color: "transparent"
 
     property string wallpaperDir: wallpaperConfig.adapter.wallPath || fallbackDir
-    property string fallbackDir: Qt.resolvedUrl("../../../../assets/wallpapers_example").toString().replace("file://", "")
-    property list<string> wallpaperPaths: []
+    property string fallbackDir: decodeURIComponent(Qt.resolvedUrl("../../../../assets/wallpapers_example").toString().replace("file://", ""))
+    property var wallpaperPaths: []
     property var subfolderFilters: []
     property int currentIndex: 0
     property string currentWallpaper: initialLoadCompleted && wallpaperPaths.length > 0 ? wallpaperPaths[currentIndex] : ""
     property bool initialLoadCompleted: false
     property bool usingFallback: false
+    property bool _wallpaperDirInitialized: false
     property string currentMatugenScheme: wallpaperConfig.adapter.matugenScheme
     property string colorPresetsDir: Quickshell.env("HOME") + "/.config/Ambxst/colors"
-    property string officialColorPresetsDir: Qt.resolvedUrl("../../../../assets/colors").toString().replace("file://", "")
+    property string officialColorPresetsDir: decodeURIComponent(Qt.resolvedUrl("../../../../assets/colors").toString().replace("file://", ""))
     onColorPresetsDirChanged: console.log("Color Presets Directory:", colorPresetsDir)
     property list<string> colorPresets: []
     onColorPresetsChanged: console.log("Color Presets Updated:", colorPresets)
@@ -166,7 +167,7 @@ PanelWindow {
         
         console.log("Generating lockscreen frame for:", filePath);
         
-        var scriptPath = Qt.resolvedUrl("../../../../scripts/lockwall.py").toString().replace("file://", "");
+        var scriptPath = decodeURIComponent(Qt.resolvedUrl("../../../../scripts/lockwall.py").toString().replace("file://", ""));
         var dataPath = Quickshell.dataDir;
         
         lockscreenWallpaperScript.command = [
@@ -189,16 +190,34 @@ PanelWindow {
     }
 
     function scanSubfolders() {
-        var command = ["find", wallpaperDir, "-type", "d", "-mindepth", "1", "-maxdepth", "1"];
+        // Explicitly update command with current wallpaperDir
+        var cmd = ["find", wallpaperDir, "-type", "d", "-mindepth", "1", "-maxdepth", "1"];
+        scanSubfoldersProcess.command = cmd;
         scanSubfoldersProcess.running = true;
     }
 
     // Update directory watcher when wallpaperDir changes
     onWallpaperDirChanged: {
+        // Skip initial spurious changes before config is loaded
+        if (!_wallpaperDirInitialized) return;
+        
+        // Only the primary wallpaper manager should handle directory changes
+        if (GlobalStates.wallpaperManager !== wallpaper) return;
+        
         console.log("Wallpaper directory changed to:", wallpaperDir);
         usingFallback = false;
+        
+        // Clear current lists to reflect change immediately
+        wallpaperPaths = [];
+        subfolderFilters = [];
+        
         directoryWatcher.path = wallpaperDir;
+        
+        // Force update scan command
+        var cmd = ["find", wallpaperDir, "-type", "f", "(", "-name", "*.jpg", "-o", "-name", "*.jpeg", "-o", "-name", "*.png", "-o", "-name", "*.webp", "-o", "-name", "*.tif", "-o", "-name", "*.tiff", "-o", "-name", "*.gif", "-o", "-name", "*.mp4", "-o", "-name", "*.webm", "-o", "-name", "*.mov", "-o", "-name", "*.avi", "-o", "-name", "*.mkv", ")"];
+        scanWallpapers.command = cmd;
         scanWallpapers.running = true;
+        
         scanSubfolders();
         
         // Regenerate thumbnails for the new directory (delayed)
@@ -278,7 +297,7 @@ PanelWindow {
             console.log("Using source for matugen:", matugenSource, "(type:", fileType + ")");
 
             // Ejecutar matugen con configuración específica
-            var commandWithConfig = ["matugen", "image", matugenSource, "-c", Qt.resolvedUrl("../../../../assets/matugen/config.toml").toString().replace("file://", ""), "-t", wallpaperConfig.adapter.matugenScheme];
+            var commandWithConfig = ["matugen", "image", matugenSource, "-c", decodeURIComponent(Qt.resolvedUrl("../../../../assets/matugen/config.toml").toString().replace("file://", "")), "-t", wallpaperConfig.adapter.matugenScheme];
             if (Config.theme.lightMode) {
                 commandWithConfig.push("-m", "light");
             }
@@ -296,23 +315,25 @@ PanelWindow {
     }
 
     Component.onCompleted: {
+        // Only the first Wallpaper instance should manage scanning
+        // Other instances (for other screens) share the same data via GlobalStates
+        if (GlobalStates.wallpaperManager !== null) {
+            // Another instance already registered, skip initialization
+            _wallpaperDirInitialized = true;
+            return;
+        }
+        
         GlobalStates.wallpaperManager = wallpaper;
 
         // Verificar si existe wallpapers.json, si no, crear con fallback
         checkWallpapersJson.running = true;
 
-        // Ejecutar script de generación de thumbnails (delayed)
-        delayedThumbnailGen.start();
-
-        // Initial scans
-        // scanWallpapers.running = true; // Handled by onWallpaperDirChanged
-        // scanSubfolders(); // Handled by onWallpaperDirChanged
+        // Initial scans - do these once after config is loaded
         scanColorPresets();
         // Start directory monitoring
-        directoryWatcher.reload();
         presetsWatcher.reload();
         officialPresetsWatcher.reload();
-        // Load initial wallpaper config
+        // Load initial wallpaper config - this will trigger onWallPathChanged which does the actual scan
         wallpaperConfig.reload();
         
         // Generate lockscreen frame for initial wallpaper after a short delay
@@ -354,12 +375,11 @@ PanelWindow {
             }
 
             onCurrentWallChanged: {
-                console.log("DEBUG: currentWall changed to:", currentWall);
-                console.log("DEBUG: current wallpaper is:", wallpaper.currentWallpaper);
-                console.log("DEBUG: initialLoadCompleted:", wallpaper.initialLoadCompleted);
+                // Skip during initial load - scanWallpapers handles this
+                if (!wallpaper._wallpaperDirInitialized) return;
+                
                 // Siempre actualizar si es diferente al actual
                 if (currentWall && currentWall !== wallpaper.currentWallpaper) {
-                    console.log("Loading wallpaper from JSON:", currentWall);
                     // If paths are not loaded yet, wait for scanWallpapers to finish
                     if (wallpaper.wallpaperPaths.length === 0) {
                         return;
@@ -379,9 +399,26 @@ PanelWindow {
             }
 
             onWallPathChanged: {
-                // Only log change, logic moved to onWallpaperDirChanged
                 if (wallPath) {
                     console.log("Config wallPath updated:", wallPath);
+                    
+                    // Initialize scanning on first valid wallPath load
+                    if (!wallpaper._wallpaperDirInitialized && GlobalStates.wallpaperManager === wallpaper) {
+                        wallpaper._wallpaperDirInitialized = true;
+                        
+                        // Set up directory watcher
+                        directoryWatcher.path = wallpaper.wallpaperDir;
+                        directoryWatcher.reload();
+                        
+                        // Perform initial wallpaper scan
+                        var cmd = ["find", wallpaper.wallpaperDir, "-type", "f", "(", "-name", "*.jpg", "-o", "-name", "*.jpeg", "-o", "-name", "*.png", "-o", "-name", "*.webp", "-o", "-name", "*.tif", "-o", "-name", "*.tiff", "-o", "-name", "*.gif", "-o", "-name", "*.mp4", "-o", "-name", "*.webm", "-o", "-name", "*.mov", "-o", "-name", "*.avi", "-o", "-name", "*.mkv", ")"];
+                        scanWallpapers.command = cmd;
+                        scanWallpapers.running = true;
+                        wallpaper.scanSubfolders();
+                        
+                        // Start thumbnail generation
+                        delayedThumbnailGen.start();
+                    }
                 }
             }
         }
@@ -458,7 +495,7 @@ PanelWindow {
     Process {
         id: thumbnailGeneratorScript
         running: false
-        command: ["python3", Qt.resolvedUrl("../../../../scripts").toString().replace("file://", "") + "/thumbgen.py", Quickshell.dataDir + "/wallpapers.json", Quickshell.dataDir]
+        command: ["python3", decodeURIComponent(Qt.resolvedUrl("../../../../scripts/thumbgen.py").toString().replace("file://", "")), Quickshell.dataDir + "/wallpapers.json", Quickshell.dataDir, fallbackDir]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -487,7 +524,7 @@ PanelWindow {
 
     Timer {
         id: delayedThumbnailGen
-        interval: 2000 // Delay 2 seconds after startup
+        interval: 5000 // Delay 5 seconds after startup to not block initial load
         repeat: false
         onTriggered: thumbnailGeneratorScript.running = true
     }
@@ -648,7 +685,6 @@ PanelWindow {
                                 if (!wallpaperConfig.adapter.currentWall) {
                                     wallpaperConfig.adapter.currentWall = wallpaperPaths[0];
                                 }
-                                console.log("DEBUG: Setting initialLoadCompleted to true");
                                 initialLoadCompleted = true;
                                 // runMatugenForCurrentWallpaper() will be called by onCurrentWallChanged
                             }
@@ -887,7 +923,7 @@ PanelWindow {
             id: mpvpaperComponent
             Item {
                 property string sourceFile: parent.sourceFile
-                property string scriptPath: Qt.resolvedUrl("mpvpaper.sh").toString().replace("file://", "")
+                property string scriptPath: decodeURIComponent(Qt.resolvedUrl("mpvpaper.sh").toString().replace("file://", ""))
 
                 Timer {
                     id: mpvpaperRestartTimer

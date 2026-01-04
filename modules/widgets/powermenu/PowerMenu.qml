@@ -35,6 +35,11 @@ ActionGrid {
             command: "systemctl suspend"
         },
         {
+            icon: Icons.hibernate,
+            tooltip: "Hibernate",
+            command: "systemctl hibernate"
+        },
+        {
             icon: Icons.logout,
             tooltip: "Exit Hyprland",
             command: "hyprctl dispatch exit"

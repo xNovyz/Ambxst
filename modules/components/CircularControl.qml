@@ -44,9 +44,11 @@ StyledRect {
         property real dragStartY: 0
         property real dragStartValue: 0
         property bool isDragging: false
+        property bool wasDragging: false
 
         onClicked: {
-            if (root.isToggleable) {
+            // Only trigger toggle if we didn't drag
+            if (root.isToggleable && !wasDragging) {
                 root.toggled();
             }
         }
@@ -55,6 +57,7 @@ StyledRect {
             dragStartY = mouse.y;
             dragStartValue = root.value;
             isDragging = false;
+            wasDragging = false;
         }
 
         onPositionChanged: mouse => {
@@ -65,6 +68,7 @@ StyledRect {
             if (Math.abs(deltaY) > 3) {
                 if (!isDragging) {
                     isDragging = true;
+                    wasDragging = true;
                     root.draggingChanged(true);
                 }
                 let deltaValue = deltaY / 100.0;
