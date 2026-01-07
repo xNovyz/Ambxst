@@ -191,7 +191,7 @@ PanelWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             width: notchContainer.width
-            height: notchContainer.height
+            height: notchContainer.height + notchContainer.anchors.topMargin
 
             // Opacity animation
             opacity: notchPanel.reveal ? 1 : 0
