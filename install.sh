@@ -32,9 +32,9 @@ detect_distro() {
 		echo "nixos"
 	elif command -v pacman >/dev/null 2>&1; then
 		echo "arch"
-	elif [ -f /etc/fedora-release ]; then
+	elif command -v dnf >/dev/null 2>&1; then
 		echo "fedora"
-	elif [ -f /etc/debian_version ]; then
+	elif command -v apt >/dev/null 2>&1; then
 		echo "debian"
 	else
 		echo "unknown"
@@ -76,9 +76,17 @@ install_dependencies() {
 		# Enable COPRs
 		log_info "Enabling COPR repositories..."
 		sudo dnf install -y dnf-plugins-core
-		sudo dnf copr enable -y errornointernet/quickshell
-		sudo dnf copr enable -y solopasha/hyprland
-		sudo dnf copr enable -y pm4marcin/Hyprland
+		# The -y flag for dnf should be passed to the main command, but for 'copr enable',
+		# passing it as a command argument often works better to confirm the prompt.
+		# If not, we can force it with 'yes'.
+		# Using 'yes | ...' to ensure unattended installation if -y isn't sufficient for GPG keys.
+
+		# Quickshell
+		yes | sudo dnf copr enable errornointernet/quickshell
+		# Hyprland (for mpvpaper)
+		yes | sudo dnf copr enable solopasha/hyprland
+		# Matugen
+		yes | sudo dnf copr enable zirconium/packages
 
 		log_info "Installing dependencies..."
 
