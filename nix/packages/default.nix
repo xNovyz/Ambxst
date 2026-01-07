@@ -28,6 +28,15 @@ let
     paths = baseEnv;
   };
 
+  # Create fontconfig configuration to find bundled fonts
+  fontconfigConf = pkgs.writeTextDir "etc/fonts/conf.d/99-ambxst-fonts.conf" ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+    <fontconfig>
+      <dir>${envAmbxst}/share/fonts</dir>
+    </fontconfig>
+  '';
+
   # Copy shell sources to the Nix store
   shellSrc = pkgs.stdenv.mkDerivation {
     pname = "ambxst-shell";
@@ -48,8 +57,8 @@ let
     export QML2_IMPORT_PATH="${envAmbxst}/lib/qt-6/qml:$QML2_IMPORT_PATH"
     export QML_IMPORT_PATH="$QML2_IMPORT_PATH"
 
-    # Make fonts available to fontconfig
-    export XDG_DATA_DIRS="${envAmbxst}/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    # Make bundled fonts available to fontconfig
+    export FONTCONFIG_PATH="${fontconfigConf}/etc/fonts:''${FONTCONFIG_PATH:-}"
 
     # Delegate execution to CLI (now in the Nix store)
     exec ${shellSrc}/cli.sh "$@"
