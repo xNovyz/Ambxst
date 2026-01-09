@@ -11,59 +11,70 @@ Singleton {
     
     // In-memory cache: { appId: { count: N, lastUsed: timestamp } }
     property var usageData: ({})
+    property bool dataLoaded: false
+    property bool fileReady: false
+    
+    // Signal emitted when data is loaded
+    signal usageDataReady()
     
     // Decay factor for time-based scoring (apps used recently get higher scores)
     readonly property int maxBoostScore: 200
     readonly property int dayInMs: 86400000
     
-    // Process for reading usage data
-    property Process readProcess: Process {
-        id: readProc
-        running: false
-        
-        onExited: function (exitCode, exitStatus) {
-            if (exitCode === 0 && stdout.trim() !== "") {
-                try {
-                    root.usageData = JSON.parse(stdout);
-                } catch (e) {
-                    console.warn("UsageTracker: Failed to parse usage.json:", e);
-                    root.usageData = {};
-                }
-            } else {
-                root.usageData = {};
-            }
-        }
-    }
-    
-    // Process for writing usage data
-    property Process writeProcess: Process {
-        id: writeProc
-        running: false
-        
-        onExited: function (exitCode, exitStatus) {
-            if (exitCode !== 0) {
-                console.warn("UsageTracker: Failed to write usage.json");
-            }
+    // Ensure the file exists
+    Process {
+        id: ensureUsageFile
+        running: true
+        command: ["bash", "-c", "mkdir -p \"$(dirname '" + root.usageFilePath + "')\" && if [ ! -f '" + root.usageFilePath + "' ]; then echo '{}' > '" + root.usageFilePath + "'; fi"]
+        onExited: {
+            root.fileReady = true;
+            usageFile.reload();
         }
     }
 
+    FileView {
+        id: usageFile
+        path: root.fileReady ? root.usageFilePath : ""
+        onLoaded: root.loadUsageData()
+    }
+
     Component.onCompleted: {
-        loadUsageData();
+        usageFile.reload();
     }
 
     // Load usage data from file
     function loadUsageData() {
-        readProc.command = ["bash", "-c", "cat " + usageFilePath + " 2>/dev/null || echo '{}'"];
-        readProc.running = true;
+        try {
+            const data = usageFile.text();
+            if (!data || data.trim() === "") {
+                console.log("UsageTracker: No existing usage data, starting fresh");
+                root.usageData = {};
+                root.dataLoaded = true;
+                root.usageDataReady();
+                return;
+            }
+
+            root.usageData = JSON.parse(data);
+            console.log("UsageTracker: Loaded", Object.keys(root.usageData).length, "entries from usage.json");
+            root.dataLoaded = true;
+            root.usageDataReady();
+        } catch (e) {
+            console.warn("UsageTracker: Failed to parse usage.json:", e);
+            root.usageData = {};
+            root.dataLoaded = true;
+            root.usageDataReady();
+        }
     }
 
     // Save usage data to file
     function saveUsageData() {
-        var jsonData = JSON.stringify(usageData, null, 2);
-        // Escape single quotes for bash
-        jsonData = jsonData.replace(/'/g, "'\\''");
-        writeProc.command = ["bash", "-c", "echo '" + jsonData + "' > " + usageFilePath];
-        writeProc.running = true;
+        if (!root.fileReady) {
+            console.warn("UsageTracker: File not ready, skipping save");
+            return;
+        }
+
+        const jsonData = JSON.stringify(usageData, null, 2);
+        usageFile.setText(jsonData);
     }
 
     // Record that an app was used

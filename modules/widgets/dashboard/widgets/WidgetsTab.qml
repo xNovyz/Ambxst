@@ -169,6 +169,11 @@ Rectangle {
                 updateFilteredApps();
                 updateAppsModel();
                 focusSearchInput();
+                
+                // Re-update when UsageTracker finishes loading
+                UsageTracker.usageDataReady.connect(function() {
+                    updateFilteredApps();
+                });
             }
 
             onSearchTextChanged: {
