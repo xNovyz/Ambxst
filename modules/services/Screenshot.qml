@@ -26,6 +26,9 @@ QtObject {
     
     // Store monitor scale factor for coordinate scaling
     property real monitorScale: 1.0
+    
+    // Store focused monitor name for single-monitor capture
+    property string focusedMonitor: ""
 
     property Process xdgProcess: Process {
         command: ["bash", "-c", "xdg-user-dir PICTURES"]
@@ -46,17 +49,20 @@ QtObject {
     // Process for initial freeze
     property Process freezeProcess: Process {
         id: freezeProcess
-        command: ["grim", root.tempPath]
+        // command set dynamically based on focused monitor
         onExited: exitCode => {
+            console.log("Screenshot: freezeProcess exited with code " + exitCode)
             if (exitCode === 0) {
+                console.log("Screenshot: Emitting screenshotCaptured with path: " + root.tempPath)
                 root.screenshotCaptured(root.tempPath)
             } else {
+                console.warn("Screenshot: grim failed with exit code " + exitCode)
                 root.errorOccurred("Failed to capture screen (grim)")
             }
         }
     }
     
-    // Process to get scale factor before freeze
+    // Process to get scale factor and focused monitor before freeze
     property Process scaleProcess: Process {
         id: scaleProcess
         command: ["hyprctl", "-j", "monitors"]
@@ -66,18 +72,38 @@ QtObject {
                 try {
                     var monitors = JSON.parse(scaleProcess.stdout.text)
                     for (var i = 0; i < monitors.length; i++) {
-                        if (monitors[i].focused && monitors[i].scale) {
-                            root.monitorScale = monitors[i].scale
-                            console.log("Screenshot: Monitor scale factor detected: " + root.monitorScale)
+                        if (monitors[i].focused) {
+                            if (monitors[i].scale) {
+                                root.monitorScale = monitors[i].scale
+                                console.log("Screenshot: Monitor scale factor detected: " + root.monitorScale)
+                            }
+                            if (monitors[i].name) {
+                                root.focusedMonitor = monitors[i].name
+                                console.log("Screenshot: Focused monitor detected: " + root.focusedMonitor)
+                            }
                             break
                         }
                     }
+                    // Now run freeze with the detected monitor
+                    if (root.focusedMonitor !== "") {
+                        freezeProcess.command = ["grim", "-o", root.focusedMonitor, root.tempPath]
+                    } else {
+                        freezeProcess.command = ["grim", root.tempPath]
+                    }
+                    console.log("Screenshot: Starting freezeProcess with command: " + JSON.stringify(freezeProcess.command))
+                    freezeProcess.running = true
                 } catch (e) {
                     console.warn("Screenshot: Failed to parse scale: " + e.message)
                     root.monitorScale = 1.0
+                    root.focusedMonitor = ""
+                    freezeProcess.command = ["grim", root.tempPath]
+                    freezeProcess.running = true
                 }
             } else {
                 root.monitorScale = 1.0
+                root.focusedMonitor = ""
+                freezeProcess.command = ["grim", root.tempPath]
+                freezeProcess.running = true
             }
         }
     }
@@ -211,14 +237,25 @@ QtObject {
         }
     }
 
+    // Timer to delay capture slightly so other UI elements can hide
+    property Timer captureDelayTimer: Timer {
+        id: captureDelayTimer
+        interval: 200  // 200ms delay
+        repeat: false
+        onTriggered: {
+            console.log("Screenshot: Delay complete, starting scaleProcess")
+            scaleProcess.running = true
+        }
+    }
+
     function freezeScreen() {
-        // Run both in parallel. The freeze is urgent for UI feedback.
-        // Scale is needed later for cropping.
-        scaleProcess.running = true;
-        freezeProcess.running = true;
+        console.log("Screenshot: freezeScreen() called")
+        // First wait a bit for other UI elements to hide, then detect monitor and capture
+        captureDelayTimer.running = true
     }
 
     function fetchWindows() {
+        console.log("Screenshot: fetchWindows() called")
         // Start the chain: Monitors -> Clients
         monitorsProcess.running = true
     }
@@ -237,6 +274,7 @@ QtObject {
     }
 
     function processRegion(x, y, w, h) {
+        console.log("Screenshot: processRegion() called with x=" + x + ", y=" + y + ", w=" + w + ", h=" + h)
         // Determine output path based on mode
         if (root.captureMode === "lens") {
             root.finalPath = root.lensPath;
@@ -247,6 +285,8 @@ QtObject {
             var filename = "Screenshot_" + getTimestamp() + ".png"
             root.finalPath = root.screenshotsDir + "/" + filename
         }
+        
+        console.log("Screenshot: finalPath = " + root.finalPath)
         
         // Scale coordinates by monitor scale factor for accurate cropping
         var scaledX = Math.round(x * root.monitorScale)
@@ -258,11 +298,13 @@ QtObject {
         
         // convert /tmp/ambxst_freeze.png -crop WxH+X+Y /path/to/save.png
         var geom = `${scaledW}x${scaledH}+${scaledX}+${scaledY}`
+        console.log("Screenshot: Running crop command: convert " + root.tempPath + " -crop " + geom + " " + root.finalPath)
         cropProcess.command = ["convert", root.tempPath, "-crop", geom, root.finalPath]
         cropProcess.running = true
     }
 
     function processFullscreen() {
+        console.log("Screenshot: processFullscreen() called")
         // Determine output path based on mode
         if (root.captureMode === "lens") {
             root.finalPath = root.lensPath;
@@ -273,6 +315,8 @@ QtObject {
             var filename = "Screenshot_" + getTimestamp() + ".png"
             root.finalPath = root.screenshotsDir + "/" + filename
         }
+        
+        console.log("Screenshot: Copying " + root.tempPath + " to " + root.finalPath)
 
         // Just copy the freeze file to final path
         cropProcess.command = ["cp", root.tempPath, root.finalPath]

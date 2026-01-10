@@ -51,16 +51,19 @@ PanelWindow {
     ]
 
     function open() {
+        console.log("ScreenshotTool: open() called")
         // Reset to default state
         if (modeGrid)
             modeGrid.currentIndex = 0;
         screenshotPopup.currentMode = "region";
 
         screenshotPopup.state = "loading";
+        console.log("ScreenshotTool: state set to 'loading', calling Screenshot.freezeScreen()")
         Screenshot.freezeScreen();
     }
 
     function close() {
+        console.log("ScreenshotTool: close() called")
         screenshotPopup.state = "idle";
     }
 
@@ -81,9 +84,12 @@ PanelWindow {
     Connections {
         target: Screenshot
         function onScreenshotCaptured(path) {
+            console.log("ScreenshotTool: onScreenshotCaptured received with path: " + path)
             previewImage.source = "";
             previewImage.source = "file://" + path;
+            console.log("ScreenshotTool: previewImage.source set to: file://" + path)
             screenshotPopup.state = "active";
+            console.log("ScreenshotTool: state set to 'active'")
             // Reset selection
             selectionRect.width = 0;
             selectionRect.height = 0;
@@ -94,10 +100,11 @@ PanelWindow {
             modeGrid.forceActiveFocus();
         }
         function onWindowListReady(windows) {
+            console.log("ScreenshotTool: onWindowListReady received with " + windows.length + " windows")
             screenshotPopup.activeWindows = windows;
         }
         function onErrorOccurred(msg) {
-            console.warn("Screenshot Error:", msg);
+            console.warn("ScreenshotTool: onErrorOccurred: " + msg);
             screenshotPopup.close();
         }
     }
@@ -139,12 +146,12 @@ PanelWindow {
                     width: modelData.size[0]
                     height: modelData.size[1]
                     color: "transparent"
-                    border.color: hoverHandler.hovered ? Styling.styledRectItem("overprimary") : "transparent"
+                    border.color: hoverHandler.hovered ? Styling.srItem("overprimary") : "transparent"
                     border.width: 2
 
                     Rectangle {
                         anchors.fill: parent
-                        color: Styling.styledRectItem("overprimary")
+                        color: Styling.srItem("overprimary")
                         opacity: hoverHandler.hovered ? 0.2 : 0
                     }
 
@@ -227,12 +234,12 @@ PanelWindow {
             id: selectionRect
             visible: screenshotPopup.state === "active" && screenshotPopup.currentMode === "region"
             color: "transparent"
-            border.color: Styling.styledRectItem("overprimary")
+            border.color: Styling.srItem("overprimary")
             border.width: 2
 
             Rectangle {
                 anchors.fill: parent
-                color: Styling.styledRectItem("overprimary")
+                color: Styling.srItem("overprimary")
                 opacity: 0.2
             }
         }
