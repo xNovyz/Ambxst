@@ -33,14 +33,24 @@ Item {
     property bool isSearchMatch: false
     property bool isSearchSelected: false
 
+    // Override position tracking for immediate visual update
+    property real overrideX: -1
+    property real overrideY: -1
+    property bool useOverridePosition: false
+
     // Cache calculated values
     readonly property real initX: {
+        if (useOverridePosition && overrideX >= 0)
+            return overrideX;
+
         let base = (windowData?.at?.[0] || 0) - (monitorData?.x || 0);
         if (barPosition === "left")
             base -= barReserved;
         return Math.round(Math.max(base * scale, 0) + xOffset);
     }
     readonly property real initY: {
+        if (useOverridePosition && overrideY >= 0)
+            return overrideY;
         let base = (windowData?.at?.[1] || 0) - (monitorData?.y || 0);
         if (barPosition === "top")
             base -= barReserved;
@@ -69,15 +79,31 @@ Item {
 
     clip: true
 
+    // Timer to reset override position after a delay (waiting for Hyprland update)
+    Timer {
+        id: resetOverrideTimer
+        interval: 200
+        onTriggered: {
+            root.useOverridePosition = false;
+        }
+    }
+
+    // Watch for windowData changes to reset override when real data updates
+    onWindowDataChanged: {
+        if (useOverridePosition) {
+            resetOverrideTimer.restart();
+        }
+    }
+
     Behavior on x {
-        enabled: Config.animDuration > 0
+        enabled: Config.animDuration > 0 && !root.useOverridePosition
         NumberAnimation {
             duration: Config.animDuration
             easing.type: Easing.OutQuart
         }
     }
     Behavior on y {
-        enabled: Config.animDuration > 0
+        enabled: Config.animDuration > 0 && !root.useOverridePosition
         NumberAnimation {
             duration: Config.animDuration
             easing.type: Easing.OutQuart
@@ -120,7 +146,7 @@ Item {
         anchors.fill: parent
         radius: root.calculatedRadius
         color: pressed ? Colors.surfaceBright : hovered ? Colors.surface : Colors.background
-        border.color: root.isSearchSelected ? Colors.tertiary : root.isSearchMatch ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("overprimary")
+        border.color: root.isSearchSelected ? Colors.tertiary : root.isSearchMatch ? Styling.srItem("overprimary") : Styling.srItem("overprimary")
         border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 0)
         visible: !windowPreview.hasContent || !Config.performance.windowPreview
 
@@ -159,7 +185,7 @@ Item {
         anchors.fill: parent
         radius: root.calculatedRadius
         color: pressed ? Qt.rgba(Colors.surfaceContainerHighest.r, Colors.surfaceContainerHighest.g, Colors.surfaceContainerHighest.b, 0.5) : hovered ? Qt.rgba(Colors.surfaceContainer.r, Colors.surfaceContainer.g, Colors.surfaceContainer.b, 0.2) : "transparent"
-        border.color: root.isSearchSelected ? Colors.tertiary : root.isSearchMatch ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("overprimary")
+        border.color: root.isSearchSelected ? Colors.tertiary : root.isSearchMatch ? Styling.srItem("overprimary") : Styling.srItem("overprimary")
         border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 0)
         visible: windowPreview.hasContent && Config.performance.windowPreview
         z: 5
@@ -245,17 +271,94 @@ Item {
 
         onReleased: mouse => {
             const overviewRoot = parent.parent.parent.parent;
-            const targetWorkspace = overviewRoot.draggingTargetWorkspace;
+            let targetWorkspace = overviewRoot.draggingTargetWorkspace;
 
             root.pressed = false;
             root.Drag.active = false;
 
             if (mouse.button === Qt.LeftButton) {
+                // If targetWorkspace is -1, calculate it from current position
+                if (targetWorkspace === -1) {
+                    // Calculate which workspace we're over based on position
+                    const workspaceColIndex = Math.floor((root.x - root.xOffset + root.availableWorkspaceWidth / 2) / (root.availableWorkspaceWidth + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing));
+                    const workspaceRowIndex = Math.floor((root.y - root.yOffset + root.availableWorkspaceHeight / 2) / (root.availableWorkspaceHeight + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing));
+                    
+                    if (workspaceColIndex >= 0 && workspaceColIndex < overviewRoot.columns && 
+                        workspaceRowIndex >= 0 && workspaceRowIndex < overviewRoot.rows) {
+                        targetWorkspace = overviewRoot.workspaceGroup * overviewRoot.workspacesShown + 
+                                        workspaceRowIndex * overviewRoot.columns + workspaceColIndex + 1;
+                    } else {
+                        // Out of bounds, default to current workspace
+                        targetWorkspace = windowData?.workspace.id;
+                    }
+                }
+
                 root.dragFinished(targetWorkspace);
                 overviewRoot.draggingTargetWorkspace = -1;
 
-                // Reset position if no target workspace or same workspace
-                if (targetWorkspace === -1 || targetWorkspace === windowData?.workspace.id) {
+                // Check if moving to different workspace
+                if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) {
+                    // Moving to different workspace
+                    if (windowData?.floating && (root.x !== root.initX || root.y !== root.initY)) {
+                        // Calculate position in the target workspace
+                        // Get target workspace offset
+                        const targetColIndex = (targetWorkspace - 1) % overviewRoot.columns;
+                        const targetRowIndex = Math.floor((targetWorkspace - 1) % overviewRoot.workspacesShown / overviewRoot.columns);
+                        const targetXOffset = Math.round((overviewRoot.workspaceImplicitWidth + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing) * targetColIndex + overviewRoot.workspacePadding / 2);
+                        const targetYOffset = Math.round((overviewRoot.workspaceImplicitHeight + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing) * targetRowIndex + overviewRoot.workspacePadding / 2);
+                        
+                        // Calculate relative position in target workspace
+                        const relativeX = root.x - targetXOffset;
+                        const relativeY = root.y - targetYOffset;
+                        
+                        // Convert to percentage
+                        const percentageX = Math.round((relativeX / root.availableWorkspaceWidth) * 100);
+                        const percentageY = Math.round((relativeY / root.availableWorkspaceHeight) * 100);
+                        
+                        // Move to workspace and set position
+                        Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
+                        Hyprland.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
+                        
+                        // Force immediate window data update
+                        HyprlandData.updateWindowList();
+                    } else {
+                        // Just move workspace without repositioning
+                        Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
+                        
+                        // Force immediate window data update
+                        HyprlandData.updateWindowList();
+                    }
+                    
+                    // Reset position in overview
+                    root.x = root.initX;
+                    root.y = root.initY;
+                } else if (windowData?.floating && (root.x !== root.initX || root.y !== root.initY)) {
+                    // Dropped on same workspace and floating - reposition
+                    const relativeX = root.x - root.xOffset;
+                    const relativeY = root.y - root.yOffset;
+                    
+                    const percentageX = Math.round((relativeX / root.availableWorkspaceWidth) * 100);
+                    const percentageY = Math.round((relativeY / root.availableWorkspaceHeight) * 100);
+                    
+                    const draggedX = root.x;
+                    const draggedY = root.y;
+                    
+                    Hyprland.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
+                    
+                    // Force immediate window data update
+                    HyprlandData.updateWindowList();
+                    
+                    // Set override position for immediate visual update
+                    root.overrideX = draggedX;
+                    root.overrideY = draggedY;
+                    root.useOverridePosition = true;
+                    
+                    root.x = draggedX;
+                    root.y = draggedY;
+                    
+                    resetOverrideTimer.restart();
+                } else {
+                    // Reset position for non-floating or non-moved windows
                     root.x = root.initX;
                     root.y = root.initY;
                 }

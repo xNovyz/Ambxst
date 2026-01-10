@@ -664,7 +664,7 @@ Item {
                                         font.family: Config.theme.font
                                         font.pixelSize: Styling.fontSize(-1)
                                         font.bold: true
-                                        color: Styling.styledRectItem("overprimary")
+                                        color: Styling.srItem("overprimary")
                                     }
                                     Item {
                                         Layout.fillWidth: true
@@ -1037,7 +1037,7 @@ Item {
                 Text {
                     anchors.centerIn: parent
                     text: Icons.accept
-                    color: Styling.styledRectItem("primary")
+                    color: Styling.srItem("primary")
                     font.family: Icons.font
                     font.pixelSize: 16
                     scale: checked ? 1.0 : 0.0

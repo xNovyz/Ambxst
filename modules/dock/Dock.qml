@@ -85,6 +85,16 @@ Scope {
             required property ShellScreen modelData
             screen: modelData
 
+            // Reference to the bar panel on this screen to check its state
+            readonly property var barPanelRef: Visibilities.barPanels[screen.name]
+            // Only allow exclusive zone if the bar is also pinned (to prevent pushing the bar when it's floating)
+            readonly property bool barPinned: {
+                if (barPanelRef && typeof barPanelRef.pinned !== 'undefined') {
+                    return barPanelRef.pinned;
+                }
+                return true; // Default to true if not found, to maintain original behavior
+            }
+
             // Reveal logic: pinned, hover, no active window
             property bool reveal: root.pinned || (Config.dock?.hoverToReveal && dockMouseArea.containsMouse) || !ToplevelManager.activeToplevel?.activated
 
@@ -99,14 +109,17 @@ Scope {
             readonly property int shadowSpace: 32
             readonly property int dockSize: Config.dock?.height ?? 56
 
-            // Reserve space when pinned (without shadow space to not push windows too far)
-            exclusiveZone: root.pinned ? dockSize + totalMargin : 0
+            // Reserve space when pinned, but ONLY if bar is also pinned (to avoid displacement issues)
+            // If bar is unpinned (auto-hide), dock becomes overlay-only (0 zone)
+            exclusiveZone: (root.pinned && barPinned) ? dockSize + totalMargin : 0
 
             implicitWidth: root.isVertical ? dockSize + totalMargin + shadowSpace * 2 : dockContent.implicitWidth + shadowSpace * 2
             implicitHeight: root.isVertical ? dockContent.implicitHeight + shadowSpace * 2 : dockSize + totalMargin + shadowSpace * 2
 
             WlrLayershell.namespace: "quickshell"
+            WlrLayershell.layer: WlrLayer.Overlay
             color: "transparent"
+            exclusionMode: ExclusionMode.Ignore
 
             mask: Region {
                 item: dockMouseArea
@@ -423,23 +436,19 @@ Scope {
                                 implicitWidth: 32
                                 implicitHeight: 32
 
-                                background: Rectangle {
+                                background: StyledRect {
+                                    visible: root.pinned || pinButton.hovered
+                                    variant: root.pinned ? "primary" : "focus"
                                     radius: Styling.radius(-2)
-                                    color: root.pinned ? Styling.styledRectItem("overprimary") : (pinButton.hovered ? Qt.rgba(Styling.styledRectItem("overprimary").r, Styling.styledRectItem("overprimary").g, Styling.styledRectItem("overprimary").b, 0.15) : "transparent")
-
-                                    Behavior on color {
-                                        enabled: Config.animDuration > 0
-                                        ColorAnimation {
-                                            duration: Config.animDuration / 2
-                                        }
-                                    }
+                                    enableShadow: false
+                                    enableBorder: false
                                 }
 
                                 contentItem: Text {
                                     text: Icons.pin
                                     font.family: Icons.font
                                     font.pixelSize: 16
-                                    color: root.pinned ? Colors.overPrimary : Colors.overBackground
+                                    color: root.pinned ? Styling.srItem("primary") : Colors.overBackground
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
 
@@ -447,6 +456,13 @@ Scope {
                                     Behavior on rotation {
                                         enabled: Config.animDuration > 0
                                         NumberAnimation {
+                                            duration: Config.animDuration / 2
+                                        }
+                                    }
+
+                                    Behavior on color {
+                                        enabled: Config.animDuration > 0
+                                        ColorAnimation {
                                             duration: Config.animDuration / 2
                                         }
                                     }
@@ -508,16 +524,12 @@ Scope {
                                 implicitWidth: 32
                                 implicitHeight: 32
 
-                                background: Rectangle {
+                                background: StyledRect {
+                                    visible: overviewButton.hovered
+                                    variant: "focus"
                                     radius: Styling.radius(-2)
-                                    color: overviewButton.hovered ? Qt.rgba(Styling.styledRectItem("overprimary").r, Styling.styledRectItem("overprimary").g, Styling.styledRectItem("overprimary").b, 0.15) : "transparent"
-
-                                    Behavior on color {
-                                        enabled: Config.animDuration > 0
-                                        ColorAnimation {
-                                            duration: Config.animDuration / 2
-                                        }
-                                    }
+                                    enableShadow: false
+                                    enableBorder: false
                                 }
 
                                 contentItem: Text {
@@ -565,23 +577,19 @@ Scope {
                                 implicitWidth: 32
                                 implicitHeight: 32
 
-                                background: Rectangle {
+                                background: StyledRect {
+                                    visible: root.pinned || pinButtonV.hovered
+                                    variant: root.pinned ? "primary" : "focus"
                                     radius: Styling.radius(-2)
-                                    color: root.pinned ? Styling.styledRectItem("overprimary") : (pinButtonV.hovered ? Qt.rgba(Styling.styledRectItem("overprimary").r, Styling.styledRectItem("overprimary").g, Styling.styledRectItem("overprimary").b, 0.15) : "transparent")
-
-                                    Behavior on color {
-                                        enabled: Config.animDuration > 0
-                                        ColorAnimation {
-                                            duration: Config.animDuration / 2
-                                        }
-                                    }
+                                    enableShadow: false
+                                    enableBorder: false
                                 }
 
                                 contentItem: Text {
                                     text: Icons.pin
                                     font.family: Icons.font
                                     font.pixelSize: 16
-                                    color: root.pinned ? Colors.overPrimary : Colors.overBackground
+                                    color: root.pinned ? Styling.srItem("primary") : Colors.overBackground
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
 
@@ -589,6 +597,13 @@ Scope {
                                     Behavior on rotation {
                                         enabled: Config.animDuration > 0
                                         NumberAnimation {
+                                            duration: Config.animDuration / 2
+                                        }
+                                    }
+
+                                    Behavior on color {
+                                        enabled: Config.animDuration > 0
+                                        ColorAnimation {
                                             duration: Config.animDuration / 2
                                         }
                                     }
@@ -650,16 +665,12 @@ Scope {
                                 implicitWidth: 32
                                 implicitHeight: 32
 
-                                background: Rectangle {
+                                background: StyledRect {
+                                    visible: overviewButtonV.hovered
+                                    variant: "focus"
                                     radius: Styling.radius(-2)
-                                    color: overviewButtonV.hovered ? Qt.rgba(Styling.styledRectItem("overprimary").r, Styling.styledRectItem("overprimary").g, Styling.styledRectItem("overprimary").b, 0.15) : "transparent"
-
-                                    Behavior on color {
-                                        enabled: Config.animDuration > 0
-                                        ColorAnimation {
-                                            duration: Config.animDuration / 2
-                                        }
-                                    }
+                                    enableShadow: false
+                                    enableBorder: false
                                 }
 
                                 contentItem: Text {

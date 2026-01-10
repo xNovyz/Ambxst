@@ -108,8 +108,16 @@ Rectangle {
             property bool keyboardNavigation: false
 
             // Animated model for smooth filtering
-            property var filteredApps: searchText.length > 0 ? AppSearch.fuzzyQuery(searchText) : AppSearch.getAllApps()
+            property var filteredApps: []
             property var appsById: ({})
+
+            function updateFilteredApps() {
+                if (searchText.length > 0) {
+                    filteredApps = AppSearch.fuzzyQuery(searchText);
+                } else {
+                    filteredApps = AppSearch.getAllApps();
+                }
+            }
 
             onFilteredAppsChanged: {
                 resultsList.enableScrollAnimation = false;
@@ -148,6 +156,8 @@ Rectangle {
                 let app = appsById[appId];
                 if (app && app.execute) {
                     app.execute();
+                    // Record usage for sorting priority
+                    UsageTracker.recordUsage(appId);
                 }
             }
 
@@ -156,11 +166,18 @@ Rectangle {
             }
 
             Component.onCompleted: {
+                updateFilteredApps();
                 updateAppsModel();
                 focusSearchInput();
+                
+                // Re-update when UsageTracker finishes loading
+                UsageTracker.usageDataReady.connect(function() {
+                    updateFilteredApps();
+                });
             }
 
             onSearchTextChanged: {
+                updateFilteredApps();
                 // Detect prefix and switch tab if needed
                 let detectedTab = detectPrefix(searchText);
                 if (detectedTab !== currentTab) {
@@ -633,24 +650,15 @@ Rectangle {
                                 Layout.preferredHeight: 32
 
                                 Image {
+                                    id: appIconImage
                                     anchors.fill: parent
                                     source: "image://icon/" + appIcon
                                     fillMode: Image.PreserveAspectFit
                                     visible: !Config.tintIcons
-
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        color: "transparent"
-                                        border.color: Colors.outline
-                                        border.width: parent.status === Image.Error ? 1 : 0
-                                        radius: 4
-
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: "?"
-                                            visible: parent.parent.status === Image.Error
-                                            color: Colors.overBackground
-                                            font.family: Config.theme.font
+                                    
+                                    onStatusChanged: {
+                                        if (status === Image.Error) {
+                                            source = "image://icon/image-missing";
                                         }
                                     }
                                 }
@@ -659,8 +667,15 @@ Rectangle {
                                     anchors.fill: parent
                                     visible: Config.tintIcons
                                     sourceItem: Image {
+                                        id: tintedAppIcon
                                         source: "image://icon/" + appIcon
                                         fillMode: Image.PreserveAspectFit
+                                        
+                                        onStatusChanged: {
+                                            if (status === Image.Error) {
+                                                source = "image://icon/image-missing";
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -674,9 +689,9 @@ Rectangle {
                                     text: appName
                                     color: {
                                         if (isExpanded) {
-                                            return Styling.styledRectItem("pane");
+                                            return Styling.srItem("pane");
                                         } else if (appLauncher.selectedIndex === index) {
-                                            return Styling.styledRectItem("primary");
+                                            return Styling.srItem("primary");
                                         } else {
                                             return Colors.overBackground;
                                         }
@@ -700,9 +715,9 @@ Rectangle {
                                     text: appComment || ""
                                     color: {
                                         if (isExpanded) {
-                                            return Styling.styledRectItem("pane");
+                                            return Styling.srItem("pane");
                                         } else if (appLauncher.selectedIndex === index) {
-                                            return Styling.styledRectItem("primary");
+                                            return Styling.srItem("primary");
                                         } else {
                                             return Colors.outline;
                                         }
@@ -759,8 +774,8 @@ Rectangle {
                                         {
                                             text: "Launch",
                                             icon: Icons.launch,
-                                            highlightColor: Styling.styledRectItem("overprimary"),
-                                            textColor: Styling.styledRectItem("primary"),
+                                            highlightColor: Styling.srItem("overprimary"),
+                                            textColor: Styling.srItem("primary"),
                                             action: function () {
                                                 appLauncher.executeApp(appId);
                                                 Visibilities.setActiveModule("");
@@ -770,7 +785,7 @@ Rectangle {
                                             text: TaskbarApps.isPinned(appId) ? "Unpin from Dock" : "Pin to Dock",
                                             icon: TaskbarApps.isPinned(appId) ? Icons.unpin : Icons.pin,
                                             highlightColor: TaskbarApps.isPinned(appId) ? Colors.error : Colors.tertiary,
-                                            textColor: TaskbarApps.isPinned(appId) ? Styling.styledRectItem("error") : Styling.styledRectItem("tertiary"),
+                                            textColor: TaskbarApps.isPinned(appId) ? Styling.srItem("error") : Styling.srItem("tertiary"),
                                             action: function () {
                                                 TaskbarApps.togglePin(appId);
                                                 appLauncher.expandedItemIndex = -1;
@@ -780,7 +795,7 @@ Rectangle {
                                             text: "Create Shortcut",
                                             icon: Icons.shortcut,
                                             highlightColor: Colors.secondary,
-                                            textColor: Styling.styledRectItem("secondary"),
+                                            textColor: Styling.srItem("secondary"),
                                             action: function () {
                                                 let desktopDir = Quickshell.env("XDG_DESKTOP_DIR") || Quickshell.env("HOME") + "/Desktop";
                                                 let timestamp = Date.now();
@@ -1302,7 +1317,7 @@ Rectangle {
                             text: iconContainer.showingSyncFeedback ? Icons.sync : Icons.sun
                             font.family: Icons.font
                             font.pixelSize: 18
-                            color: Brightness.syncBrightness ? Styling.styledRectItem("primary") : Colors.overBackground
+                            color: Brightness.syncBrightness ? Styling.srItem("primary") : Colors.overBackground
                             rotation: iconContainer.showingSyncFeedback ? syncIconRotation : brightnessIconRotation
                             scale: iconContainer.showingSyncFeedback ? 1 : brightnessIconScale
                             opacity: iconOpacity
@@ -1420,7 +1435,7 @@ Rectangle {
                         sliderVisible: true
                         iconPos: "start"
                         icon: ""
-                        progressColor: Styling.styledRectItem("overprimary")
+                        progressColor: Styling.srItem("overprimary")
 
                         property real brightnessValue: 0
                         property var currentMonitor: {
@@ -1512,7 +1527,7 @@ Rectangle {
                     return Icons.speakerHigh;
                 }
                 value: Audio.sink?.audio?.volume ?? 0
-                accentColor: Audio.sink?.audio?.muted ? Colors.outline : Styling.styledRectItem("overprimary")
+                accentColor: Audio.sink?.audio?.muted ? Colors.outline : Styling.srItem("overprimary")
                 isToggleable: true
                 isToggled: !(Audio.sink?.audio?.muted ?? false)
 
@@ -1540,7 +1555,7 @@ Rectangle {
                 Layout.preferredHeight: 48
                 icon: Audio.source?.audio?.muted ? Icons.micSlash : Icons.mic
                 value: Audio.source?.audio?.volume ?? 0
-                accentColor: Audio.source?.audio?.muted ? Colors.outline : Styling.styledRectItem("overprimary")
+                accentColor: Audio.source?.audio?.muted ? Colors.outline : Styling.srItem("overprimary")
                 isToggleable: true
                 isToggled: !(Audio.source?.audio?.muted ?? false)
 

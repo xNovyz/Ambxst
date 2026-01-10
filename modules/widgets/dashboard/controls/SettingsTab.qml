@@ -152,7 +152,7 @@ Rectangle {
                                     text: sidebarButton.modelData.isIcon ? sidebarButton.modelData.icon : ""
                                     font.family: Icons.font
                                     font.pixelSize: 20
-                                    color: sidebarButton.isActive ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("common")
+                                    color: sidebarButton.isActive ? Styling.srItem("overprimary") : Styling.srItem("common")
                                     anchors.verticalCenter: parent.verticalCenter
                                     leftPadding: 10
                                     visible: sidebarButton.modelData.isIcon
@@ -188,7 +188,7 @@ Rectangle {
                                         layer.effect: MultiEffect {
                                             brightness: 1.0
                                             colorization: 1.0
-                                            colorizationColor: sidebarButton.isActive ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("common")
+                                            colorizationColor: sidebarButton.isActive ? Styling.srItem("overprimary") : Styling.srItem("common")
                                         }
                                     }
                                 }
@@ -199,7 +199,7 @@ Rectangle {
                                     font.family: Config.theme.font
                                     font.pixelSize: Styling.fontSize(0)
                                     font.weight: sidebarButton.isActive ? Font.Bold : Font.Normal
-                                    color: sidebarButton.isActive ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("common")
+                                    color: sidebarButton.isActive ? Styling.srItem("overprimary") : Styling.srItem("common")
                                     anchors.verticalCenter: parent.verticalCenter
 
                                     Behavior on color {

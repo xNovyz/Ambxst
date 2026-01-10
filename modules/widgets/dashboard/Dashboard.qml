@@ -53,8 +53,8 @@ NotchAnimationBehavior {
             if (stack.currentItem && stack.currentItem.focusSearchInput) {
                 focusUnifiedLauncherTimer.restart();
             } else if (GlobalStates.dashboardCurrentTab === 0) {
-                 Notifications.hideAllPopups();
-                 focusUnifiedLauncherTimer.restart();
+                Notifications.hideAllPopups();
+                focusUnifiedLauncherTimer.restart();
             }
         } else {
             // Reset launcher state when dashboard closes
@@ -205,7 +205,7 @@ NotchAnimationBehavior {
                         contentItem: Text {
                             text: parent.text
                             textFormat: Text.RichText
-                            color: root.state.currentTab === index ? Styling.styledRectItem("primary") : Colors.overBackground
+                            color: root.state.currentTab === index ? Styling.srItem("primary") : Colors.overBackground
                             // font.family: Config.theme.font
                             font.family: Icons.font
                             // font.pixelSize: Config.theme.fontSize
@@ -269,7 +269,7 @@ NotchAnimationBehavior {
                     font.family: Icons.font
                     font.pixelSize: 20
                     font.weight: Font.Medium
-                    color: root.state.currentTab === 4 ? Styling.styledRectItem("primary") : Colors.overBackground
+                    color: root.state.currentTab === 4 ? Styling.srItem("primary") : Colors.overBackground
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
 

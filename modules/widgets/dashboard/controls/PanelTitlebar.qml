@@ -13,7 +13,7 @@ RowLayout {
 
     property string title: ""
     property string statusText: ""
-    property color statusColor: Styling.styledRectItem("overprimary")
+    property color statusColor: Styling.srItem("overprimary")
     property bool showToggle: false
     property bool toggleChecked: false
 
@@ -85,7 +85,7 @@ RowLayout {
                 text: actionButton.modelData.icon || ""
                 font.family: Icons.font
                 font.pixelSize: 14
-                color: actionButton.isLoading ? Styling.styledRectItem("overprimary") : (actionButton.enabled ? Colors.overBackground : Colors.outline)
+                color: actionButton.isLoading ? Styling.srItem("overprimary") : (actionButton.enabled ? Colors.overBackground : Colors.outline)
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
 
@@ -124,8 +124,8 @@ RowLayout {
             x: toggleSwitch.leftPadding
             y: parent.height / 2 - height / 2
             radius: height / 2
-            color: toggleSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.surfaceBright
-            border.color: toggleSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.outline
+            color: toggleSwitch.checked ? Styling.srItem("overprimary") : Colors.surfaceBright
+            border.color: toggleSwitch.checked ? Styling.srItem("overprimary") : Colors.outline
 
             Behavior on color {
                 enabled: Config.animDuration > 0

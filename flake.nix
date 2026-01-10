@@ -49,5 +49,16 @@
           };
         }
       );
+
+      apps = ambxstLib.forAllSystems (system:
+        let
+          Ambxst = self.packages.${system}.default;
+        in {
+          default = {
+            type = "app";
+            program = "${Ambxst}/bin/ambxst";
+          };
+        }
+      );
     };
 }

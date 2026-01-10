@@ -217,7 +217,7 @@ PanelWindow {
                     Rectangle {
                         anchors.fill: parent
                         color: "transparent"
-                        border.color: Styling.styledRectItem("overprimary")
+                        border.color: Styling.srItem("overprimary")
                         border.width: 2
                         radius: Styling.radius(0) / 2
                         visible: parent.containsDrag

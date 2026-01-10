@@ -87,7 +87,7 @@ update)
 	;;
 refresh)
 	echo "Refreshing Ambxst profile..."
-	exec nix profile upgrade --impure Ambxst
+	exec nix profile upgrade Ambxst --refresh --impure
 	;;
 lock)
 	# Trigger lockscreen via quickshell-ipc

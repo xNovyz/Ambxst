@@ -137,8 +137,8 @@ Item {
                 x: toggleSwitch.leftPadding
                 y: parent.height / 2 - height / 2
                 radius: height / 2
-                color: toggleSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.surfaceBright
-                border.color: toggleSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.outline
+                color: toggleSwitch.checked ? Styling.srItem("overprimary") : Colors.surfaceBright
+                border.color: toggleSwitch.checked ? Styling.srItem("overprimary") : Colors.outline
 
                 Behavior on color {
                     enabled: Config.animDuration > 0
@@ -718,6 +718,77 @@ Item {
                             }
                         }
 
+                        Separator {
+                            Layout.fillWidth: true
+                        }
+
+                        Text {
+                            text: "Auto-hide"
+                            font.family: Config.theme.font
+                            font.pixelSize: Styling.fontSize(-1)
+                            font.weight: Font.Medium
+                            color: Colors.overSurfaceVariant
+                            Layout.bottomMargin: -4
+                        }
+
+                        ToggleRow {
+                            label: "Pinned on Startup"
+                            checked: Config.bar.pinnedOnStartup ?? true
+                            onToggled: value => {
+                                if (value !== Config.bar.pinnedOnStartup) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.pinnedOnStartup = value;
+                                }
+                            }
+                        }
+
+                        ToggleRow {
+                            label: "Hover to Reveal"
+                            checked: Config.bar.hoverToReveal ?? true
+                            onToggled: value => {
+                                if (value !== Config.bar.hoverToReveal) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.hoverToReveal = value;
+                                }
+                            }
+                        }
+
+                        NumberInputRow {
+                            label: "Hover Region Height"
+                            value: Config.bar.hoverRegionHeight ?? 8
+                            minValue: 0
+                            maxValue: 32
+                            suffix: "px"
+                            onValueEdited: newValue => {
+                                if (newValue !== Config.bar.hoverRegionHeight) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.hoverRegionHeight = newValue;
+                                }
+                            }
+                        }
+
+                        ToggleRow {
+                            label: "Show Pin Button"
+                            checked: Config.bar.showPinButton ?? true
+                            onToggled: value => {
+                                if (value !== Config.bar.showPinButton) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.showPinButton = value;
+                                }
+                            }
+                        }
+
+                        ToggleRow {
+                            label: "Available on Fullscreen"
+                            checked: Config.bar.availableOnFullscreen ?? false
+                            onToggled: value => {
+                                if (value !== Config.bar.availableOnFullscreen) {
+                                    GlobalStates.markShellChanged();
+                                    Config.bar.availableOnFullscreen = value;
+                                }
+                            }
+                        }
+
                         ScreenListRow {
                             label: "Screens"
                             selectedScreens: Config.bar.screenList ?? []
@@ -930,7 +1001,7 @@ Item {
                                 id: overviewScaleSlider
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 20
-                                progressColor: Styling.styledRectItem("overprimary")
+                                progressColor: Styling.srItem("overprimary")
                                 tooltipText: `${(value * 0.2).toFixed(2)}`
                                 scroll: true
                                 stepSize: 0.05  // 0.05 * 0.2 = 0.01 scale steps
@@ -1380,7 +1451,7 @@ Item {
                                     text: "OCR Languages"
                                     font.family: Config.theme.font
                                     font.pixelSize: Styling.fontSize(-2)
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
                                     font.bold: true
                                     Layout.topMargin: 8
                                 }

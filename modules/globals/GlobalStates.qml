@@ -168,9 +168,10 @@ Singleton {
 
     // Screenshot Tool state
     property bool screenshotToolVisible: false
+    property string screenshotToolMode: "normal" // "normal" or "lens"
 
-    // Screen Record Tool state (deprecated/removed)
-    // property bool screenRecordToolVisible: false
+    // Screen Record Tool state
+    property bool screenRecordToolVisible: false
 
     // Mirror Tool state
     property bool mirrorWindowVisible: false
@@ -333,7 +334,7 @@ Singleton {
 
     // Shell config sections and their properties
     readonly property var _shellSections: {
-        "bar": ["position", "launcherIcon", "launcherIconTint", "launcherIconFullTint", "launcherIconSize", "enableFirefoxPlayer", "screenList"],
+        "bar": ["position", "launcherIcon", "launcherIconTint", "launcherIconFullTint", "launcherIconSize", "enableFirefoxPlayer", "screenList", "pinnedOnStartup", "hoverToReveal", "hoverRegionHeight", "showPinButton", "availableOnFullscreen"],
         "notch": ["theme", "hoverRegionHeight"],
         "workspaces": ["shown", "showAppIcons", "alwaysShowNumbers", "showNumbers", "dynamic"],
         "overview": ["rows", "columns", "scale", "workspaceSpacing"],

@@ -680,7 +680,7 @@ Rectangle {
                                 text: root.clearButtonConfirmState ? Icons.xeyes : Icons.broom
                                 font.family: Icons.font
                                 font.pixelSize: 20
-                                color: root.clearButtonConfirmState ? clearButton.item : Styling.styledRectItem("overprimary")
+                                color: root.clearButtonConfirmState ? clearButton.item : Styling.srItem("overprimary")
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                                 textFormat: Text.RichText
@@ -842,9 +842,9 @@ Rectangle {
                         property color textColor: {
                             if (root.selectedIndex === index && !root.isRecentFocused) {
                                 if (root.expandedItemIndex === index) {
-                                    return Styling.styledRectItem("pane");
+                                    return Styling.srItem("pane");
                                 }
-                                return Styling.styledRectItem("primary");
+                                return Styling.srItem("primary");
                             } else {
                                 return Colors.overSurface;
                             }
@@ -1061,7 +1061,7 @@ Rectangle {
                                                     font.weight: skinToneOptionsListView.currentIndex === index ? Font.Bold : Font.Normal
                                                     color: {
                                                         if (skinToneOptionsListView.currentIndex === index) {
-                                                            return Styling.styledRectItem("primary");
+                                                            return Styling.srItem("primary");
                                                         }
                                                         return Colors.overSurface;
                                                     }
@@ -1140,7 +1140,7 @@ Rectangle {
                                 }
 
                                 contentItem: Rectangle {
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
                                     radius: Styling.radius(0)
                                 }
 
@@ -1316,7 +1316,7 @@ Rectangle {
 
                             property color textColor: {
                                 if (root.selectedRecentIndex === index && root.isRecentFocused) {
-                                    return Styling.styledRectItem("primary");
+                                    return Styling.srItem("primary");
                                 } else {
                                     return Colors.overSurface;
                                 }

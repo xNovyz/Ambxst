@@ -216,7 +216,7 @@ Item {
                             textFormat: Text.RichText
                             font.family: Icons.font
                             font.pixelSize: 16
-                            color: topRow.showAppName ? Colors.outline : Styling.styledRectItem("overprimary")
+                            color: topRow.showAppName ? Colors.outline : Styling.srItem("overprimary")
                             visible: !groupSmallAppIcon.visible
                         }
 
@@ -228,7 +228,7 @@ Item {
                             font.family: Config.theme.font
                             font.pixelSize: Config.theme.fontSize
                             font.weight: Font.Bold
-                            color: topRow.showAppName ? Colors.outline : Styling.styledRectItem("overprimary")
+                            color: topRow.showAppName ? Colors.outline : Styling.srItem("overprimary")
                         }
                         Text {
                             id: timeText

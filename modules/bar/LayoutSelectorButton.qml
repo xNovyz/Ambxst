@@ -63,7 +63,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             opacity: root.popupOpen ? 0 : (root.isHovered ? 0.25 : 0)
             radius: parent.radius ?? 0
 
@@ -80,7 +80,7 @@ Item {
             text: root.getLayoutIcon(GlobalStates.hyprlandLayout)
             font.family: Icons.font
             font.pixelSize: 18
-            color: root.popupOpen ? buttonBg.item : Styling.styledRectItem("overprimary")
+            color: root.popupOpen ? buttonBg.item : Styling.srItem("overprimary")
         }
 
         MouseArea {

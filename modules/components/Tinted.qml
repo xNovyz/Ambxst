@@ -16,7 +16,7 @@ Item {
             contrast: -0.25
             // saturation: -0.25
             colorization: 0.25
-            colorizationColor: Styling.styledRectItem("overprimary")
+            colorizationColor: Styling.srItem("overprimary")
         }
     }
 }

@@ -67,7 +67,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             opacity: root.isHovered && !root.isExpanded ? 0.25 : 0
             radius: parent.radius ?? 0
 
@@ -126,7 +126,7 @@ Item {
                     return Icons.speakerLow;
                 return Icons.speakerHigh;
             }
-            progressColor: Audio.sink?.audio?.muted ? Colors.outline : Styling.styledRectItem("overprimary")
+            progressColor: Audio.sink?.audio?.muted ? Colors.outline : Styling.srItem("overprimary")
 
             onValueChanged: {
                 if (Audio.sink?.audio) {

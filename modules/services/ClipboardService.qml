@@ -500,7 +500,7 @@ QtObject {
         // Use JSON mode for reliable parsing, with timeout to avoid locks
         // ORDER BY pinned DESC, display_index ASC to show pinned items first (ordered by index), then unpinned items (ordered by index)
         listProcess.command = ["sh", "-c", 
-            "sqlite3 '" + dbPath + "' <<'EOSQL'\n.timeout 5000\n.mode json\nSELECT id, mime_type, preview, is_image, binary_path, content_hash, size, created_at, pinned, alias, display_index FROM clipboard_items ORDER BY pinned DESC, display_index ASC, updated_at DESC LIMIT 100;\nEOSQL"
+            "sqlite3 '" + dbPath + "' <<'EOSQL'\n.timeout 5000\n.mode json\nSELECT id, mime_type, preview, is_image, binary_path, content_hash, size, created_at, pinned, alias, display_index FROM clipboard_items ORDER BY pinned DESC, display_index ASC, updated_at DESC, id DESC LIMIT 100;\nEOSQL"
         ];
         listProcess.running = true;
     }
@@ -554,12 +554,12 @@ QtObject {
             "END WHERE pinned = (SELECT pinned FROM clipboard_items WHERE id = " + id + ");\n" +
             "-- Compact indices to remove gaps for both pinned and unpinned\n" +
             "WITH reindexed_pinned AS (\n" +
-            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC) - 1 AS new_idx\n" +
+            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC, id DESC) - 1 AS new_idx\n" +
             "  FROM clipboard_items WHERE pinned = 1\n" +
             ")\n" +
             "UPDATE clipboard_items SET display_index = (SELECT new_idx FROM reindexed_pinned WHERE reindexed_pinned.id = clipboard_items.id) WHERE pinned = 1;\n" +
             "WITH reindexed_unpinned AS (\n" +
-            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC) - 1 AS new_idx\n" +
+            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC, id DESC) - 1 AS new_idx\n" +
             "  FROM clipboard_items WHERE pinned = 0\n" +
             ")\n" +
             "UPDATE clipboard_items SET display_index = (SELECT new_idx FROM reindexed_unpinned WHERE reindexed_unpinned.id = clipboard_items.id) WHERE pinned = 0;\n" +
@@ -654,7 +654,7 @@ QtObject {
             "UPDATE clipboard_items SET display_index = " + newIndex + " WHERE id = " + itemId + ";\n" +
             "-- Compact indices to remove gaps\n" +
             "WITH reindexed AS (\n" +
-            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC) - 1 AS new_idx\n" +
+            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC, id DESC) - 1 AS new_idx\n" +
             "  FROM clipboard_items WHERE pinned = " + isPinned + "\n" +
             ")\n" +
             "UPDATE clipboard_items SET display_index = (SELECT new_idx FROM reindexed WHERE reindexed.id = clipboard_items.id) WHERE pinned = " + isPinned + ";\n" +
@@ -737,6 +737,17 @@ QtObject {
         var cmd = "sqlite3 '" + dbPath + "' <<'EOSQL'\n" +
             ".timeout 5000\n" +
             "BEGIN TRANSACTION;\n" +
+            "-- Reindex to ensure unique indices\n" +
+            "WITH reindexed_pinned AS (\n" +
+            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC, id DESC) - 1 AS new_idx\n" +
+            "  FROM clipboard_items WHERE pinned = 1\n" +
+            ")\n" +
+            "UPDATE clipboard_items SET display_index = (SELECT new_idx FROM reindexed_pinned WHERE reindexed_pinned.id = clipboard_items.id) WHERE pinned = 1;\n" +
+            "WITH reindexed_unpinned AS (\n" +
+            "  SELECT id, ROW_NUMBER() OVER (ORDER BY display_index ASC, updated_at DESC, id DESC) - 1 AS new_idx\n" +
+            "  FROM clipboard_items WHERE pinned = 0\n" +
+            ")\n" +
+            "UPDATE clipboard_items SET display_index = (SELECT new_idx FROM reindexed_unpinned WHERE reindexed_unpinned.id = clipboard_items.id) WHERE pinned = 0;\n" +
             "-- Create temp variables for the swap\n" +
             "CREATE TEMP TABLE IF NOT EXISTS swap_temp (idx1 INTEGER, idx2 INTEGER);\n" +
             "DELETE FROM swap_temp;\n" +

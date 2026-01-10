@@ -76,7 +76,7 @@ Item {
                         Layout.fillHeight: true
                         radius: Styling.radius(0)
 
-                        readonly property color buttonItem: leftMouseArea.pressed ? itemColor : Styling.styledRectItem("overprimary")
+                        readonly property color buttonItem: leftMouseArea.pressed ? itemColor : Styling.srItem("overprimary")
 
                         Text {
                             anchors.centerIn: parent
@@ -101,7 +101,7 @@ Item {
                         Layout.fillHeight: true
                         radius: Styling.radius(0)
 
-                        readonly property color buttonItem: rightMouseArea.pressed ? itemColor : Styling.styledRectItem("overprimary")
+                        readonly property color buttonItem: rightMouseArea.pressed ? itemColor : Styling.srItem("overprimary")
 
                         Text {
                             anchors.centerIn: parent

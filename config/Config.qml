@@ -592,6 +592,12 @@ Singleton {
             property list<string> screenList: []
             property bool enableFirefoxPlayer: false
             property list<var> barColor: [["surface", 0.0]]
+            // Auto-hide properties
+            property bool pinnedOnStartup: true
+            property bool hoverToReveal: true
+            property int hoverRegionHeight: 8
+            property bool showPinButton: true
+            property bool availableOnFullscreen: false
         }
     }
 
@@ -775,6 +781,8 @@ Singleton {
             property int blurSize: 4
             property int blurPasses: 2
             property bool blurIgnoreOpacity: true
+            property bool blurExplicitIgnoreAlpha: false
+            property real blurIgnoreAlphaValue: 0.2
             property bool blurNewOptimizations: true
             property bool blurXray: false
             property real blurNoise: 0.0
@@ -1104,9 +1112,49 @@ Singleton {
             property bool showRunningIndicators: true
             property bool showPinButton: true
             property bool showOverviewButton: true
-            property list<string> pinnedApps: ["org.gnome.Nautilus", "firefox", "kitty"]
             property list<string> ignoredAppRegexes: ["quickshell.*", "xdg-desktop-portal.*"]
             property list<string> screenList: []
+        }
+    }
+
+    // ============================================
+    // PINNED APPS (stored in dataPath for per-user data)
+    // ============================================
+    property bool pinnedAppsReady: false
+
+    Process {
+        id: checkPinnedAppsFile
+        running: true
+        command: ["test", "-f", Quickshell.dataPath("pinnedapps.json")]
+
+        onExited: exitCode => {
+            if (exitCode !== 0) {
+                console.log("pinnedapps.json not found, creating with default values...");
+                pinnedAppsLoader.writeAdapter();
+            }
+            root.pinnedAppsReady = true;
+        }
+    }
+
+    FileView {
+        id: pinnedAppsLoader
+        path: Quickshell.dataPath("pinnedapps.json")
+        atomicWrites: true
+        watchChanges: true
+        onFileChanged: {
+            root.pauseAutoSave = true;
+            reload();
+            root.pauseAutoSave = false;
+        }
+        onPathChanged: reload()
+        onAdapterUpdated: {
+            if (root.pinnedAppsReady && !root.pauseAutoSave) {
+                pinnedAppsLoader.writeAdapter();
+            }
+        }
+
+        adapter: JsonAdapter {
+            property list<string> apps: ["kitty"]
         }
     }
 
@@ -1162,8 +1210,95 @@ Singleton {
             if (exitCode !== 0) {
                 console.log("binds.json not found, creating with default values...");
                 keybindsLoader.writeAdapter();
+            } else {
+                // File exists, check if it needs repair
+                repairKeybindsTimer.start();
             }
             root.keybindsInitialLoadComplete = true;
+        }
+    }
+
+    // Timer to repair keybinds after initial load
+    Timer {
+        id: repairKeybindsTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            if (keybindsRawLoader.status === FileView.Ready) {
+                repairKeybinds();
+            }
+        }
+    }
+
+    // Raw loader to check and repair binds.json
+    FileView {
+        id: keybindsRawLoader
+        path: keybindsPath
+    }
+
+    // Function to repair missing binds
+    function repairKeybinds() {
+        const raw = keybindsRawLoader.text();
+        if (!raw) return;
+
+        try {
+            const current = JSON.parse(raw);
+            let needsUpdate = false;
+
+            // Ensure ambxst structure exists
+            if (!current.ambxst) {
+                current.ambxst = {};
+                needsUpdate = true;
+            }
+            if (!current.ambxst.dashboard) {
+                current.ambxst.dashboard = {};
+                needsUpdate = true;
+            }
+            if (!current.ambxst.system) {
+                current.ambxst.system = {};
+                needsUpdate = true;
+            }
+
+            // Get default binds from adapter
+            const adapter = keybindsLoader.adapter;
+            if (!adapter || !adapter.ambxst) return;
+
+            // Helper function to create clean bind object
+            function createCleanBind(bindObj) {
+                return {
+                    "modifiers": bindObj.modifiers || [],
+                    "key": bindObj.key || "",
+                    "dispatcher": bindObj.dispatcher || "",
+                    "argument": bindObj.argument || ""
+                };
+            }
+
+            // Check dashboard binds
+            const dashboardKeys = ["assistant", "clipboard", "emoji", "notes", "tmux", "wallpapers", "widgets"];
+            for (const key of dashboardKeys) {
+                if (!current.ambxst.dashboard[key] && adapter.ambxst.dashboard && adapter.ambxst.dashboard[key]) {
+                    console.log("Adding missing dashboard bind:", key);
+                    current.ambxst.dashboard[key] = createCleanBind(adapter.ambxst.dashboard[key]);
+                    needsUpdate = true;
+                }
+            }
+
+            // Check system binds
+            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens"];
+            for (const key of systemKeys) {
+                if (!current.ambxst.system[key] && adapter.ambxst.system && adapter.ambxst.system[key]) {
+                    console.log("Adding missing system bind:", key);
+                    current.ambxst.system[key] = createCleanBind(adapter.ambxst.system[key]);
+                    needsUpdate = true;
+                }
+            }
+
+            if (needsUpdate) {
+                console.log("Auto-repairing binds.json: adding missing binds");
+                keybindsRawLoader.setText(JSON.stringify(current, null, 4));
+            }
+        } catch (e) {
+            console.warn("Failed to repair binds.json:", e);
         }
     }
 
@@ -1342,6 +1477,24 @@ Singleton {
                         property string key: "S"
                         property string dispatcher: "global"
                         property string argument: "ambxst:tools"
+                    }
+                    property JsonObject screenshot: JsonObject {
+                        property list<string> modifiers: ["SUPER", "SHIFT"]
+                        property string key: "S"
+                        property string dispatcher: "global"
+                        property string argument: "ambxst:screenshot"
+                    }
+                    property JsonObject screenrecord: JsonObject {
+                        property list<string> modifiers: ["SUPER", "SHIFT"]
+                        property string key: "R"
+                        property string dispatcher: "global"
+                        property string argument: "ambxst:screenrecord"
+                    }
+                    property JsonObject lens: JsonObject {
+                        property list<string> modifiers: ["SUPER", "SHIFT"]
+                        property string key: "A"
+                        property string dispatcher: "global"
+                        property string argument: "ambxst:lens"
                     }
                 }
             }
@@ -3144,6 +3297,9 @@ Singleton {
     // Dock configuration
     property QtObject dock: dockLoader.adapter
 
+    // Pinned apps configuration (stored in dataPath)
+    property QtObject pinnedApps: pinnedAppsLoader.adapter
+
     // AI configuration
     property QtObject ai: aiLoader.adapter
 
@@ -3183,6 +3339,9 @@ Singleton {
     }
     function saveDock() {
         dockLoader.writeAdapter();
+    }
+    function savePinnedApps() {
+        pinnedAppsLoader.writeAdapter();
     }
     function saveAi() {
         aiLoader.writeAdapter();

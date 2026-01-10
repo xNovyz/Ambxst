@@ -117,7 +117,7 @@ Item {
                 font.family: Config.theme.font
                 font.pixelSize: Styling.fontSize(-1)
                 font.weight: Font.Medium
-                color: Styling.styledRectItem("overprimary")
+                color: Styling.srItem("overprimary")
                 visible: root.selectedStopIndex >= 0 && root.selectedStopIndex < root.stops.length
             }
         }
@@ -257,7 +257,7 @@ Item {
                             height: 6
                             anchors.top: parent.top
                             anchors.horizontalCenter: parent.horizontalCenter
-                            color: stopHandle.isSelected ? Styling.styledRectItem("overprimary") : Colors.outline
+                            color: stopHandle.isSelected ? Styling.srItem("overprimary") : Colors.outline
                         }
 
                         // Handle visual (centered)
@@ -268,7 +268,7 @@ Item {
                             radius: 8
                             anchors.centerIn: parent
                             color: Config.resolveColor(stopHandle.stopColor)
-                            border.color: stopHandle.isSelected ? Styling.styledRectItem("overprimary") : Colors.outline
+                            border.color: stopHandle.isSelected ? Styling.srItem("overprimary") : Colors.outline
                             border.width: stopHandle.isSelected ? 2 : 1
 
                             // Inner highlight
@@ -295,7 +295,7 @@ Item {
                             height: 6
                             anchors.bottom: parent.bottom
                             anchors.horizontalCenter: parent.horizontalCenter
-                            color: stopHandle.isSelected ? Styling.styledRectItem("overprimary") : Colors.outline
+                            color: stopHandle.isSelected ? Styling.srItem("overprimary") : Colors.outline
                         }
 
                         MouseArea {

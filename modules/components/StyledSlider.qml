@@ -29,7 +29,7 @@ Item {
     property real dragPosition: 0.0
     property real progressRatio: isDragging ? dragPosition : value
     property string tooltipText: `${Math.round(value * 100)}%`
-    property color progressColor: Styling.styledRectItem("overprimary")
+    property color progressColor: Styling.srItem("overprimary")
     property color backgroundColor: Colors.surfaceBright
     property bool wavy: false
     property real wavyAmplitude: 0.8
@@ -320,7 +320,7 @@ Item {
             z: 4
             onEntered: {
                 if (root.iconClickable) {
-                    iconColor = Styling.styledRectItem("overprimary");
+                    iconColor = Styling.srItem("overprimary");
                     root.iconHovered(true);
                 }
             }

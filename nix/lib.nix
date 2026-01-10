@@ -13,7 +13,4 @@ in {
   # Iterate over all supported Linux systems
   forAllSystems = f:
     builtins.foldl' (acc: system: acc // { ${system} = f system; }) {} linuxSystems;
-
-  # Detect if running on NixOS
-  detectNixOS = pkgs: pkgs ? config && pkgs.config ? nixosConfig;
 }

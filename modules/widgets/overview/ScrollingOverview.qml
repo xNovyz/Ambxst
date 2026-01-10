@@ -20,7 +20,7 @@ Item {
     readonly property int visibleWorkspaces: 3  // Show 3 workspaces at a time in viewport
     readonly property real workspaceSpacing: Config.overview.workspaceSpacing
     readonly property real workspacePadding: 4
-    readonly property color activeBorderColor: Styling.styledRectItem("overprimary")
+    readonly property color activeBorderColor: Styling.srItem("overprimary")
 
     // Monitor info
     property var currentScreen: null

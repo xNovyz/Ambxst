@@ -206,7 +206,7 @@ Popup {
                             text: Ai.fetchingModels ? Icons.circleNotch : (refreshBtn.confirming ? Icons.sync : Icons.arrowCounterClockwise)
                             font.family: Icons.font
                             font.pixelSize: 20
-                            color: refreshBtn.confirming ? Styling.styledRectItem("primary") : Styling.styledRectItem("overprimary")
+                            color: refreshBtn.confirming ? Styling.srItem("primary") : Styling.srItem("overprimary")
 
                             RotationAnimation on rotation {
                                 loops: Animation.Infinite
@@ -239,7 +239,7 @@ Popup {
                         font.family: Config.theme.font
                         font.pixelSize: 13
                         font.weight: Font.Bold
-                        color: Styling.styledRectItem("primary")
+                        color: Styling.srItem("primary")
 
                         opacity: refreshBtn.confirming ? 1 : 0
                         visible: opacity > 0
@@ -460,7 +460,7 @@ Popup {
 
                         Text {
                             text: modelData.name
-                            color: delegateBtn.isSelected ? Styling.styledRectItem("primary") : (delegateBtn.isActiveModel ? Styling.styledRectItem("overprimary") : Colors.overBackground)
+                            color: delegateBtn.isSelected ? Styling.srItem("primary") : (delegateBtn.isActiveModel ? Styling.srItem("overprimary") : Colors.overBackground)
                             font.family: Config.theme.font
                             font.pixelSize: 14
                             font.weight: Font.Medium
@@ -479,7 +479,7 @@ Popup {
                         Text {
                             // Show provider and model ID
                             text: modelData.api_format.toUpperCase() + " • " + modelData.model
-                            color: delegateBtn.isSelected ? Styling.styledRectItem("primary") : Colors.outline
+                            color: delegateBtn.isSelected ? Styling.srItem("primary") : Colors.outline
                             font.family: Config.theme.font
                             font.pixelSize: 11
                             Layout.fillWidth: true
@@ -507,7 +507,7 @@ Popup {
                             font.family: Icons.font
                             font.pixelSize: 16
                             // On primary highlight, color should be readable. srPrimary itemColor usually contrasts well.
-                            color: delegateBtn.isSelected ? Styling.styledRectItem("primary") : Styling.styledRectItem("overprimary")
+                            color: delegateBtn.isSelected ? Styling.srItem("primary") : Styling.srItem("overprimary")
                             visible: delegateBtn.isActiveModel
 
                             Behavior on color {

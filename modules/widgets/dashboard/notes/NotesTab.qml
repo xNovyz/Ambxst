@@ -1393,11 +1393,11 @@ Item {
                     property bool isExpanded: index === root.expandedItemIndex
                     property color textColor: {
                         if (isInDeleteMode) {
-                            return Styling.styledRectItem("error");
+                            return Styling.srItem("error");
                         } else if (isExpanded) {
-                            return Styling.styledRectItem("pane");
+                            return Styling.srItem("pane");
                         } else if (isSelected) {
-                            return Styling.styledRectItem("primary");
+                            return Styling.srItem("primary");
                         } else {
                             return Colors.overSurface;
                         }
@@ -1956,8 +1956,8 @@ Item {
                             {
                                 text: "Edit",
                                 icon: Icons.edit,
-                                highlightColor: Styling.styledRectItem("overprimary"),
-                                textColor: Styling.styledRectItem("primary"),
+                                highlightColor: Styling.srItem("overprimary"),
+                                textColor: Styling.srItem("primary"),
                                 action: function () {
                                     openNoteInEditor(modelData.id);
                                 }
@@ -1966,7 +1966,7 @@ Item {
                                 text: "Rename",
                                 icon: Icons.edit,
                                 highlightColor: Colors.secondary,
-                                textColor: Styling.styledRectItem("secondary"),
+                                textColor: Styling.srItem("secondary"),
                                 action: function () {
                                     enterRenameMode(modelData.id);
                                     root.expandedItemIndex = -1;
@@ -1976,7 +1976,7 @@ Item {
                                 text: "Delete",
                                 icon: Icons.trash,
                                 highlightColor: Colors.error,
-                                textColor: Styling.styledRectItem("error"),
+                                textColor: Styling.srItem("error"),
                                 action: function () {
                                     enterDeleteMode(modelData.id);
                                     root.expandedItemIndex = -1;
@@ -1988,8 +1988,8 @@ Item {
                             {
                                 text: "Rich Text",
                                 icon: Icons.file,
-                                highlightColor: Styling.styledRectItem("overprimary"),
-                                textColor: Styling.styledRectItem("primary"),
+                                highlightColor: Styling.srItem("overprimary"),
+                                textColor: Styling.srItem("primary"),
                                 action: function () {
                                     root.expandedItemIndex = -1;
                                     createNewNote(modelData.noteNameToCreate || "", false);
@@ -1999,7 +1999,7 @@ Item {
                                 text: "Markdown",
                                 icon: Icons.markdown,
                                 highlightColor: Colors.secondary,
-                                textColor: Styling.styledRectItem("secondary"),
+                                textColor: Styling.srItem("secondary"),
                                 action: function () {
                                     root.expandedItemIndex = -1;
                                     createNewNote(modelData.noteNameToCreate || "", true);
@@ -2330,7 +2330,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: isBold() ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: isBold() ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: boldMouseArea.containsMouse
 
@@ -2370,7 +2370,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: isItalic() ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: isItalic() ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: italicMouseArea.containsMouse
 
@@ -2410,7 +2410,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: isUnderline() ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: isUnderline() ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: underlineMouseArea.containsMouse
 
@@ -2450,7 +2450,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: isStrikeout() ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: isStrikeout() ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: strikeMouseArea.containsMouse
 
@@ -2498,7 +2498,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: noteEditor.cursorSelection.alignment === Qt.AlignLeft ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: noteEditor.cursorSelection.alignment === Qt.AlignLeft ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: alignLeftMouseArea.containsMouse
 
@@ -2540,7 +2540,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: noteEditor.cursorSelection.alignment === Qt.AlignHCenter ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: noteEditor.cursorSelection.alignment === Qt.AlignHCenter ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: alignCenterMouseArea.containsMouse
 
@@ -2582,7 +2582,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: noteEditor.cursorSelection.alignment === Qt.AlignRight ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: noteEditor.cursorSelection.alignment === Qt.AlignRight ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: alignRightMouseArea.containsMouse
 
@@ -2624,7 +2624,7 @@ Item {
                         width: 32
                         height: 32
                         radius: Styling.radius(-4)
-                        color: noteEditor.cursorSelection.alignment === Qt.AlignJustify ? Styling.styledRectItem("overprimary") : "transparent"
+                        color: noteEditor.cursorSelection.alignment === Qt.AlignJustify ? Styling.srItem("overprimary") : "transparent"
 
                         property bool isHovered: alignJustifyMouseArea.containsMouse
 

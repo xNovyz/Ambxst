@@ -55,7 +55,7 @@ ColumnLayout {
                 contentItem: Text {
                     text: Icons.copy
                     font.family: Icons.font
-                    color: parent.hovered ? Styling.styledRectItem("overprimary") : Colors.outline
+                    color: parent.hovered ? Styling.srItem("overprimary") : Colors.outline
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter

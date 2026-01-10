@@ -141,7 +141,7 @@ StyledRect {
                 anchors.centerIn: parent
                 text: lockPlayer.isPlaying ? Icons.pause : Icons.play
                 textFormat: Text.RichText
-                color: Styling.styledRectItem("overprimary")
+                color: Styling.srItem("overprimary")
                 font.pixelSize: 24
                 font.family: Icons.font
                 opacity: playPauseHover.hovered ? 1.0 : 0.0
@@ -216,7 +216,7 @@ StyledRect {
                     id: previousBtn
                     text: Icons.previous
                     textFormat: Text.RichText
-                    color: previousHover.hovered ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                    color: previousHover.hovered ? Styling.srItem("overprimary") : Colors.overBackground
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: MprisController.canGoPrevious ? 1.0 : 0.3
@@ -248,7 +248,7 @@ StyledRect {
 
                     player: MprisController.activePlayer
                     useCustomColors: true
-                    customProgressColor: Styling.styledRectItem("overprimary")
+                    customProgressColor: Styling.srItem("overprimary")
                     customBackgroundColor: Colors.surfaceBright
                 }
 
@@ -256,7 +256,7 @@ StyledRect {
                     id: nextBtn
                     text: Icons.next
                     textFormat: Text.RichText
-                    color: nextHover.hovered ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                    color: nextHover.hovered ? Styling.srItem("overprimary") : Colors.overBackground
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: MprisController.canGoNext ? 1.0 : 0.3
@@ -296,7 +296,7 @@ StyledRect {
                         }
                     }
                     textFormat: Text.RichText
-                    color: modeHover.hovered ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                    color: modeHover.hovered ? Styling.srItem("overprimary") : Colors.overBackground
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: {
@@ -358,7 +358,7 @@ StyledRect {
                         return Icons.player;
                     }
                     textFormat: Text.RichText
-                    color: playerIconHover.hovered ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                    color: playerIconHover.hovered ? Styling.srItem("overprimary") : Colors.overBackground
                     font.pixelSize: 20
                     font.family: Icons.font
                     opacity: MprisController.activePlayer ? 1.0 : 0.3
@@ -439,7 +439,7 @@ StyledRect {
                                 menuItems.push({
                                     text: player.trackTitle || player.identity || "Unknown Player",
                                     icon: getPlayerIcon(player),
-                                    highlightColor: Styling.styledRectItem("overprimary"),
+                                    highlightColor: Styling.srItem("overprimary"),
                                     textColor: Colors.overPrimary,
                                     onTriggered: () => {
                                         MprisController.setActivePlayer(player);

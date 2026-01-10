@@ -13,18 +13,18 @@ Item {
     readonly property var matugenSchemes: ["scheme-content", "scheme-expressive", "scheme-fidelity", "scheme-fruit-salad", "scheme-monochrome", "scheme-neutral", "scheme-rainbow", "scheme-tonal-spot"]
     property var presets: GlobalStates.wallpaperManager ? GlobalStates.wallpaperManager.colorPresets : []
     onPresetsChanged: console.log("SchemeSelector received presets:", presets)
-    
+
     property var combinedModel: {
         var currentPresets = presets; // Explicit dependency
         var list = [];
-        for (var i=0; i<matugenSchemes.length; i++) {
+        for (var i = 0; i < matugenSchemes.length; i++) {
             list.push({
                 id: matugenSchemes[i],
                 label: getSchemeDisplayName(matugenSchemes[i]),
                 type: "matugen"
             });
         }
-        for (var j=0; j<currentPresets.length; j++) {
+        for (var j = 0; j < currentPresets.length; j++) {
             list.push({
                 id: currentPresets[j],
                 label: currentPresets[j],
@@ -38,10 +38,10 @@ Item {
     property int selectedSchemeIndex: -1
     property bool keyboardNavigationActive: false
 
-    signal schemeSelectorClosed()
-    signal escapePressedOnScheme()
-    signal tabPressed()
-    signal shiftTabPressed()
+    signal schemeSelectorClosed
+    signal escapePressedOnScheme
+    signal tabPressed
+    signal shiftTabPressed
 
     function openAndFocus() {
         schemeListExpanded = true;
@@ -51,13 +51,13 @@ Item {
         // Posicionar el ListView en el item seleccionado después de que se expanda
         positionTimer.restart();
     }
-    
+
     function positionAtSelectedScheme() {
         if (selectedSchemeIndex >= 0 && selectedSchemeIndex < combinedModel.length) {
             schemeListView.positionViewAtIndex(selectedSchemeIndex, ListView.Center);
         }
     }
-    
+
     Timer {
         id: positionTimer
         interval: 50
@@ -75,33 +75,41 @@ Item {
 
     Connections {
         target: GlobalStates.wallpaperManager
-        function onCurrentMatugenSchemeChanged() { updateSelectedIndex(); }
-        function onActiveColorPresetChanged() { updateSelectedIndex(); }
+        function onCurrentMatugenSchemeChanged() {
+            updateSelectedIndex();
+        }
+        function onActiveColorPresetChanged() {
+            updateSelectedIndex();
+        }
     }
 
     function updateSelectedIndex() {
-        if (!GlobalStates.wallpaperManager) return;
-        
+        if (!GlobalStates.wallpaperManager)
+            return;
+
         var activePreset = GlobalStates.wallpaperManager.activeColorPreset;
         var activeMatugen = GlobalStates.wallpaperManager.currentMatugenScheme;
-        
+
         var index = -1;
-        
+
         if (activePreset) {
-            for (var i=0; i<combinedModel.length; i++) {
+            for (var i = 0; i < combinedModel.length; i++) {
                 if (combinedModel[i].type === "preset" && combinedModel[i].id === activePreset) {
-                    index = i; break;
+                    index = i;
+                    break;
                 }
             }
         } else if (activeMatugen) {
-            for (var i=0; i<combinedModel.length; i++) {
+            for (var i = 0; i < combinedModel.length; i++) {
                 if (combinedModel[i].type === "matugen" && combinedModel[i].id === activeMatugen) {
-                    index = i; break;
+                    index = i;
+                    break;
                 }
             }
         }
-        
-        if (index !== -1) selectedSchemeIndex = index;
+
+        if (index !== -1)
+            selectedSchemeIndex = index;
     }
 
     Component.onCompleted: {
@@ -123,17 +131,18 @@ Item {
     }
 
     function getCurrentDisplayName() {
-        if (!GlobalStates.wallpaperManager) return "Selecciona esquema";
-        
+        if (!GlobalStates.wallpaperManager)
+            return "Select Scheme";
+
         if (GlobalStates.wallpaperManager.activeColorPreset) {
             return GlobalStates.wallpaperManager.activeColorPreset;
         }
-        
+
         if (GlobalStates.wallpaperManager.currentMatugenScheme) {
             return getSchemeDisplayName(GlobalStates.wallpaperManager.currentMatugenScheme);
         }
-        
-        return "Selecciona esquema";
+
+        return "Select Scheme";
     }
 
     // Layout properties (can be overridden by parent)
@@ -170,7 +179,7 @@ Item {
                     Layout.preferredHeight: 40
                     text: getCurrentDisplayName()
                     focus: true
-                    
+
                     onActiveFocusChanged: {
                         if (!activeFocus) {
                             keyboardNavigationActive = false;
@@ -179,7 +188,7 @@ Item {
                             }
                         }
                     }
-                    
+
                     onClicked: {
                         keyboardNavigationActive = false;
                         schemeListExpanded = !schemeListExpanded;
@@ -272,7 +281,7 @@ Item {
                     Layout.preferredHeight: 40
                     checked: Config.theme.lightMode
                     focusPolicy: Qt.NoFocus
-                    
+
                     onCheckedChanged: {
                         Config.theme.lightMode = checked;
                     }
@@ -289,7 +298,7 @@ Item {
                             anchors.leftMargin: 10
                             anchors.verticalCenter: parent.verticalCenter
                             text: Icons.sun
-                            color: Config.theme.lightMode ? Styling.styledRectItem("primary") : Colors.overBackground
+                            color: Config.theme.lightMode ? Styling.srItem("primary") : Colors.overBackground
                             font.family: Icons.font
                             font.pixelSize: 20
                         }
@@ -300,7 +309,7 @@ Item {
                             anchors.rightMargin: 8
                             anchors.verticalCenter: parent.verticalCenter
                             text: Icons.moon
-                            color: Config.theme.lightMode ? Colors.overBackground : Styling.styledRectItem("primary")
+                            color: Config.theme.lightMode ? Colors.overBackground : Styling.srItem("primary")
                             font.family: Icons.font
                             font.pixelSize: 20
                         }
@@ -386,7 +395,7 @@ Item {
 
                             contentItem: Text {
                                 text: parent.text
-                                color: selectedSchemeIndex === index ? Styling.styledRectItem("primary") : Colors.overSurface
+                                color: selectedSchemeIndex === index ? Styling.srItem("primary") : Colors.overSurface
                                 font.family: Config.theme.font
                                 font.pixelSize: Config.theme.fontSize
                                 font.weight: selectedSchemeIndex === index ? Font.Bold : Font.Normal
@@ -406,12 +415,14 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: !schemeListView.isScrolling
                                 onEntered: {
-                                    if (schemeListView.isScrolling) return;
+                                    if (schemeListView.isScrolling)
+                                        return;
                                     selectedSchemeIndex = index;
                                     schemeListView.currentIndex = index;
                                 }
                                 onClicked: {
-                                    if (schemeListView.isScrolling) return;
+                                    if (schemeListView.isScrolling)
+                                        return;
                                     if (GlobalStates.wallpaperManager) {
                                         if (modelData.type === "preset") {
                                             GlobalStates.wallpaperManager.setColorPreset(modelData.id);

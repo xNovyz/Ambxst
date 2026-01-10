@@ -2,7 +2,6 @@
 { pkgs, lib, self, system, quickshell, ambxstLib }:
 
 let
-  isNixOS = ambxstLib.detectNixOS pkgs;
   quickshellPkg = quickshell.packages.${system}.default;
 
   # Import sub-packages
@@ -16,46 +15,57 @@ let
   fontsPkgs = import ./fonts.nix { inherit pkgs ttf-phosphor-icons; };
   tesseractPkgs = import ./tesseract.nix { inherit pkgs; };
 
-  # NixOS-specific packages
-  nixosPkgs = [
-    pkgs.power-profiles-daemon
-    pkgs.networkmanager
-  ];
-
-  # Non-NixOS packages
-  nonNixosPkgs = [ ];
-
-  # Combine all packages
+  # Combine all packages (NixOS-specific deps handled by the module)
   baseEnv = corePkgs
     ++ toolsPkgs
     ++ mediaPkgs
     ++ appsPkgs
     ++ fontsPkgs
-    ++ tesseractPkgs
-    ++ (if isNixOS then nixosPkgs else nonNixosPkgs);
+    ++ tesseractPkgs;
 
   envAmbxst = pkgs.buildEnv {
     name = "Ambxst-env";
     paths = baseEnv;
   };
 
-  launcher = pkgs.writeShellScriptBin "ambxst" ''
-    ${lib.optionalString (!isNixOS) ''
-      # On non-NixOS, use local build from ~/.local/bin
-      export PATH="$HOME/.local/bin:$PATH"
-    ''}
+  # Create fontconfig configuration to find bundled fonts
+  fontconfigConf = pkgs.writeTextDir "etc/fonts/conf.d/99-ambxst-fonts.conf" ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+    <fontconfig>
+      <dir>${envAmbxst}/share/fonts</dir>
+    </fontconfig>
+  '';
 
+  # Copy shell sources to the Nix store
+  shellSrc = pkgs.stdenv.mkDerivation {
+    pname = "ambxst-shell";
+    version = "0.1.0";
+    src = lib.cleanSource self;
+    dontBuild = true;
+    installPhase = ''
+      mkdir -p $out
+      cp -r . $out/
+    '';
+  };
+
+  launcher = pkgs.writeShellScriptBin "ambxst" ''
     export AMBXST_QS="${quickshellPkg}/bin/qs"
+    export PATH="${envAmbxst}/bin:$PATH"
 
     # Set QML2_IMPORT_PATH to include modules from envAmbxst (like syntax-highlighting)
     export QML2_IMPORT_PATH="${envAmbxst}/lib/qt-6/qml:$QML2_IMPORT_PATH"
     export QML_IMPORT_PATH="$QML2_IMPORT_PATH"
 
-    # Delegate execution to CLI
-    exec ${self}/cli.sh "$@"
+    # Make bundled fonts available to fontconfig
+    export FONTCONFIG_PATH="${fontconfigConf}/etc/fonts:''${FONTCONFIG_PATH:-}"
+
+    # Delegate execution to CLI (now in the Nix store)
+    exec ${shellSrc}/cli.sh "$@"
   '';
 
 in pkgs.buildEnv {
   name = "Ambxst";
   paths = [ envAmbxst launcher ];
+  meta.mainProgram = "ambxst";
 }

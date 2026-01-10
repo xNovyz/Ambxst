@@ -262,7 +262,7 @@ FocusScope {
                                 textFormat: Text.RichText
                                 font.family: Icons.font
                                 font.pixelSize: root.iconSize
-                                color: actionButton.pressed ? Styling.styledRectItem("overprimary") : (index === root.currentIndex ? (highlight.targetItem ? highlight.item : Styling.styledRectItem("primary")) : Colors.overBackground)
+                                color: actionButton.pressed ? Styling.srItem("overprimary") : (index === root.currentIndex ? (highlight.targetItem ? highlight.item : Styling.srItem("primary")) : Colors.overBackground)
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
 
@@ -286,7 +286,7 @@ FocusScope {
                                 font.family: Config.defaultFont
                                 font.pixelSize: root.iconSize * 0.7
                                 font.weight: Font.DemiBold
-                                color: actionButton.pressed ? Styling.styledRectItem("overprimary") : (index === root.currentIndex ? (highlight.targetItem ? highlight.item : Styling.styledRectItem("primary")) : Colors.overBackground)
+                                color: actionButton.pressed ? Styling.srItem("overprimary") : (index === root.currentIndex ? (highlight.targetItem ? highlight.item : Styling.srItem("primary")) : Colors.overBackground)
                                 verticalAlignment: Text.AlignVCenter
 
                                 Behavior on color {

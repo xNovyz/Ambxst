@@ -65,7 +65,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             opacity: root.isHovered && !root.isExpanded ? 0.25 : 0
             radius: parent.radius ?? 0
 
@@ -113,7 +113,7 @@ Item {
             wavyFrequency: (root.isExpanded || micSlider.isDragging || root.externalVolumeChange) ? (Audio.source?.audio?.muted ? 1.0 : 8.0 * value) : 0
             iconPos: root.vertical ? "end" : "start"
             icon: Audio.source?.audio?.muted ? Icons.micSlash : Icons.mic
-            progressColor: Audio.source?.audio?.muted ? Colors.outline : Styling.styledRectItem("overprimary")
+            progressColor: Audio.source?.audio?.muted ? Colors.outline : Styling.srItem("overprimary")
 
             onValueChanged: {
                 if (Audio.source?.audio) {

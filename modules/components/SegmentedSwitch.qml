@@ -47,7 +47,7 @@ StyledRect {
                     easing.type: Easing.OutCubic
                 }
             }
-            
+
             Behavior on width {
                 enabled: Config.animDuration > 0
                 NumberAnimation {
@@ -89,7 +89,7 @@ StyledRect {
                         id: contentRow
                         anchors.centerIn: parent
                         spacing: 8
-                        
+
                         // Image Icon
                         Image {
                             visible: typeof optionButton.modelData === "object" && !!optionButton.modelData.image
@@ -106,9 +106,7 @@ StyledRect {
                         Text {
                             visible: typeof optionButton.modelData === "object" && !!optionButton.modelData.icon && !optionButton.modelData.image
                             text: visible ? optionButton.modelData.icon : ""
-                            color: root.currentIndex === optionButton.index 
-                                ? Styling.styledRectItem("overprimary")
-                                : Colors.overBackground
+                            color: root.currentIndex === optionButton.index ? Styling.srItem("overprimary") : Colors.overBackground
                             font.family: Icons.font
                             font.pixelSize: 14
                             horizontalAlignment: Text.AlignHCenter
@@ -126,12 +124,8 @@ StyledRect {
                         // Label
                         Text {
                             visible: typeof optionButton.modelData !== "object" || !!optionButton.modelData.label
-                            text: typeof optionButton.modelData === "object" 
-                                ? (optionButton.modelData.label || "") 
-                                : optionButton.modelData
-                            color: root.currentIndex === optionButton.index 
-                                ? Styling.styledRectItem("overprimary")
-                                : Colors.overBackground
+                            text: typeof optionButton.modelData === "object" ? (optionButton.modelData.label || "") : optionButton.modelData
+                            color: root.currentIndex === optionButton.index ? Styling.srItem("overprimary") : Colors.overBackground
                             font.family: Config.theme.font
                             font.pixelSize: 14
                             font.weight: root.currentIndex === optionButton.index ? Font.DemiBold : Font.Normal

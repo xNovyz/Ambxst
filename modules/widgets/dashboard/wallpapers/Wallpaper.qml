@@ -21,7 +21,7 @@ PanelWindow {
 
     color: "transparent"
 
-    property string wallpaperDir: wallpaperConfig.adapter.wallPath || fallbackDir
+    property string wallpaperDir: wallpaperConfig.adapter.wallPath
     property string fallbackDir: decodeURIComponent(Qt.resolvedUrl("../../../../assets/wallpapers_example").toString().replace("file://", ""))
     property var wallpaperPaths: []
     property var subfolderFilters: []
@@ -31,6 +31,36 @@ PanelWindow {
     property bool usingFallback: false
     property bool _wallpaperDirInitialized: false
     property string currentMatugenScheme: wallpaperConfig.adapter.matugenScheme
+
+    // Sync state from the primary wallpaper manager to secondary instances
+    Binding {
+        target: wallpaper
+        property: "wallpaperPaths"
+        value: GlobalStates.wallpaperManager.wallpaperPaths
+        when: GlobalStates.wallpaperManager !== null && GlobalStates.wallpaperManager !== wallpaper
+    }
+
+    Binding {
+        target: wallpaper
+        property: "currentIndex"
+        value: GlobalStates.wallpaperManager.currentIndex
+        when: GlobalStates.wallpaperManager !== null && GlobalStates.wallpaperManager !== wallpaper
+    }
+
+    Binding {
+        target: wallpaper
+        property: "subfolderFilters"
+        value: GlobalStates.wallpaperManager.subfolderFilters
+        when: GlobalStates.wallpaperManager !== null && GlobalStates.wallpaperManager !== wallpaper
+    }
+    
+    Binding {
+        target: wallpaper
+        property: "initialLoadCompleted"
+        value: GlobalStates.wallpaperManager.initialLoadCompleted
+        when: GlobalStates.wallpaperManager !== null && GlobalStates.wallpaperManager !== wallpaper
+    }
+
     property string colorPresetsDir: Quickshell.env("HOME") + "/.config/Ambxst/colors"
     property string officialColorPresetsDir: decodeURIComponent(Qt.resolvedUrl("../../../../assets/colors").toString().replace("file://", ""))
     onColorPresetsDirChanged: console.log("Color Presets Directory:", colorPresetsDir)
@@ -230,6 +260,11 @@ PanelWindow {
     {}
 
     function setWallpaper(path) {
+        if (GlobalStates.wallpaperManager && GlobalStates.wallpaperManager !== wallpaper) {
+            GlobalStates.wallpaperManager.setWallpaper(path);
+            return;
+        }
+
         console.log("setWallpaper called with:", path);
         initialLoadCompleted = true;
         var pathIndex = wallpaperPaths.indexOf(path);
@@ -244,6 +279,11 @@ PanelWindow {
     }
 
     function nextWallpaper() {
+        if (GlobalStates.wallpaperManager && GlobalStates.wallpaperManager !== wallpaper) {
+            GlobalStates.wallpaperManager.nextWallpaper();
+            return;
+        }
+
         if (wallpaperPaths.length === 0)
             return;
         initialLoadCompleted = true;
@@ -255,6 +295,11 @@ PanelWindow {
     }
 
     function previousWallpaper() {
+        if (GlobalStates.wallpaperManager && GlobalStates.wallpaperManager !== wallpaper) {
+            GlobalStates.wallpaperManager.previousWallpaper();
+            return;
+        }
+
         if (wallpaperPaths.length === 0)
             return;
         initialLoadCompleted = true;
@@ -266,6 +311,11 @@ PanelWindow {
     }
 
     function setWallpaperByIndex(index) {
+        if (GlobalStates.wallpaperManager && GlobalStates.wallpaperManager !== wallpaper) {
+            GlobalStates.wallpaperManager.setWallpaperByIndex(index);
+            return;
+        }
+
         if (index >= 0 && index < wallpaperPaths.length) {
             initialLoadCompleted = true;
             currentIndex = index;
@@ -348,6 +398,13 @@ PanelWindow {
         id: wallpaperConfig
         path: Quickshell.dataPath("wallpapers.json")
         watchChanges: true
+
+        onLoaded: {
+            if (!wallpaperConfig.adapter.wallPath) {
+                console.log("Loaded config but wallPath is empty, using fallback");
+                wallpaperConfig.adapter.wallPath = fallbackDir;
+            }
+        }
 
         onFileChanged: reload()
         onAdapterUpdated: {
@@ -607,6 +664,7 @@ PanelWindow {
         printErrors: false
 
         onFileChanged: {
+            if (wallpaperDir === "") return;
             console.log("Wallpaper directory changed, rescanning...");
             scanWallpapers.running = true;
             // Regenerar thumbnails si hay nuevos videos (delayed)
@@ -646,7 +704,14 @@ PanelWindow {
     Process {
         id: scanWallpapers
         running: false
-        command: ["find", wallpaperDir, "-type", "f", "(", "-name", "*.jpg", "-o", "-name", "*.jpeg", "-o", "-name", "*.png", "-o", "-name", "*.webp", "-o", "-name", "*.tif", "-o", "-name", "*.tiff", "-o", "-name", "*.gif", "-o", "-name", "*.mp4", "-o", "-name", "*.webm", "-o", "-name", "*.mov", "-o", "-name", "*.avi", "-o", "-name", "*.mkv", ")"]
+        command: wallpaperDir ? ["find", wallpaperDir, "-type", "f", "(", "-name", "*.jpg", "-o", "-name", "*.jpeg", "-o", "-name", "*.png", "-o", "-name", "*.webp", "-o", "-name", "*.tif", "-o", "-name", "*.tiff", "-o", "-name", "*.gif", "-o", "-name", "*.mp4", "-o", "-name", "*.webm", "-o", "-name", "*.mov", "-o", "-name", "*.avi", "-o", "-name", "*.mkv", ")"] : []
+
+        onRunningChanged: {
+            if (running && wallpaperDir === "") {
+                console.log("Blocking scanWallpapers because wallpaperDir is empty");
+                running = false;
+            }
+        }
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -698,9 +763,9 @@ PanelWindow {
             onStreamFinished: {
                 if (text.length > 0) {
                     console.warn("Error scanning wallpaper directory:", text);
-                    // Only fallback if we don't already have wallpapers loaded
-                    if (wallpaperPaths.length === 0) {
-                        console.log("Directory scan failed, using fallback");
+                    // Only fallback if we don't already have wallpapers loaded AND we have a valid directory that failed
+                    if (wallpaperPaths.length === 0 && wallpaperDir !== "") {
+                        console.log("Directory scan failed for " + wallpaperDir + ", using fallback");
                         usingFallback = true;
                         scanFallback.running = true;
                     }
@@ -912,6 +977,8 @@ PanelWindow {
         Component {
             id: staticImageComponent
             Image {
+                width: parent.width
+                height: parent.height
                 source: parent.sourceFile ? "file://" + parent.sourceFile : ""
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true

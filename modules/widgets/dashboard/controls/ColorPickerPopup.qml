@@ -50,7 +50,7 @@ Popup {
             Layout.margins: 2
             color: hexInput.activeFocus ? Colors.surfaceContainerHigh : Colors.surfaceContainer
             radius: Styling.radius(-2)
-            border.color: hexInput.activeFocus ? Styling.styledRectItem("overprimary") : Colors.outlineVariant
+            border.color: hexInput.activeFocus ? Styling.srItem("overprimary") : Colors.outlineVariant
             border.width: 1
 
             RowLayout {
@@ -214,7 +214,7 @@ Popup {
                         text: Icons.accept
                         font.family: Icons.font
                         font.pixelSize: 14
-                        color: Styling.styledRectItem("overprimary")
+                        color: Styling.srItem("overprimary")
                         visible: root.currentColor === colorItem.modelData
                     }
                 }

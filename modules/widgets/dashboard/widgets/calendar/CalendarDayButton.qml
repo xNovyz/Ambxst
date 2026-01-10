@@ -37,7 +37,7 @@ Rectangle {
             font.family: Config.defaultFont
             color: {
                 if (isToday === 1)
-                    return Styling.styledRectItem("primary");
+                    return Styling.srItem("primary");
                 if (bold) {
                     return isCurrentDayOfWeek ? Colors.overBackground : Colors.outline;
                 }

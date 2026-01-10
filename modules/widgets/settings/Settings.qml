@@ -52,7 +52,7 @@ FloatingWindow {
                         font.family: Styling.defaultFont
                         font.pixelSize: Styling.fontSize(0) + 2
                         font.bold: true
-                        color: Styling.styledRectItem("overprimary")
+                        color: Styling.srItem("overprimary")
                         Layout.fillWidth: true
                     }
 
@@ -125,7 +125,7 @@ FloatingWindow {
                         readonly property bool hasChanges: parent.parent.hasAnyChanges
 
                         background: Rectangle {
-                            color: applyButton.hasChanges ? Styling.styledRectItem("overprimary") : Colors.surfaceContainer
+                            color: applyButton.hasChanges ? Styling.srItem("overprimary") : Colors.surfaceContainer
                             radius: Styling.radius(-4)
                             opacity: applyButton.hasChanges ? (applyButton.hovered ? 0.8 : 1.0) : 0.5
                         }
@@ -218,7 +218,7 @@ FloatingWindow {
                             font.family: Styling.defaultFont
                             font.pixelSize: Styling.fontSize(0)
                             font.bold: true
-                            color: Styling.styledRectItem("overprimary")
+                            color: Styling.srItem("overprimary")
                             Layout.alignment: Qt.AlignHCenter
                             Layout.bottomMargin: 8
                         }
@@ -250,7 +250,7 @@ FloatingWindow {
                                 readonly property bool isSelected: tabStack.currentIndex === index
 
                                 background: Rectangle {
-                                    color: tabButton.isSelected ? Styling.styledRectItem("overprimary") : (tabButton.hovered ? Colors.surfaceContainerHigh : Colors.surfaceContainer)
+                                    color: tabButton.isSelected ? Styling.srItem("overprimary") : (tabButton.hovered ? Colors.surfaceContainerHigh : Colors.surfaceContainer)
                                     radius: Styling.radius(-2)
 
                                     Behavior on color {

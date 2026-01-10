@@ -10,7 +10,7 @@ Item {
     property string icon: ""
     property string label: ""
     property real value: 0.0
-    property color barColor: Styling.styledRectItem("overprimary")
+    property color barColor: Styling.srItem("overprimary")
 
     implicitHeight: 24
 

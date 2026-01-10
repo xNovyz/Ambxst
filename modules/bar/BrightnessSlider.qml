@@ -94,7 +94,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             opacity: root.isHovered && !root.isExpanded ? 0.25 : 0
             radius: parent.radius ?? 0
 
@@ -143,7 +143,7 @@ Item {
             icon: Icons.sun
             iconRotation: root.iconRotation
             iconScale: root.iconScale
-            progressColor: Styling.styledRectItem("overprimary")
+            progressColor: Styling.srItem("overprimary")
 
             onValueChanged: {
                 if (currentMonitor && currentMonitor.ready) {

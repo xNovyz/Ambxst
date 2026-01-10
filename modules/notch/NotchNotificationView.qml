@@ -456,7 +456,7 @@ Item {
                                                             font.pixelSize: Config.theme.fontSize
                                                             font.weight: Font.Bold
                                                             font.underline: notification && notification.urgency == NotificationUrgency.Critical && hovered
-                                                            color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.styledRectItem("overprimary")
+                                                            color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.srItem("overprimary")
                                                             elide: Text.ElideRight
                                                             maximumLineCount: 1
                                                             wrapMode: Text.NoWrap
@@ -531,7 +531,7 @@ Item {
                                                     font.family: Config.theme.font
                                                     font.pixelSize: Config.theme.fontSize
                                                     font.weight: Font.Bold
-                                                    color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.styledRectItem("overprimary")
+                                                    color: notification && notification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.srItem("overprimary")
                                                     elide: Text.ElideRight
                                                     maximumLineCount: 1
                                                     wrapMode: Text.NoWrap
@@ -784,7 +784,7 @@ Item {
                             height: 8
                             radius: 4
                             property bool isCritical: Notifications.popupList[index] && Notifications.popupList[index].urgency == NotificationUrgency.Critical
-                            color: isCritical ? Colors.criticalRed : (index === root.currentIndex ? Styling.styledRectItem("overprimary") : Colors.surfaceBright)
+                            color: isCritical ? Colors.criticalRed : (index === root.currentIndex ? Styling.srItem("overprimary") : Colors.surfaceBright)
 
                             Behavior on color {
                                 enabled: Config.animDuration > 0

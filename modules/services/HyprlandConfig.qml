@@ -124,7 +124,20 @@ QtObject {
 
         let batchCommand = [`keyword bezier myBezier,0.4,0.0,0.2,1.0`, `keyword cursor:no_warps true`, `keyword input:mouse_refocus false`, `keyword general:col.active_border ${activeColorFormatted}`, `keyword general:col.inactive_border ${inactiveColorFormatted}`, `keyword general:border_size ${Config.hyprlandBorderSize}`, `keyword general:layout ${GlobalStates.hyprlandLayout}`, `keyword decoration:rounding ${Config.hyprlandRounding}`, `keyword general:gaps_in ${Config.hyprland.gapsIn}`, `keyword general:gaps_out ${Config.hyprland.gapsOut}`, `keyword decoration:shadow:enabled ${Config.hyprland.shadowEnabled ? 1 : 0}`, `keyword decoration:shadow:range ${Config.hyprland.shadowRange}`, `keyword decoration:shadow:render_power ${Config.hyprland.shadowRenderPower}`, `keyword decoration:shadow:sharp ${Config.hyprland.shadowSharp ? 1 : 0}`, `keyword decoration:shadow:ignore_window ${Config.hyprland.shadowIgnoreWindow ? 1 : 0}`, `keyword decoration:shadow:color ${shadowColorFormatted}`, `keyword decoration:shadow:color_inactive ${shadowColorInactiveFormatted}`, `keyword decoration:shadow:offset ${Config.hyprland.shadowOffset}`, `keyword decoration:shadow:scale ${Config.hyprland.shadowScale}`, `keyword decoration:blur:enabled ${Config.hyprland.blurEnabled ? 1 : 0}`, `keyword decoration:blur:size ${Config.hyprland.blurSize}`, `keyword decoration:blur:passes ${Config.hyprland.blurPasses}`, `keyword decoration:blur:ignore_opacity ${Config.hyprland.blurIgnoreOpacity ? 1 : 0}`, `keyword decoration:blur:new_optimizations ${Config.hyprland.blurNewOptimizations ? 1 : 0}`, `keyword decoration:blur:xray ${Config.hyprland.blurXray ? 1 : 0}`, `keyword decoration:blur:noise ${Config.hyprland.blurNoise}`, `keyword decoration:blur:contrast ${Config.hyprland.blurContrast}`, `keyword decoration:blur:brightness ${Config.hyprland.blurBrightness}`, `keyword decoration:blur:vibrancy ${Config.hyprland.blurVibrancy}`, `keyword decoration:blur:vibrancy_darkness ${Config.hyprland.blurVibrancyDarkness}`, `keyword decoration:blur:special ${Config.hyprland.blurSpecial ? 1 : 0}`, `keyword decoration:blur:popups ${Config.hyprland.blurPopups ? 1 : 0}`, `keyword decoration:blur:popups_ignorealpha ${Config.hyprland.blurPopupsIgnorealpha}`, `keyword decoration:blur:input_methods ${Config.hyprland.blurInputMethods ? 1 : 0}`, `keyword decoration:blur:input_methods_ignorealpha ${Config.hyprland.blurInputMethodsIgnorealpha}`, `keyword animation windows,1,2.5,myBezier,popin 80%`, `keyword animation border,1,2.5,myBezier`, `keyword animation fade,1,2.5,myBezier`, `keyword animation workspaces,1,2.5,myBezier,${workspacesAnimation}`].join(" ; ");
 
-        batchCommand += " ; keyword layerrule noanim,quickshell ; keyword layerrule blur,quickshell ; keyword layerrule blurpopups,quickshell ; keyword layerrule ignorealpha 0.7,quickshell";
+        // Calcular ignorealpha
+        let ignoreAlphaValue = 0.0;
+
+        if (Config.hyprland.blurExplicitIgnoreAlpha) {
+            ignoreAlphaValue = Config.hyprland.blurIgnoreAlphaValue.toFixed(2);
+        } else {
+            // Calcular ignorealpha dinámicamente basado en la opacidad de los StyledRect
+            // Si barbg tiene opacidad > 0, usar el menor entre barbg y bg; si no, usar bg
+            const barBgOpacity = Config.theme.srBarBg.opacity || 0;
+            const bgOpacity = Config.theme.srBg.opacity || 1.0;
+            ignoreAlphaValue = (barBgOpacity > 0 ? Math.min(barBgOpacity, bgOpacity) : bgOpacity).toFixed(2);
+        }
+
+        batchCommand += ` ; keyword layerrule noanim,quickshell ; keyword layerrule blur,quickshell ; keyword layerrule blurpopups,quickshell ; keyword layerrule ignorealpha ${ignoreAlphaValue},quickshell`;
         console.log("HyprlandConfig: Applying hyprctl batch command.");
         hyprctlProcess.command = ["hyprctl", "--batch", batchCommand];
         hyprctlProcess.running = true;
@@ -223,6 +236,12 @@ QtObject {
         function onBlurIgnoreOpacityChanged() {
             applyHyprlandConfig();
         }
+        function onBlurExplicitIgnoreAlphaChanged() {
+            applyHyprlandConfig();
+        }
+        function onBlurIgnoreAlphaValueChanged() {
+            applyHyprlandConfig();
+        }
         function onBlurNewOptimizationsChanged() {
             applyHyprlandConfig();
         }
@@ -274,6 +293,20 @@ QtObject {
     property Connections barConnections: Connections {
         target: Config.bar
         function onPositionChanged() {
+            applyHyprlandConfig();
+        }
+    }
+
+    property Connections srBgConnections: Connections {
+        target: Config.theme.srBg
+        function onOpacityChanged() {
+            applyHyprlandConfig();
+        }
+    }
+
+    property Connections srBarBgConnections: Connections {
+        target: Config.theme.srBarBg
+        function onOpacityChanged() {
             applyHyprlandConfig();
         }
     }

@@ -178,7 +178,7 @@ Item {
                         CircularControl {
                             icon: Icons.circleHalf
                             value: root.variantConfig ? root.variantConfig.opacity : 1.0
-                            accentColor: Styling.styledRectItem("overprimary")
+                            accentColor: Styling.srItem("overprimary")
                             isToggleable: false
                             isToggled: false
                             showBackground: false
@@ -329,7 +329,7 @@ Item {
                     text: Icons.arrowDown
                     font.family: Icons.font
                     font.pixelSize: 20
-                    color: Styling.styledRectItem("overprimary")
+                    color: Styling.srItem("overprimary")
                     rotation: root.variantConfig ? root.variantConfig.gradientAngle : 0
 
                     Behavior on rotation {
@@ -411,7 +411,7 @@ Item {
                         font.family: Styling.defaultFont
                         font.pixelSize: Styling.fontSize(0)
                         font.bold: true
-                        color: Styling.styledRectItem("overprimary")
+                        color: Styling.srItem("overprimary")
                         Layout.preferredWidth: 20
                     }
 
@@ -457,7 +457,7 @@ Item {
                         font.family: Styling.defaultFont
                         font.pixelSize: Styling.fontSize(0)
                         font.bold: true
-                        color: Styling.styledRectItem("overprimary")
+                        color: Styling.srItem("overprimary")
                         Layout.preferredWidth: 20
                     }
 
@@ -564,7 +564,7 @@ Item {
                                 text: Icons.arrowDown
                                 font.family: Icons.font
                                 font.pixelSize: 18
-                                color: Styling.styledRectItem("overprimary")
+                                color: Styling.srItem("overprimary")
                                 rotation: root.variantConfig ? root.variantConfig.gradientAngle : 0
 
                                 Behavior on rotation {
@@ -614,7 +614,7 @@ Item {
                             font.family: Styling.defaultFont
                             font.pixelSize: Styling.fontSize(0)
                             font.bold: true
-                            color: Styling.styledRectItem("overprimary")
+                            color: Styling.srItem("overprimary")
                             Layout.preferredWidth: 40
                             horizontalAlignment: Text.AlignRight
                         }
@@ -629,7 +629,7 @@ Item {
                             text: Icons.circle
                             font.family: Icons.font
                             font.pixelSize: 18
-                            color: Styling.styledRectItem("overprimary")
+                            color: Styling.srItem("overprimary")
                             Layout.preferredWidth: 24
                         }
 
@@ -722,7 +722,7 @@ Item {
                             text: Icons.range
                             font.family: Icons.font
                             font.pixelSize: 18
-                            color: Styling.styledRectItem("overprimary")
+                            color: Styling.srItem("overprimary")
                             Layout.preferredWidth: 24
                         }
 

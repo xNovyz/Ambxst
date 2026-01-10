@@ -370,8 +370,8 @@ Item {
                                         x: tintIconsSwitch.leftPadding
                                         y: parent.height / 2 - height / 2
                                         radius: height / 2
-                                        color: tintIconsSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.surfaceBright
-                                        border.color: tintIconsSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.outline
+                                        color: tintIconsSwitch.checked ? Styling.srItem("overprimary") : Colors.surfaceBright
+                                        border.color: tintIconsSwitch.checked ? Styling.srItem("overprimary") : Colors.outline
 
                                         Behavior on color {
                                             enabled: Config.animDuration > 0
@@ -439,8 +439,8 @@ Item {
                                         x: enableCornersSwitch.leftPadding
                                         y: parent.height / 2 - height / 2
                                         radius: height / 2
-                                        color: enableCornersSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.surfaceBright
-                                        border.color: enableCornersSwitch.checked ? Styling.styledRectItem("overprimary") : Colors.outline
+                                        color: enableCornersSwitch.checked ? Styling.srItem("overprimary") : Colors.surfaceBright
+                                        border.color: enableCornersSwitch.checked ? Styling.srItem("overprimary") : Colors.outline
 
                                         Behavior on color {
                                             enabled: Config.animDuration > 0
@@ -487,7 +487,7 @@ Item {
                                     id: animDurationSlider
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 20
-                                    progressColor: Styling.styledRectItem("overprimary")
+                                    progressColor: Styling.srItem("overprimary")
                                     tooltipText: `${Math.round(value * 1000)}ms`
                                     scroll: true
                                     stepSize: 0.01  // 10ms steps (1/100 of 1000ms)
@@ -754,7 +754,7 @@ Item {
                                     id: roundnessSlider
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 20
-                                    progressColor: Styling.styledRectItem("overprimary")
+                                    progressColor: Styling.srItem("overprimary")
                                     tooltipText: `${Math.round(value * 20)}`
                                     scroll: true
                                     stepSize: 0.05  // 1/20 = 0.05 for integer steps in 0-20 range
@@ -832,7 +832,7 @@ Item {
                                     id: shadowOpacitySlider
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 20
-                                    progressColor: Styling.styledRectItem("overprimary")
+                                    progressColor: Styling.srItem("overprimary")
                                     tooltipText: `${Math.round(value * 100)}%`
                                     scroll: true
                                     stepSize: 0.01
@@ -883,7 +883,7 @@ Item {
                                     id: shadowBlurSlider
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 20
-                                    progressColor: Styling.styledRectItem("overprimary")
+                                    progressColor: Styling.srItem("overprimary")
                                     tooltipText: `${(value * 4).toFixed(1)}`
                                     scroll: true
                                     stepSize: 0.01
@@ -935,7 +935,7 @@ Item {
                                     id: shadowXOffsetSlider
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 20
-                                    progressColor: Styling.styledRectItem("overprimary")
+                                    progressColor: Styling.srItem("overprimary")
                                     tooltipText: `${Math.round((value - 0.5) * 40)}`
                                     scroll: true
                                     stepSize: 0.025  // 1/40 for integer steps in -20 to +20 range
@@ -986,7 +986,7 @@ Item {
                                     id: shadowYOffsetSlider
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: 20
-                                    progressColor: Styling.styledRectItem("overprimary")
+                                    progressColor: Styling.srItem("overprimary")
                                     tooltipText: `${Math.round((value - 0.5) * 40)}`
                                     scroll: true
                                     stepSize: 0.025  // 1/40 for integer steps in -20 to +20 range
@@ -1070,7 +1070,7 @@ Item {
 
                                     Rectangle {
                                         anchors.fill: parent
-                                        color: Styling.styledRectItem("overprimary")
+                                        color: Styling.srItem("overprimary")
                                         radius: shadowColorButton.radius ?? 0
                                         opacity: shadowColorButton.isHovered ? 0.15 : 0
 
@@ -1246,7 +1246,7 @@ Item {
 
                                                     Rectangle {
                                                         anchors.fill: parent
-                                                        color: Styling.styledRectItem("overprimary")
+                                                        color: Styling.srItem("overprimary")
                                                         radius: variantTagRow.radius ?? 0
                                                         opacity: variantTagRow.isHovered ? 0.15 : 0
 
@@ -1292,7 +1292,7 @@ Item {
 
                                         contentItem: Rectangle {
                                             implicitHeight: 8
-                                            color: Styling.styledRectItem("overprimary")
+                                            color: Styling.srItem("overprimary")
                                             radius: 4
                                         }
 
@@ -1403,7 +1403,7 @@ Item {
                                             Rectangle {
                                                 id: hoverOverlay
                                                 anchors.fill: parent
-                                                color: Styling.styledRectItem("overprimary")
+                                                color: Styling.srItem("overprimary")
                                                 radius: variantTag.radius ?? 0
                                                 opacity: variantTag.isHovered ? 0.15 : 0
 

@@ -171,7 +171,7 @@ Item {
                                     text: Icons.edit
                                     font.family: Icons.font
                                     font.pixelSize: 18
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
                                 }
                             }
 
@@ -247,7 +247,7 @@ Item {
                                         let date = new Date(parseInt(modelData.id));
                                         return date.toLocaleString(Qt.locale(), "MM-dd hh:mm");
                                     }
-                                    color: Ai.currentChatId === modelData.id ? Styling.styledRectItem("overprimary") : Colors.overSurface
+                                    color: Ai.currentChatId === modelData.id ? Styling.srItem("overprimary") : Colors.overSurface
                                     font.family: Config.theme.font
                                     font.pixelSize: 13
                                     elide: Text.ElideRight
@@ -387,7 +387,7 @@ Item {
                 spacing: 8
 
                 Text {
-                    text: "Hello, <font color='" + Styling.styledRectItem("overprimary") + "'>" + mainChatArea.username + "</font>."
+                    text: "Hello, <font color='" + Styling.srItem("overprimary") + "'>" + mainChatArea.username + "</font>."
                     font.family: Config.theme.font
                     font.pixelSize: 32
                     font.weight: Font.Bold
@@ -644,7 +644,7 @@ Item {
                                     variant: isSystem ? "surface" : (isUser ? "primaryContainer" : "surfaceVariant")
                                     radius: Styling.radius(4)
                                     border.width: isSystem || messageDelegate.isEditing ? 1 : 0
-                                    border.color: messageDelegate.isEditing ? Styling.styledRectItem("overprimary") : Colors.surfaceDim
+                                    border.color: messageDelegate.isEditing ? Styling.srItem("overprimary") : Colors.surfaceDim
 
                                     ColumnLayout {
                                         id: bubbleContent
@@ -756,7 +756,7 @@ Item {
 
                                             Text {
                                                 text: "Run Command"
-                                                color: Styling.styledRectItem("overprimary")
+                                                color: Styling.srItem("overprimary")
                                                 font.family: Config.theme.font
                                                 font.weight: Font.Bold
                                                 font.pixelSize: 12
@@ -898,7 +898,7 @@ Item {
                                     width: 8
                                     height: 8
                                     radius: 4
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
                                     opacity: 0.5
 
                                     SequentialAnimation on opacity {
@@ -1042,7 +1042,7 @@ Item {
                                         text: "/" + model.name
                                         font.family: Config.theme.font
                                         font.weight: Font.Bold
-                                        color: highlighted ? Styling.styledRectItem("overprimary") : Colors.overSurface
+                                        color: highlighted ? Styling.srItem("overprimary") : Colors.overSurface
                                     }
 
                                     Text {
@@ -1140,7 +1140,7 @@ Item {
                                 text: Icons.paperPlane
                                 font.family: Icons.font
                                 font.pixelSize: 20
-                                color: Styling.styledRectItem("overprimary")
+                                color: Styling.srItem("overprimary")
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }

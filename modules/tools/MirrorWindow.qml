@@ -184,7 +184,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         text: Icons.cancel
                         font.family: Icons.font
-                        color: Styling.styledRectItem("error")
+                        color: Styling.srItem("error")
                         font.pixelSize: 20
                     }
 
@@ -321,7 +321,7 @@ PanelWindow {
             text: mode == 0 || mode == 3 ? Icons.caretDoubleDown : Icons.caretDoubleUp
             rotation: mode == 0 ? -45 : mode == 1 ? 45 : mode == 2 ? -135 : 135
             font.family: Icons.font
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             font.pixelSize: 12
             opacity: (dragArea.containsMouse || parent.containsMouse) ? 0.8 : 0
         }

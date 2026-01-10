@@ -21,7 +21,7 @@ Item {
     readonly property int workspacesShown: rows * columns
     readonly property real workspaceSpacing: Config.overview.workspaceSpacing
     readonly property real workspacePadding: 8
-    readonly property color activeBorderColor: Styling.styledRectItem("overprimary")
+    readonly property color activeBorderColor: Styling.srItem("overprimary")
 
     // Use the screen's monitor instead of focused monitor for multi-monitor support
     property var currentScreen: null  // This will be set from parent

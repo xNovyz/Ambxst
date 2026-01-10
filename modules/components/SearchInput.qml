@@ -59,7 +59,7 @@ StyledRect {
             text: root.iconText
             font.family: Config.theme.font
             font.pixelSize: 20
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             visible: root.iconText.length > 0
         }
 
@@ -78,7 +78,7 @@ StyledRect {
                 font.family: root.prefixIcon.length > 0 ? Icons.font : Config.theme.font
                 font.pixelSize: root.prefixIcon.length > 0 ? 18 : Config.theme.fontSize - 1
                 // font.weight: Font.Bold
-                color: Styling.styledRectItem("primary")
+                color: Styling.srItem("primary")
             }
         }
 

@@ -73,7 +73,7 @@ Item {
                     }
                     font.family: Icons.font
                     font.pixelSize: 20
-                    color: root.network?.active ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                    color: root.network?.active ? Styling.srItem("overprimary") : Colors.overBackground
                 }
 
                 // Lock icon for secure networks
@@ -203,7 +203,7 @@ Item {
                         text: root.network?.active ? "Disconnect" : "Connect"
                         font.family: Config.theme.font
                         font.pixelSize: Styling.fontSize(-1)
-                        color: root.network?.active ? Colors.overSurfaceVariant : Styling.styledRectItem("primary")
+                        color: root.network?.active ? Colors.overSurfaceVariant : Styling.srItem("primary")
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }

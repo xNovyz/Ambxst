@@ -353,7 +353,7 @@ FocusScope {
                                     Text {
                                         anchors.centerIn: parent
                                         text: Icons.accept
-                                        color: Styling.styledRectItem("primary")
+                                        color: Styling.srItem("primary")
                                         font.family: Icons.font
                                         font.pixelSize: 20
                                         scale: oledCheckbox.checked ? 1.0 : 0.0
@@ -584,7 +584,7 @@ FocusScope {
                         width: parent.width - wallpapersTabRoot.wallpaperMargin * 2
                         height: parent.height - wallpapersTabRoot.wallpaperMargin * 2
                         color: "transparent"
-                        border.color: Styling.styledRectItem("overprimary")
+                        border.color: Styling.srItem("overprimary")
                         border.width: 2
                         visible: selectedIndex >= 0
                         radius: Styling.radius(4)
@@ -645,7 +645,7 @@ FocusScope {
                                             }
                                             return "";
                                         }
-                                        color: parent.parent.isCurrentWallpaper ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                                        color: parent.parent.isCurrentWallpaper ? Styling.srItem("overprimary") : Colors.overBackground
                                         font.family: Config.theme.font
                                         font.pixelSize: Config.theme.fontSize
                                         font.weight: Font.Bold

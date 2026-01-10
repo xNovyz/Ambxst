@@ -22,7 +22,7 @@ Item {
     property alias isDragging: slider.isDragging
 
     // Propiedades opcionales para sobrescribir colores
-    property color customProgressColor: Styling.styledRectItem("overprimary")
+    property color customProgressColor: Styling.srItem("overprimary")
     property color customBackgroundColor: Colors.shadow
     property bool useCustomColors: false
 
@@ -31,7 +31,7 @@ Item {
         anchors.fill: parent
 
         value: root.length > 0 ? Math.min(1.0, root.position / root.length) : 0
-        progressColor: root.useCustomColors ? root.customProgressColor : Styling.styledRectItem("overprimary")
+        progressColor: root.useCustomColors ? root.customProgressColor : Styling.srItem("overprimary")
         backgroundColor: root.useCustomColors ? root.customBackgroundColor : Colors.shadow
         wavy: true
         wavyAmplitude: root.isPlaying ? 1 : 0.0

@@ -14,7 +14,7 @@ Item {
 
     property string icon: ""
     property real sliderValue: 0
-    property color progressColor: Styling.styledRectItem("overprimary")
+    property color progressColor: Styling.srItem("overprimary")
     property bool wavy: false
     property real wavyAmplitude: 0.8
     property real wavyFrequency: 8
@@ -82,7 +82,7 @@ Item {
                 text: root.icon
                 font.family: Icons.font
                 font.pixelSize: 18
-                color: iconMouseArea.containsMouse ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                color: iconMouseArea.containsMouse ? Styling.srItem("overprimary") : Colors.overBackground
                 rotation: root._animatedIconRotation
                 scale: root._animatedIconScale
 

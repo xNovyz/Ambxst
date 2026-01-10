@@ -46,7 +46,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             opacity: root.popupOpen ? 0 : (root.isHovered ? 0.25 : 0)
             radius: parent.radius ?? 0
 
@@ -286,8 +286,8 @@ Item {
                                         anchors.centerIn: parent
                                         width: 28
                                         height: 28
-                                        radius: 14
-                                        color: Styling.styledRectItem("overprimary")
+                                        radius: Styling.radius(0)
+                                        color: Styling.srItem("overprimary")
                                         visible: dayColumn.isToday
                                     }
 

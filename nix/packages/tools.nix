@@ -11,6 +11,7 @@ with pkgs; [
   jq
   litellm
   matugen
+  python3
   slurp
   sqlite
   upower

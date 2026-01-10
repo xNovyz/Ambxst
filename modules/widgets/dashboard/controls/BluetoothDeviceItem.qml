@@ -80,7 +80,7 @@ Item {
                 }
                 font.family: Icons.font
                 font.pixelSize: 20
-                color: root.device?.connected ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                color: root.device?.connected ? Styling.srItem("overprimary") : Colors.overBackground
             }
 
             // Device name and status
@@ -196,7 +196,7 @@ Item {
                     text: "Forget"
                     font.family: Config.theme.font
                     font.pixelSize: Styling.fontSize(-1)
-                    color: Styling.styledRectItem("error")
+                    color: Styling.srItem("error")
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -224,7 +224,7 @@ Item {
                     text: root.device?.connected ? "Disconnect" : "Connect"
                     font.family: Config.theme.font
                     font.pixelSize: Styling.fontSize(-1)
-                    color: root.device?.connected ? Colors.overSurfaceVariant : Styling.styledRectItem("primary")
+                    color: root.device?.connected ? Colors.overSurfaceVariant : Styling.srItem("primary")
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }

@@ -927,7 +927,7 @@ Item {
                             textFormat: Text.RichText
                             font.family: Icons.font
                             font.pixelSize: 20
-                            color: root.clearButtonConfirmState ? clearButton.item : Styling.styledRectItem("overprimary")
+                            color: root.clearButtonConfirmState ? clearButton.item : Styling.srItem("overprimary")
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -1189,11 +1189,11 @@ Item {
                         property bool isDraggingForReorder: false
                         property color textColor: {
                             if (isInDeleteMode) {
-                                return Styling.styledRectItem("error");
+                                return Styling.srItem("error");
                             } else if (isExpanded) {
-                                return Styling.styledRectItem("pane");
+                                return Styling.srItem("pane");
                             } else if (isSelected) {
-                                return Styling.styledRectItem("primary");
+                                return Styling.srItem("primary");
                             } else {
                                 return Colors.overSurface;
                             }
@@ -1750,8 +1750,8 @@ Item {
                                             {
                                                 text: "Copy",
                                                 icon: Icons.copy,
-                                                highlightColor: Styling.styledRectItem("overprimary"),
-                                                textColor: Styling.styledRectItem("primary"),
+                                                highlightColor: Styling.srItem("overprimary"),
+                                                textColor: Styling.srItem("primary"),
                                                 action: function () {
                                                     root.copyToClipboard(modelData.id);
                                                     Visibilities.setActiveModule("");
@@ -1764,8 +1764,8 @@ Item {
                                             options.push({
                                                 text: "Open",
                                                 icon: Icons.popOpen,
-                                                highlightColor: Styling.styledRectItem("overprimary"),
-                                                textColor: Styling.styledRectItem("primary"),
+                                                highlightColor: Styling.srItem("overprimary"),
+                                                textColor: Styling.srItem("primary"),
                                                 action: function () {
                                                     root.openItem(modelData.id);
                                                 }
@@ -1775,8 +1775,8 @@ Item {
                                         options.push({
                                             text: modelData.pinned ? "Unpin" : "Pin",
                                             icon: modelData.pinned ? Icons.unpin : Icons.pin,
-                                            highlightColor: Styling.styledRectItem("overprimary"),
-                                            textColor: Styling.styledRectItem("primary"),
+                                            highlightColor: Styling.srItem("overprimary"),
+                                            textColor: Styling.srItem("primary"),
                                             action: function () {
                                                 root.pendingItemIdToSelect = modelData.id;
                                                 ClipboardService.togglePin(modelData.id);
@@ -1786,7 +1786,7 @@ Item {
                                             text: "Alias",
                                             icon: Icons.edit,
                                             highlightColor: Colors.secondary,
-                                            textColor: Styling.styledRectItem("secondary"),
+                                            textColor: Styling.srItem("secondary"),
                                             action: function () {
                                                 root.enterAliasMode(modelData.id);
                                                 root.expandedItemIndex = -1;
@@ -1795,7 +1795,7 @@ Item {
                                             text: "Delete",
                                             icon: Icons.trash,
                                             highlightColor: Colors.error,
-                                            textColor: Styling.styledRectItem("error"),
+                                            textColor: Styling.srItem("error"),
                                             action: function () {
                                                 root.enterDeleteMode(modelData.id);
                                                 root.expandedItemIndex = -1;
@@ -1984,7 +1984,7 @@ Item {
                                 }
 
                                 contentItem: Rectangle {
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
                                     radius: Styling.radius(0)
                                 }
 
@@ -2161,7 +2161,7 @@ Item {
                                     height: 14
                                     radius: 7
                                     visible: modelData.pinned && !isInDeleteMode && !isInAliasMode
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
 
                                     Text {
                                         anchors.centerIn: parent
@@ -2279,7 +2279,7 @@ Item {
                                         } else if (isExpanded) {
                                             return Colors.overBackground;
                                         } else if (isSelected) {
-                                            return Styling.styledRectItem("primary");
+                                            return Styling.srItem("primary");
                                         } else {
                                             return Colors.outline;
                                         }
@@ -2565,7 +2565,7 @@ Item {
                             textFormat: Text.RichText
                             font.family: Icons.font
                             font.pixelSize: 48
-                            color: Styling.styledRectItem("overprimary")
+                            color: Styling.srItem("overprimary")
                         }
                     }
 
@@ -2629,7 +2629,7 @@ Item {
                                     y: 0
                                     width: 4
                                     height: parent.height
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
 
                                     // Rounded corners only on the left side
                                     topLeftRadius: Config.roundness > 0 ? Config.roundness + 4 : 0
@@ -2735,7 +2735,7 @@ Item {
                                                 width: 60
                                                 height: 60
                                                 radius: 30
-                                                color: Styling.styledRectItem("overprimary")
+                                                color: Styling.srItem("overprimary")
                                                 opacity: 0.9
 
                                                 Text {
@@ -2761,7 +2761,7 @@ Item {
                                                     text: Icons.spinnerGap
                                                     font.family: Icons.font
                                                     font.pixelSize: 32
-                                                    color: Styling.styledRectItem("overprimary")
+                                                    color: Styling.srItem("overprimary")
                                                     textFormat: Text.RichText
 
                                                     RotationAnimator on rotation {
@@ -2932,7 +2932,7 @@ Item {
                                                     text: Icons.spinnerGap
                                                     font.family: Icons.font
                                                     font.pixelSize: 24
-                                                    color: Styling.styledRectItem("overprimary")
+                                                    color: Styling.srItem("overprimary")
                                                     textFormat: Text.RichText
                                                 }
                                             }
@@ -2958,7 +2958,7 @@ Item {
                                         text: Icons.spinnerGap
                                         font.family: Icons.font
                                         font.pixelSize: 20
-                                        color: Styling.styledRectItem("overprimary")
+                                        color: Styling.srItem("overprimary")
                                         textFormat: Text.RichText
 
                                         RotationAnimator on rotation {
@@ -3069,7 +3069,7 @@ Item {
                                                 text: Icons.globe
                                                 font.family: Icons.font
                                                 font.pixelSize: 20
-                                                color: Styling.styledRectItem("overprimary")
+                                                color: Styling.srItem("overprimary")
                                                 textFormat: Text.RichText
                                             }
                                         }
@@ -3170,7 +3170,7 @@ Item {
                                     textFormat: Text.RichText
                                     font.family: Icons.font
                                     font.pixelSize: 48
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
                                 }
                             }
 
@@ -3433,7 +3433,7 @@ Item {
                                     text: Icons.popOpen
                                     font.family: Icons.font
                                     font.pixelSize: 20
-                                    color: metadataOpenButtonMouseArea.containsMouse ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                                    color: metadataOpenButtonMouseArea.containsMouse ? Styling.srItem("overprimary") : Colors.overBackground
                                     textFormat: Text.RichText
 
                                     Behavior on color {
@@ -3502,7 +3502,7 @@ Item {
                                     text: Icons.handGrab
                                     font.family: Icons.font
                                     font.pixelSize: 20
-                                    color: metadataDragArea.containsMouse ? Styling.styledRectItem("overprimary") : Colors.overBackground
+                                    color: metadataDragArea.containsMouse ? Styling.srItem("overprimary") : Colors.overBackground
                                     textFormat: Text.RichText
 
                                     Behavior on color {

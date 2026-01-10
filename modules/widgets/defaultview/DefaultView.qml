@@ -28,7 +28,7 @@ Item {
 
     readonly property bool expandedState: contentHoverHandler.hovered || notchHovered || isNavigating || Visibilities.playerMenuOpen
 
-    property real mainRowMargin: (Config.notchTheme === "island" && (hasActiveNotifications || expandedState)) ? 64 : 16
+    property real mainRowMargin: (Config.notchTheme === "island" && hasActiveNotifications) ? 64 : 16
 
     Behavior on mainRowMargin {
         enabled: Config.animDuration > 0

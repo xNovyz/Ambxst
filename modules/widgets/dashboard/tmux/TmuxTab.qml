@@ -852,13 +852,13 @@ Item {
                     property bool isExpanded: index === root.expandedItemIndex
                     property color textColor: {
                         if (isInDeleteMode) {
-                            return Styling.styledRectItem("error");
+                            return Styling.srItem("error");
                         } else if (isInRenameMode) {
-                            return Styling.styledRectItem("secondary");
+                            return Styling.srItem("secondary");
                         } else if (isExpanded) {
-                            return Styling.styledRectItem("pane");
+                            return Styling.srItem("pane");
                         } else if (root.selectedIndex === index) {
-                            return Styling.styledRectItem("primary");
+                            return Styling.srItem("primary");
                         } else {
                             return Colors.overSurface;
                         }
@@ -1031,8 +1031,8 @@ Item {
                                     {
                                         text: "Open",
                                         icon: Icons.popOpen,
-                                        highlightColor: Styling.styledRectItem("overprimary"),
-                                        textColor: Styling.styledRectItem("primary"),
+                                        highlightColor: Styling.srItem("overprimary"),
+                                        textColor: Styling.srItem("primary"),
                                         action: function () {
                                             root.attachToSession(modelData.name);
                                         }
@@ -1041,7 +1041,7 @@ Item {
                                         text: "Rename",
                                         icon: Icons.edit,
                                         highlightColor: Colors.secondary,
-                                        textColor: Styling.styledRectItem("secondary"),
+                                        textColor: Styling.srItem("secondary"),
                                         action: function () {
                                             root.enterRenameMode(modelData.name);
                                             root.expandedItemIndex = -1;
@@ -1051,7 +1051,7 @@ Item {
                                         text: "Quit",
                                         icon: Icons.alert,
                                         highlightColor: Colors.error,
-                                        textColor: Styling.styledRectItem("error"),
+                                        textColor: Styling.srItem("error"),
                                         action: function () {
                                             root.enterDeleteMode(modelData.name);
                                             root.expandedItemIndex = -1;
@@ -1909,7 +1909,7 @@ Item {
                                     anchors.fill: parent
                                     color: "transparent"
                                     border.width: modelData.active ? 2 : 0
-                                    border.color: modelData.active ? Styling.styledRectItem("overprimary") : "transparent"
+                                    border.color: modelData.active ? Styling.srItem("overprimary") : "transparent"
                                     radius: paneRect.radius
 
                                     Behavior on border.width {
@@ -2015,7 +2015,7 @@ Item {
                                     text: Icons.spinnerGap
                                     font.family: Icons.font
                                     font.pixelSize: 20
-                                    color: Styling.styledRectItem("overprimary")
+                                    color: Styling.srItem("overprimary")
                                     textFormat: Text.RichText
 
                                     RotationAnimator on rotation {

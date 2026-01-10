@@ -113,7 +113,7 @@ Item {
                         Layout.fillHeight: true
                         radius: Notifications.silent ? Styling.radius(-4) : Styling.radius(0)
 
-                        readonly property color dndItem: Notifications.silent ? itemColor : Styling.styledRectItem("overprimary")
+                        readonly property color dndItem: Notifications.silent ? itemColor : Styling.srItem("overprimary")
 
                         Text {
                             anchors.centerIn: parent
@@ -140,7 +140,7 @@ Item {
                         Layout.fillHeight: true
                         radius: Styling.radius(0)
 
-                        readonly property color clearItem: broomHover.pressed ? itemColor : Styling.styledRectItem("overerror")
+                        readonly property color clearItem: broomHover.pressed ? itemColor : Styling.srItem("overerror")
 
                         Text {
                             anchors.centerIn: parent
@@ -212,7 +212,7 @@ Item {
                     layer.effect: MultiEffect {
                         brightness: 1.0
                         colorization: 1.0
-                        colorizationColor: Styling.styledRectItem("pane")
+                        colorizationColor: Styling.srItem("pane")
                     }
                 }
             }

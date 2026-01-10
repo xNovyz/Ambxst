@@ -155,7 +155,7 @@ PanelWindow {
             anchors.verticalCenter: presetsContainer.verticalCenter
             width: 32
             height: Math.max(presetsContainer.height * 0.6, 200)
-            radius: 16
+            radius: Styling.radius(0)
 
             layer.enabled: true
             layer.effect: Shadow {}
@@ -198,8 +198,8 @@ PanelWindow {
 
                 contentItem: Rectangle {
                     implicitWidth: 12
-                    radius: 6
-                    color: externalScrollBar.pressed ? Styling.styledRectItem("overprimary") : (externalScrollBar.hovered ? Qt.lighter(Styling.styledRectItem("overprimary"), 1.2) : Styling.styledRectItem("overprimary"))
+                    radius: Styling.radius(-10)
+                    color: externalScrollBar.pressed ? Styling.srItem("overprimary") : (externalScrollBar.hovered ? Qt.lighter(Styling.srItem("overprimary"), 1.2) : Styling.srItem("overprimary"))
 
                     Behavior on color {
                         enabled: Config.animDuration > 0
@@ -211,15 +211,13 @@ PanelWindow {
 
                 background: Rectangle {
                     implicitWidth: 12
-                    radius: 6
+                    radius: Styling.radius(-10)
                     color: Colors.surfaceContainer
                     opacity: 0.3
                 }
             }
         }
     }
-
-
 
     // Ensure focus when presets opens
     onPresetsOpenChanged: {

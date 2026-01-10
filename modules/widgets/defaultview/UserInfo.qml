@@ -72,7 +72,7 @@ Item {
                 id: userHostText
                 anchors.verticalCenter: parent.verticalCenter
                 text: `${Quickshell.env("USER")}@${hostnameCollector.text.trim()}`
-                color: userHostArea.pressed ? Colors.overBackground : (userHostArea.containsMouse ? Styling.styledRectItem("overprimary") : Colors.overBackground)
+                color: userHostArea.pressed ? Colors.overBackground : (userHostArea.containsMouse ? Styling.srItem("overprimary") : Colors.overBackground)
                 font.family: Config.theme.font
                 font.pixelSize: Styling.fontSize(0)
                 font.weight: Font.Bold

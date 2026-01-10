@@ -82,7 +82,7 @@ QtObject {
         }
     }
 
-    function styledRectItem(variant) {
+    function srItem(variant) {
         return Config.resolveColor(getStyledRectConfig(variant).itemColor);
     }
 }

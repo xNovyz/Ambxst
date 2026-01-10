@@ -49,7 +49,7 @@ Menu {
     property int menuRadius: Config.roundness
 
     // Propiedades de highlight por defecto
-    property color defaultHighlightColor: Styling.styledRectItem("overprimary")
+    property color defaultHighlightColor: Styling.srItem("overprimary")
     property color defaultTextColor: Colors.overPrimary
     property color normalTextColor: Colors.overBackground
 

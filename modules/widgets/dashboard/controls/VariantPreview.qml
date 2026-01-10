@@ -36,7 +36,7 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 color: "transparent"
-                border.color: Styling.styledRectItem("overprimary")
+                border.color: Styling.srItem("overprimary")
                 border.width: root.isSelected ? 2 : 0
                 radius: previewRect.radius
 
@@ -71,7 +71,7 @@ Item {
             Rectangle {
                 id: hoverOverlay
                 anchors.fill: parent
-                color: Styling.styledRectItem("overprimary")
+                color: Styling.srItem("overprimary")
                 radius: previewRect.radius
                 opacity: 0
 
@@ -89,7 +89,7 @@ Item {
             text: root.variantLabel
             font.family: Styling.defaultFont
             font.pixelSize: Styling.fontSize(0)
-            color: root.isSelected ? Styling.styledRectItem("overprimary") : Colors.overBackground
+            color: root.isSelected ? Styling.srItem("overprimary") : Colors.overBackground
             horizontalAlignment: Text.AlignHCenter
             elide: Text.ElideRight
             Layout.fillWidth: true

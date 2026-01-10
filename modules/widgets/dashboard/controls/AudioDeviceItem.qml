@@ -55,9 +55,7 @@ Item {
             text: root.isOutput ? Icons.speakerHigh : Icons.mic
             font.family: Icons.font
             font.pixelSize: 18
-            color: root.isSelected 
-                ? Styling.styledRectItem("primary")
-                : Colors.overBackground
+            color: root.isSelected ? Styling.srItem("primary") : Colors.overBackground
         }
 
         // Device name
@@ -67,9 +65,7 @@ Item {
             font.family: Config.theme.font
             font.pixelSize: Config.theme.fontSize
             font.weight: root.isSelected ? Font.Bold : Font.Normal
-            color: root.isSelected 
-                ? Styling.styledRectItem("primary")
-                : Colors.overBackground
+            color: root.isSelected ? Styling.srItem("primary") : Colors.overBackground
             elide: Text.ElideRight
         }
 
@@ -79,7 +75,7 @@ Item {
             text: Icons.accept
             font.family: Icons.font
             font.pixelSize: 16
-            color: Styling.styledRectItem("primary")
+            color: Styling.srItem("primary")
         }
     }
 }

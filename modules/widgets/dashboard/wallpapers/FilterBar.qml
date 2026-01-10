@@ -364,7 +364,7 @@ FocusScope {
         contentItem: Rectangle {
             implicitWidth: 4
             implicitHeight: 4
-            color: Styling.styledRectItem("overprimary")
+            color: Styling.srItem("overprimary")
             radius: Styling.radius(0)
         }
 

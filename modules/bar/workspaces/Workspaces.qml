@@ -67,26 +67,32 @@ Item {
     function updateOccupiedRanges() {
         const ranges = [];
         let rangeStart = -1;
-        
+
         for (let i = 0; i < effectiveWorkspaceCount; i++) {
             const isOccupied = workspaceOccupied[i];
-            
+
             if (isOccupied) {
                 if (rangeStart === -1) {
                     rangeStart = i;
                 }
             } else {
                 if (rangeStart !== -1) {
-                    ranges.push({ start: rangeStart, end: i - 1 });
+                    ranges.push({
+                        start: rangeStart,
+                        end: i - 1
+                    });
                     rangeStart = -1;
                 }
             }
         }
-        
+
         if (rangeStart !== -1) {
-            ranges.push({ start: rangeStart, end: effectiveWorkspaceCount - 1 });
+            ranges.push({
+                start: rangeStart,
+                end: effectiveWorkspaceCount - 1
+            });
         }
-        
+
         occupiedRanges = ranges;
     }
 
@@ -103,38 +109,46 @@ Item {
         return workspaceGroup * Config.workspaces.shown + index + 1;
     }
 
-    Component.onCompleted: updateWorkspaceOccupied()
+    Timer {
+        id: updateTimer
+        interval: 50
+        repeat: false
+        onTriggered: workspacesWidget.updateWorkspaceOccupied()
+    }
+
+    // Initial update
+    Component.onCompleted: updateTimer.restart()
 
     Connections {
         target: Hyprland.workspaces
         function onValuesChanged() {
-            updateWorkspaceOccupied();
+            updateTimer.restart();
         }
     }
 
     Connections {
         target: monitor
         function onActiveWorkspaceChanged() {
-            updateWorkspaceOccupied();
+            updateTimer.restart();
         }
     }
 
     Connections {
         target: activeWindow
         function onActivatedChanged() {
-            updateWorkspaceOccupied();
+            updateTimer.restart();
         }
     }
 
     Connections {
         target: HyprlandData
         function onWindowListChanged() {
-            updateWorkspaceOccupied();
+            updateTimer.restart();
         }
     }
 
     onWorkspaceGroupChanged: {
-        updateWorkspaceOccupied();
+        updateTimer.restart();
     }
 
     implicitWidth: orientation === "vertical" ? baseSize : workspaceButtonSize * effectiveWorkspaceCount + widgetPadding * 2
@@ -185,7 +199,7 @@ Item {
                 z: 1
                 width: (modelData.end - modelData.start + 1) * workspaceButtonWidth
                 height: workspaceButtonWidth
-                
+
                 radius: Styling.radius(0) > 0 ? Math.max(Styling.radius(0) - widgetPadding, 0) : 0
 
                 opacity: Config.theme.srFocus.opacity
@@ -236,7 +250,7 @@ Item {
                 z: 1
                 width: workspaceButtonWidth
                 height: (modelData.end - modelData.start + 1) * workspaceButtonWidth
-                
+
                 radius: Styling.radius(0) > 0 ? Math.max(Styling.radius(0) - widgetPadding, 0) : 0
 
                 opacity: Config.theme.srFocus.opacity
@@ -405,7 +419,8 @@ Item {
                     implicitHeight: workspaceButtonWidth
                     property var focusedWindow: {
                         const windowsInThisWorkspace = HyprlandData.windowList.filter(w => w.workspace.id == button.workspaceValue);
-                        if (windowsInThisWorkspace.length === 0) return null;
+                        if (windowsInThisWorkspace.length === 0)
+                            return null;
                         // Get the window with the lowest focusHistoryID (most recently focused)
                         return windowsInThisWorkspace.reduce((best, win) => {
                             const bestFocus = best?.focusHistoryID ?? Infinity;
@@ -413,7 +428,7 @@ Item {
                             return winFocus < bestFocus ? win : best;
                         }, null);
                     }
-                    property var mainAppIconSource: Quickshell.iconPath(AppSearch.guessIcon(focusedWindow?.class), "image-missing")
+                    property var mainAppIconSource: Quickshell.iconPath(AppSearch.getCachedIcon(focusedWindow?.class), "image-missing")
 
                     Text {
                         opacity: Config.workspaces.alwaysShowNumbers || ((Config.workspaces.showNumbers && (!Config.workspaces.showAppIcons || !workspaceButtonBackground.focusedWindow || Config.workspaces.alwaysShowNumbers)) || (Config.workspaces.alwaysShowNumbers && !Config.workspaces.showAppIcons)) ? 1 : 0
@@ -426,7 +441,7 @@ Item {
                         font.pixelSize: workspaceLabelFontSize(text)
                         text: `${button.workspaceValue}`
                         elide: Text.ElideRight
-                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Styling.styledRectItem("primary") : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
+                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Styling.srItem("primary") : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0
@@ -443,7 +458,7 @@ Item {
                         width: workspaceButtonWidth * 0.2
                         height: width
                         radius: width / 2
-                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Styling.styledRectItem("primary") : Colors.overBackground
+                        color: (monitor?.activeWorkspace?.id == button.workspaceValue) ? Styling.srItem("primary") : Colors.overBackground
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0
@@ -536,7 +551,8 @@ Item {
                     implicitHeight: workspaceButtonWidth
                     property var focusedWindow: {
                         const windowsInThisWorkspace = HyprlandData.windowList.filter(w => w.workspace.id == buttonVert.workspaceValue);
-                        if (windowsInThisWorkspace.length === 0) return null;
+                        if (windowsInThisWorkspace.length === 0)
+                            return null;
                         // Get the window with the lowest focusHistoryID (most recently focused)
                         return windowsInThisWorkspace.reduce((best, win) => {
                             const bestFocus = best?.focusHistoryID ?? Infinity;
@@ -544,7 +560,7 @@ Item {
                             return winFocus < bestFocus ? win : best;
                         }, null);
                     }
-                    property var mainAppIconSource: Quickshell.iconPath(AppSearch.guessIcon(focusedWindow?.class), "image-missing")
+                    property var mainAppIconSource: Quickshell.iconPath(AppSearch.getCachedIcon(focusedWindow?.class), "image-missing")
 
                     Text {
                         opacity: Config.workspaces.alwaysShowNumbers || ((Config.workspaces.showNumbers && (!Config.workspaces.showAppIcons || !workspaceButtonBackgroundVert.focusedWindow || Config.workspaces.alwaysShowNumbers)) || (Config.workspaces.alwaysShowNumbers && !Config.workspaces.showAppIcons)) ? 1 : 0
@@ -557,7 +573,7 @@ Item {
                         font.pixelSize: workspaceLabelFontSize(text)
                         text: `${buttonVert.workspaceValue}`
                         elide: Text.ElideRight
-                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Styling.styledRectItem("primary") : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
+                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Styling.srItem("primary") : (workspaceOccupied[index] ? Colors.overBackground : Colors.overSecondaryFixedVariant)
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0
@@ -574,7 +590,7 @@ Item {
                         width: workspaceButtonWidth * 0.2
                         height: width
                         radius: width / 2
-                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Styling.styledRectItem("primary") : Colors.overBackground
+                        color: (monitor?.activeWorkspace?.id == buttonVert.workspaceValue) ? Styling.srItem("primary") : Colors.overBackground
 
                         Behavior on opacity {
                             enabled: Config.animDuration > 0

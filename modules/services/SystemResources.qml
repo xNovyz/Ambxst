@@ -63,11 +63,60 @@ Singleton {
     // Total data points collected (continues incrementing forever)
     property int totalDataPoints: 0
 
+    // Unified System Monitor Process
+    property Process monitorProcess: Process {
+        id: monitorProcess
+        running: false
+        // Arguments will be updated when validDisks changes
+        command: ["python3", Quickshell.shellDir + "/scripts/system_monitor.py"]
+        
+        stdout: SplitParser {
+            onRead: data => {
+                try {
+                    const stats = JSON.parse(data);
+                    
+                    // Update CPU
+                    root.cpuUsage = stats.cpu.usage;
+                    root.cpuTemp = stats.cpu.temp;
+                    
+                    // Update RAM
+                    root.ramUsage = stats.ram.usage;
+                    root.ramTotal = stats.ram.total;
+                    root.ramUsed = stats.ram.used;
+                    root.ramAvailable = stats.ram.available;
+                    
+                    // Update Disk
+                    root.diskUsage = stats.disk.usage;
+                    
+                    // Update GPU
+                    root.gpuDetected = stats.gpu.detected;
+                    if (stats.gpu.detected) {
+                        // Ensure arrays are initialized if count changes (unlikely but safe)
+                        if (root.gpuCount !== stats.gpu.count) {
+                            root.gpuCount = stats.gpu.count;
+                            root.gpuVendors = Array(stats.gpu.count).fill(stats.gpu.vendor);
+                        }
+                        root.gpuUsages = stats.gpu.usages;
+                        root.gpuTemps = stats.gpu.temps;
+                    }
+                    
+                    // Update History
+                    root.updateHistory();
+                    
+                } catch (e) {
+                    console.warn("SystemResources: Failed to parse monitor data: " + e);
+                }
+            }
+        }
+    }
+
     Component.onCompleted: {
         detectGPU();
         cpuModelReader.running = true;
-        diskTypeDetector.running = true;
-        cpuTempReader.running = true;
+        
+        // Validate disks immediately - if Config is ready, this will populate validDisks
+        // and trigger onValidDisksChanged which starts the monitor
+        validateDisks();
     }
 
     // Watch for config changes and revalidate disks
@@ -86,6 +135,27 @@ Singleton {
         }
     }
 
+    // Restart monitor when disks change (Unified handler)
+    onValidDisksChanged: {
+        // Run static detection for types
+        if (validDisks.length > 0) {
+            diskTypeDetector.running = true;
+        }
+
+        // Restart monitor process with new args
+        if (monitorProcess.running) {
+            monitorProcess.running = false;
+        }
+        
+        let cmd = ["python3", Quickshell.shellDir + "/scripts/system_monitor.py"];
+        for (let i = 0; i < validDisks.length; i++) {
+            cmd.push(validDisks[i]);
+        }
+        
+        monitorProcess.command = cmd;
+        monitorProcess.running = true;
+    }
+
     // Detect GPU vendor and availability
     function detectGPU() {
         // Try NVIDIA first
@@ -95,19 +165,22 @@ Singleton {
     // Validate configured disks and fall back to "/" if invalid
     function validateDisks() {
         const configuredDisks = Config.system.disks || ["/"];
-        validDisks = [];
+        let newValidDisks = [];
 
         for (let i = 0; i < configuredDisks.length; i++) {
             const disk = configuredDisks[i];
             if (disk && typeof disk === 'string' && disk.trim() !== '') {
-                validDisks.push(disk.trim());
+                newValidDisks.push(disk.trim());
             }
         }
 
         // Ensure at least "/" is present
-        if (validDisks.length === 0) {
-            validDisks = ["/"];
+        if (newValidDisks.length === 0) {
+            newValidDisks = ["/"];
         }
+        
+        // Assign the new array to trigger onValidDisksChanged
+        validDisks = newValidDisks;
     }
 
     // Update history arrays with current values
@@ -174,37 +247,6 @@ Singleton {
         }
     }
 
-    Timer {
-        interval: root.updateInterval
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            cpuReader.running = true;
-            ramReader.running = true;
-            diskReader.running = true;
-            cpuTempReader.running = true;
-            
-            // Only query GPU if detected
-            if (root.gpuDetected && root.gpuCount > 0) {
-                const vendor = root.gpuVendors[0] || root.gpuVendor;
-                if (vendor === "nvidia") {
-                    gpuReaderNvidia.running = true;
-                    gpuTempReaderNvidia.running = true;
-                } else if (vendor === "amd") {
-                    gpuReaderAMD.running = true;
-                    gpuTempReaderAMD.running = true;
-                } else if (vendor === "intel") {
-                    gpuReaderIntel.running = true;
-                    // Intel GPU temperature not supported (same as btop)
-                }
-            }
-
-            // Update history after collecting metrics
-            root.updateHistory();
-        }
-    }
-
     // CPU model detection
     Process {
         id: cpuModelReader
@@ -217,21 +259,17 @@ Singleton {
                 let model = text.trim();
                 if (model) {
                     // Clean up CPU name following fastfetch logic
-                    
-                    // Remove general CPU suffixes
                     model = model.replace(/ CPU$/i, '');
                     model = model.replace(/ FPU$/i, '');
                     model = model.replace(/ APU$/i, '');
                     model = model.replace(/ Processor$/i, '');
                     
-                    // Remove core count patterns (word-based)
                     model = model.replace(/ Dual-Core$/i, '');
                     model = model.replace(/ Quad-Core$/i, '');
                     model = model.replace(/ Six-Core$/i, '');
                     model = model.replace(/ Eight-Core$/i, '');
                     model = model.replace(/ Ten-Core$/i, '');
                     
-                    // Remove core count patterns (number-based)
                     model = model.replace(/ 2-Core$/i, '');
                     model = model.replace(/ 4-Core$/i, '');
                     model = model.replace(/ 6-Core$/i, '');
@@ -241,82 +279,18 @@ Singleton {
                     model = model.replace(/ 14-Core$/i, '');
                     model = model.replace(/ 16-Core$/i, '');
                     
-                    // Remove integrated GPU mentions (everything after these strings)
                     const radeonIndex1 = model.indexOf(' w/ Radeon');
-                    if (radeonIndex1 !== -1) {
-                        model = model.substring(0, radeonIndex1);
-                    }
+                    if (radeonIndex1 !== -1) model = model.substring(0, radeonIndex1);
                     const radeonIndex2 = model.indexOf(' with Radeon');
-                    if (radeonIndex2 !== -1) {
-                        model = model.substring(0, radeonIndex2);
-                    }
+                    if (radeonIndex2 !== -1) model = model.substring(0, radeonIndex2);
                     
-                    // Remove frequency suffix (everything after @)
                     const atIndex = model.indexOf('@');
-                    if (atIndex !== -1) {
-                        model = model.substring(0, atIndex);
-                    }
+                    if (atIndex !== -1) model = model.substring(0, atIndex);
                     
-                    // Remove trailing spaces and duplicate whitespaces
                     model = model.trim().replace(/\s+/g, ' ');
                     
                     root.cpuModel = model;
                 }
-            }
-        }
-    }
-
-    // CPU temperature reader (btop-style: hwmon first, then thermal zones)
-    Process {
-        id: cpuTempReader
-        running: false
-        command: ["sh", "-c", `
-            # Try hwmon first (best option, like btop)
-            for d in /sys/class/hwmon/hwmon*; do
-                [ -d "$d" ] || continue
-                name=$(cat "$d/name" 2>/dev/null)
-                case "$name" in
-                    coretemp|k10temp|zenpower|cpu_thermal|x86_pkg_temp|amd_energy)
-                        for t in "$d"/temp*_input; do
-                            [ -f "$t" ] || continue
-                            val=$(cat "$t" 2>/dev/null)
-                            if [ "$val" -gt 10000 ] 2>/dev/null && [ "$val" -lt 120000 ] 2>/dev/null; then
-                                echo $((val / 1000))
-                                exit 0
-                            fi
-                        done
-                        ;;
-                esac
-            done
-            # Fallback to thermal zones (avoid acpitz)
-            for z in /sys/class/thermal/thermal_zone*; do
-                [ -d "$z" ] || continue
-                type=$(cat "$z/type" 2>/dev/null)
-                case "$type" in
-                    x86_pkg_temp|cpu-thermal|soc_thermal|cpu_thermal|proc_thermal)
-                        val=$(cat "$z/temp" 2>/dev/null)
-                        if [ "$val" -gt 1000 ] 2>/dev/null && [ "$val" -lt 120000 ] 2>/dev/null; then
-                            echo $((val / 1000))
-                            exit 0
-                        fi
-                        ;;
-                esac
-            done
-            echo -1
-        `]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                const temp = parseInt(raw);
-                root.cpuTemp = isNaN(temp) ? -1 : temp;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.cpuTemp = -1;
             }
         }
     }
@@ -332,7 +306,6 @@ Singleton {
             onStreamFinished: {
                 const raw = text.trim();
                 if (!raw) {
-                    // Initialize with unknown types
                     const newDiskTypes = {};
                     for (const mountpoint of root.validDisks) {
                         newDiskTypes[mountpoint] = "unknown";
@@ -350,7 +323,6 @@ Singleton {
                         const mountpoint = parts[0].trim();
                         const rota = parts[1].trim();
                         
-                        // rota: "0" = SSD, "1" = HDD, anything else = unknown
                         if (rota === "0") {
                             newDiskTypes[mountpoint] = "ssd";
                         } else if (rota === "1") {
@@ -361,7 +333,6 @@ Singleton {
                     }
                 }
                 
-                // Fill in any missing mountpoints as unknown
                 for (const mountpoint of root.validDisks) {
                     if (!(mountpoint in newDiskTypes)) {
                         newDiskTypes[mountpoint] = "unknown";
@@ -373,13 +344,6 @@ Singleton {
         }
     }
     
-    // Watch for disk list changes to re-detect types
-    onValidDisksChanged: {
-        if (validDisks.length > 0) {
-            diskTypeDetector.running = true;
-        }
-    }
-
     // GPU vendor detection
     Process {
         id: gpuDetector
@@ -391,11 +355,9 @@ Singleton {
             onStreamFinished: {
                 const vendor = text.trim();
                 if (vendor === "nvidia" || vendor === "amd" || vendor === "intel") {
-                    // Initialize arrays for detected vendor
                     root.gpuVendors = [vendor];
                     root.gpuDetected = true;
                     
-                    // Trigger GPU enumeration
                     if (vendor === "nvidia") {
                         gpuEnumeratorNvidia.running = true;
                     } else if (vendor === "amd") {
@@ -479,354 +441,6 @@ Singleton {
                 root.gpuUsages = Array(count).fill(0);
                 root.gpuTemps = Array(count).fill(-1);  // Intel GPU temp not supported
                 root.gpuVendors = Array(count).fill("intel");
-            }
-        }
-    }
-
-    // NVIDIA GPU usage reader - supports multiple GPUs
-    Process {
-        id: gpuReaderNvidia
-        running: false
-        command: ["nvidia-smi", "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) return;
-                
-                const lines = raw.split('\n').filter(line => line.trim());
-                let newUsages = [];
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const usage = parseFloat(lines[i]) || 0;
-                    newUsages.push(Math.max(0, Math.min(100, usage)));
-                }
-                
-                root.gpuUsages = newUsages;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.gpuUsages = Array(root.gpuCount).fill(0);
-            }
-        }
-    }
-
-    // AMD GPU usage reader - supports multiple GPUs
-    Process {
-        id: gpuReaderAMD
-        running: false
-        command: ["sh", "-c", "for card in /sys/class/drm/card*/device/gpu_busy_percent; do [ -f \"$card\" ] && cat \"$card\" 2>/dev/null || echo 0; done"]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) return;
-                
-                const lines = raw.split('\n').filter(line => line.trim());
-                let newUsages = [];
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const usage = parseFloat(lines[i]) || 0;
-                    newUsages.push(Math.max(0, Math.min(100, usage)));
-                }
-                
-                root.gpuUsages = newUsages;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.gpuUsages = Array(root.gpuCount).fill(0);
-            }
-        }
-    }
-
-    // NVIDIA GPU temperature reader - supports multiple GPUs
-    Process {
-        id: gpuTempReaderNvidia
-        running: false
-        command: ["nvidia-smi", "--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) return;
-                
-                const lines = raw.split('\n').filter(line => line.trim());
-                let newTemps = [];
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const temp = parseInt(lines[i]);
-                    newTemps.push(isNaN(temp) ? -1 : temp);
-                }
-                
-                root.gpuTemps = newTemps;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.gpuTemps = Array(root.gpuCount).fill(-1);
-            }
-        }
-    }
-
-    // AMD GPU temperature reader - supports multiple GPUs
-    // Reads from hwmon under /sys/class/drm/card*/device/hwmon/
-    Process {
-        id: gpuTempReaderAMD
-        running: false
-        command: ["sh", "-c", `
-            for card in /sys/class/drm/card*/device; do
-                [ -d "$card" ] || continue
-                # Check if this is an AMD GPU (has gpu_busy_percent)
-                [ -f "$card/gpu_busy_percent" ] || continue
-                # Find hwmon directory and read edge temperature
-                found=0
-                for hwmon in "$card"/hwmon/hwmon*; do
-                    [ -d "$hwmon" ] || continue
-                    # Try edge temperature first (most common for AMD GPUs)
-                    for label in "$hwmon"/temp*_label; do
-                        [ -f "$label" ] || continue
-                        lbl=$(cat "$label" 2>/dev/null)
-                        if [ "$lbl" = "edge" ]; then
-                            input=\${label%_label}_input
-                            if [ -f "$input" ]; then
-                                val=$(cat "$input" 2>/dev/null)
-                                if [ "$val" -gt 1000 ] 2>/dev/null && [ "$val" -lt 120000 ] 2>/dev/null; then
-                                    echo $((val / 1000))
-                                    found=1
-                                    break 2
-                                fi
-                            fi
-                        fi
-                    done
-                    # Fallback: try temp1_input if no labeled edge temp
-                    if [ $found -eq 0 ] && [ -f "$hwmon/temp1_input" ]; then
-                        val=$(cat "$hwmon/temp1_input" 2>/dev/null)
-                        if [ "$val" -gt 1000 ] 2>/dev/null && [ "$val" -lt 120000 ] 2>/dev/null; then
-                            echo $((val / 1000))
-                            found=1
-                            break
-                        fi
-                    fi
-                done
-                [ $found -eq 0 ] && echo -1
-            done
-        `]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) {
-                    root.gpuTemps = Array(root.gpuCount).fill(-1);
-                    return;
-                }
-                
-                const lines = raw.split('\n').filter(line => line.trim());
-                let newTemps = [];
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const temp = parseInt(lines[i]);
-                    newTemps.push(isNaN(temp) ? -1 : temp);
-                }
-                
-                root.gpuTemps = newTemps;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.gpuTemps = Array(root.gpuCount).fill(-1);
-            }
-        }
-    }
-
-    // Intel GPU usage reader - supports multiple GPUs
-    Process {
-        id: gpuReaderIntel
-        running: false
-        command: ["sh", "-c", "intel_gpu_top -J -s 100 2>/dev/null | grep -oP '\"Render/3D/[0-9]*\".*?\"busy\":\\K[0-9.]+' || echo 0"]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) return;
-                
-                const lines = raw.split('\n').filter(line => line.trim());
-                let newUsages = [];
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const usage = parseFloat(lines[i]) || 0;
-                    newUsages.push(Math.max(0, Math.min(100, usage)));
-                }
-                
-                // Ensure at least one GPU if we got data
-                if (newUsages.length === 0 && lines.length > 0) {
-                    newUsages.push(parseFloat(raw) || 0);
-                }
-                
-                root.gpuUsages = newUsages;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.gpuUsages = Array(root.gpuCount).fill(0);
-            }
-        }
-    }
-
-    // CPU usage calculation based on /proc/stat (btop method)
-    Process {
-        id: cpuReader
-        running: false
-        command: ["cat", "/proc/stat"]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) return;
-
-                const lines = raw.split('\n');
-                const cpuLine = lines.find(line => line.startsWith('cpu '));
-                
-                if (!cpuLine) return;
-
-                const values = cpuLine.split(/\s+/).slice(1).map(v => parseInt(v) || 0);
-                
-                // CPU times: user, nice, system, idle, iowait, irq, softirq, steal
-                const idle = values[3] + values[4]; // idle + iowait
-                const total = values.reduce((sum, val) => sum + val, 0);
-
-                if (root.cpuPrevTotal > 0) {
-                    const totalDiff = total - root.cpuPrevTotal;
-                    const idleDiff = idle - root.cpuPrevIdle;
-                    
-                    if (totalDiff > 0) {
-                        const usage = ((totalDiff - idleDiff) * 100.0) / totalDiff;
-                        root.cpuUsage = Math.max(0, Math.min(100, usage));
-                    }
-                }
-
-                root.cpuPrevTotal = total;
-                root.cpuPrevIdle = idle;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.cpuUsage = 0;
-            }
-        }
-    }
-
-    // RAM usage calculation based on /proc/meminfo (btop method)
-    Process {
-        id: ramReader
-        running: false
-        command: ["cat", "/proc/meminfo"]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) return;
-
-                const lines = raw.split('\n');
-                let memTotal = 0;
-                let memAvailable = 0;
-
-                for (const line of lines) {
-                    const parts = line.split(/:\s+/);
-                    if (parts.length < 2) continue;
-
-                    const key = parts[0];
-                    const valueKB = parseInt(parts[1]) || 0;
-
-                    if (key === 'MemTotal') {
-                        memTotal = valueKB;
-                    } else if (key === 'MemAvailable') {
-                        memAvailable = valueKB;
-                    }
-                }
-
-                if (memTotal > 0) {
-                    root.ramTotal = memTotal;
-                    root.ramAvailable = memAvailable;
-                    root.ramUsed = memTotal - memAvailable;
-                    root.ramUsage = (root.ramUsed * 100.0) / memTotal;
-                }
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.ramUsage = 0;
-            }
-        }
-    }
-
-    // Disk usage calculation using df command
-    Process {
-        id: diskReader
-        running: false
-        command: ["sh", "-c", "LANG=C df -B1 " + root.validDisks.join(" ") + " 2>/dev/null || LANG=C df -B1 /"]
-        
-        stdout: StdioCollector {
-            waitForEnd: true
-            onStreamFinished: {
-                const raw = text.trim();
-                if (!raw) return;
-
-                const newDiskUsage = {};
-                const lines = raw.split('\n');
-
-                for (let i = 1; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (!line) continue;
-
-                    const parts = line.split(/\s+/);
-                    if (parts.length < 6) continue;
-
-                    // Mountpoint is always the last field
-                    const mountpoint = parts[parts.length - 1];
-                    const used = parseInt(parts[2]) || 0;
-                    const available = parseInt(parts[3]) || 0;
-
-                    if (root.validDisks.includes(mountpoint)) {
-                        // Calculate percentage as df does: used / (used + available)
-                        // This accounts for reserved space not shown in total
-                        const usableSpace = used + available;
-                        if (usableSpace > 0) {
-                            const usagePercent = (used * 100.0) / usableSpace;
-                            newDiskUsage[mountpoint] = Math.max(0, Math.min(100, usagePercent));
-                        }
-                    }
-                }
-
-                // Fallback: ensure all configured disks have a value
-                for (const disk of root.validDisks) {
-                    if (!(disk in newDiskUsage)) {
-                        newDiskUsage[disk] = 0.0;
-                    }
-                }
-
-                root.diskUsage = newDiskUsage;
-            }
-        }
-
-        onExited: (code, status) => {
-            if (code !== 0) {
-                root.diskUsage = {};
             }
         }
     }

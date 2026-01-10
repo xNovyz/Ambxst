@@ -427,7 +427,7 @@ Item {
 
         // System binds
         if (ambxst.system) {
-            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools"];
+            const systemKeys = ["overview", "powermenu", "config", "lockscreen", "tools", "screenshot", "screenrecord", "lens"];
             for (const key of systemKeys) {
                 if (ambxst.system[key]) {
                     binds.push({
@@ -1045,7 +1045,7 @@ Item {
                                 font.family: Config.theme.font
                                 font.pixelSize: Styling.fontSize(root.editKeys.length > 2 ? 0 : 2)
                                 font.weight: Font.Bold
-                                color: Styling.styledRectItem("overprimary")
+                                color: Styling.srItem("overprimary")
                                 elide: Text.ElideRight
                                 width: parent.width - 24
                                 horizontalAlignment: Text.AlignHCenter
@@ -1760,7 +1760,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: Icons.accept
-                            color: Styling.styledRectItem("primary")
+                            color: Styling.srItem("primary")
                             font.family: Icons.font
                             font.pixelSize: 16
                             scale: bindItem.isEnabled ? 1.0 : 0.0
@@ -1823,7 +1823,7 @@ Item {
                                 width: layoutBadgeText.width + 8
                                 height: 16
                                 radius: 4
-                                color: Styling.styledRectItem("overprimary")
+                                color: Styling.srItem("overprimary")
                                 opacity: isHovered ? 1.0 : 0.8
 
                                 Text {
@@ -1833,7 +1833,7 @@ Item {
                                     font.family: Config.theme.font
                                     font.pixelSize: Styling.fontSize(-3)
                                     font.weight: Font.Bold
-                                    color: Styling.styledRectItem("primary")
+                                    color: Styling.srItem("primary")
                                 }
 
                                 MouseArea {
@@ -1867,7 +1867,7 @@ Item {
                     font.family: Config.theme.font
                     font.pixelSize: Styling.fontSize(-1)
                     font.weight: Font.Medium
-                    color: Styling.styledRectItem("overprimary")
+                    color: Styling.srItem("overprimary")
                 }
             }
         }

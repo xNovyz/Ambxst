@@ -18,6 +18,7 @@ Singleton {
     // Config directory paths
     readonly property string configDir: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/Ambxst"
     readonly property string presetsDir: configDir + "/presets"
+    readonly property string assetsPresetsDir: Qt.resolvedUrl("../../assets/presets").toString().replace("file://", "")
     readonly property string activePresetFile: presetsDir + "/active_preset"
 
     // Signal when presets change
@@ -27,6 +28,11 @@ Singleton {
     function scanPresets() {
         scanProcess.running = true
         readActivePresetProcess.running = true
+    }
+
+    // Check if a preset name is taken by an official preset
+    function isOfficialName(name) {
+        return presets.some(p => p.name === name && p.isOfficial)
     }
 
     // Load a preset by name
@@ -40,6 +46,14 @@ Singleton {
         currentPreset = presetName
 
         // Find the preset object to get its config files
+        // Prioritize user presets if names collide? Or just find the first match?
+        // Since names can be duplicated now, we need to know WHICH one to load.
+        // But the loadPreset signature only takes a name. 
+        // For now, let's assume the UI passes the unique ID or we handle the ambiguity.
+        // Given the constraints, let's try to find a match.
+        // If we have duplicate names, 'activePreset' just stores the string name.
+        // This is a limitation of the current active_preset storage (just a string).
+        // Use the first match found.
         const preset = presets.find(p => p.name === presetName)
         if (!preset) {
             console.warn("Preset not found in list:", presetName)
@@ -47,7 +61,8 @@ Singleton {
         }
 
         // Build command to copy config files
-        const presetPath = presetsDir + "/" + presetName
+        // Use the preset's actual path (which could be in assets)
+        const presetPath = preset.path
         let copyCmd = ""
         
         for (const configFile of preset.configFiles) {
@@ -72,6 +87,12 @@ Singleton {
     function savePreset(presetName: string, configFiles: var) {
         if (presetName === "") {
             console.warn("Cannot save preset with empty name")
+            return
+        }
+
+        if (isOfficialName(presetName)) {
+            console.warn("Cannot create preset with official name:", presetName)
+            Quickshell.execDetached(["notify-send", "Error", `Cannot use reserved official name "${presetName}".`])
             return
         }
 
@@ -122,9 +143,8 @@ Singleton {
     // Scan presets process
     Process {
         id: scanProcess
-        // Find all JSON files in subdirectories of presetsDir (depth 2)
-        // Structure: presets/PresetName/config.json
-        command: ["find", presetsDir, "-mindepth", "2", "-maxdepth", "2", "-name", "*.json"]
+        // Find all JSON files in subdirectories of presetsDir (depth 2) and assetsPresetsDir
+        command: ["find", presetsDir, assetsPresetsDir, "-mindepth", "2", "-maxdepth", "2", "-name", "*.json"]
         running: false
 
         stdout: StdioCollector {
@@ -135,28 +155,40 @@ Singleton {
                 for (const file of files) {
                     // file: /path/to/presets/PresetName/config.json
                     const parts = file.split('/')
-                    const configName = parts.pop() // config.json
-                    const presetName = parts.pop() // PresetName
+                    const configName = parts.pop() // remove config.json, parts is now the folder path
                     
-                    if (!presetsMap[presetName]) {
-                        // Reconstruct path: /path/to/presets + / + PresetName
-                        // We can't trust parts.join('/') because parts is now missing the last two elements.
-                        // However, we know presetsDir and presetName.
-                        presetsMap[presetName] = {
+                    // The path to the preset directory
+                    const presetPath = parts.join('/')
+                    // The name of the preset is the last folder name
+                    const presetName = parts[parts.length - 1]
+                    
+                    // Determine if official based on path prefix
+                    const isOfficial = file.startsWith(root.assetsPresetsDir)
+
+                    // Use presetPath as key to ensure uniqueness per preset folder
+                    const key = presetPath
+
+                    if (!presetsMap[key]) {
+                        presetsMap[key] = {
                             name: presetName,
-                            path: root.presetsDir + '/' + presetName,
+                            path: presetPath,
+                            isOfficial: isOfficial,
                             configFiles: []
                         }
                     }
                     
                     // Convert .json to .js for UI display
-                    presetsMap[presetName].configFiles.push(configName.replace('.json', '.js'))
+                    presetsMap[key].configFiles.push(configName.replace('.json', '.js'))
                 }
 
                 // Convert map to array
                 const newPresets = Object.values(presetsMap)
-                // Sort by name
-                newPresets.sort((a, b) => a.name.localeCompare(b.name))
+                // Sort: Official first (alphabetical), then Custom (alphabetical)
+                newPresets.sort((a, b) => {
+                    if (a.isOfficial && !b.isOfficial) return -1;
+                    if (!a.isOfficial && b.isOfficial) return 1;
+                    return a.name.localeCompare(b.name);
+                })
 
                 root.presets = newPresets
                 root.presetsUpdated()
@@ -171,6 +203,94 @@ Singleton {
              }
         }
     }
+
+    // Rename a preset
+    function renamePreset(oldName: string, newName: string) {
+        if (oldName === "" || newName === "" || oldName === newName) {
+            console.warn("Invalid rename parameters")
+            return
+        }
+
+        const preset = presets.find(p => p.name === oldName)
+        if (preset && preset.isOfficial) {
+             console.warn("Cannot rename official preset")
+             return
+        }
+
+        if (isOfficialName(newName)) {
+            console.warn("Cannot rename to official name")
+            Quickshell.execDetached(["notify-send", "Error", `Cannot rename to reserved official name "${newName}".`])
+            return
+        }
+
+        console.log("Renaming preset:", oldName, "to:", newName)
+        root.pendingRename = { oldName: oldName, newName: newName }
+
+        const oldPath = presetsDir + "/" + oldName
+        const newPath = presetsDir + "/" + newName
+        renameProcess.command = ["mv", oldPath, newPath]
+        renameProcess.running = true
+    }
+
+    // Update a preset with current config files
+    function updatePreset(presetName: string, configFiles: var) {
+        if (presetName === "" || configFiles.length === 0) {
+            console.warn("Invalid update parameters")
+            return
+        }
+
+        // Find the preset to check if it's official
+        const preset = presets.find(p => p.name === presetName)
+        if (preset && preset.isOfficial) {
+            console.log("Updating official preset - creating custom copy")
+            const newName = presetName + " (Custom)"
+            savePreset(newName, configFiles)
+            return
+        }
+
+        console.log("Updating preset:", presetName, "with files:", configFiles)
+        root.pendingUpdateName = presetName
+
+        const presetPath = presetsDir + "/" + presetName
+
+        let copyCmd = ""
+        for (const configFile of configFiles) {
+            const jsonFile = configFile.replace('.js', '.json')
+            const srcPath = configDir + "/config/" + jsonFile
+            const dstPath = presetPath + "/" + jsonFile
+            copyCmd += `cp "${srcPath}" "${dstPath}" && `
+        }
+        copyCmd = copyCmd.slice(0, -4) // Remove last " && "
+
+        updateProcess.command = ["sh", "-c", copyCmd]
+        updateProcess.running = true
+    }
+
+    // Delete a preset
+    function deletePreset(presetName: string) {
+        if (presetName === "") {
+            console.warn("Cannot delete preset with empty name")
+            return
+        }
+
+        const preset = presets.find(p => p.name === presetName)
+        if (preset && preset.isOfficial) {
+             console.warn("Cannot delete official preset")
+             return
+        }
+
+        console.log("Deleting preset:", presetName)
+        root.pendingDeleteName = presetName
+
+        const presetPath = presetsDir + "/" + presetName
+        deleteProcess.command = ["rm", "-rf", presetPath]
+        deleteProcess.running = true
+    }
+
+    // Internal properties
+    property var pendingRename: null
+    property string pendingUpdateName: ""
+    property string pendingDeleteName: ""
 
     // Save process
     Process {
@@ -189,6 +309,77 @@ Singleton {
             }
             root.pendingPresetName = ""
         }
+    }
+
+    // Rename process
+    Process {
+        id: renameProcess
+        running: false
+
+        onExited: function(exitCode) {
+            if (exitCode === 0 && root.pendingRename) {
+                console.log("Preset renamed successfully:", root.pendingRename.oldName, "->", root.pendingRename.newName)
+                Quickshell.execDetached(["notify-send", "Preset Renamed", `Preset renamed to "${root.pendingRename.newName}".`])
+                // Update active preset if it was the renamed one
+                if (root.activePreset === root.pendingRename.oldName) {
+                    root.activePreset = root.pendingRename.newName
+                    // Update active preset file
+                    updateActivePresetFileProcess.command = ["sh", "-c", `echo "${root.pendingRename.newName}" > "${activePresetFile}"`]
+                    updateActivePresetFileProcess.running = true
+                }
+                root.scanProcess.running = true
+            } else {
+                console.warn("Failed to rename preset")
+                Quickshell.execDetached(["notify-send", "Error", "Failed to rename preset."])
+            }
+            root.pendingRename = null
+        }
+    }
+
+    // Update process
+    Process {
+        id: updateProcess
+        running: false
+
+        onExited: function(exitCode) {
+            if (exitCode === 0) {
+                console.log("Preset updated successfully:", root.pendingUpdateName)
+                Quickshell.execDetached(["notify-send", "Preset Updated", `Preset "${root.pendingUpdateName}" updated successfully.`])
+                root.scanProcess.running = true
+            } else {
+                console.warn("Failed to update preset:", root.pendingUpdateName)
+                Quickshell.execDetached(["notify-send", "Error", `Failed to update preset "${root.pendingUpdateName}".`])
+            }
+            root.pendingUpdateName = ""
+        }
+    }
+
+    // Delete process
+    Process {
+        id: deleteProcess
+        running: false
+
+        onExited: function(exitCode) {
+            if (exitCode === 0) {
+                console.log("Preset deleted successfully:", root.pendingDeleteName)
+                Quickshell.execDetached(["notify-send", "Preset Deleted", `Preset "${root.pendingDeleteName}" deleted.`])
+                // Clear active preset if it was the deleted one
+                if (root.activePreset === root.pendingDeleteName) {
+                    root.activePreset = ""
+                }
+                root.scanProcess.running = true
+            } else {
+                console.warn("Failed to delete preset:", root.pendingDeleteName)
+                Quickshell.execDetached(["notify-send", "Error", `Failed to delete preset "${root.pendingDeleteName}".`])
+            }
+            root.pendingDeleteName = ""
+        }
+    }
+
+    // Update active preset file process
+    Process {
+        id: updateActivePresetFileProcess
+        running: false
     }
 
     // Load process

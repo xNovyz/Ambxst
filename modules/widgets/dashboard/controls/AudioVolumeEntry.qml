@@ -98,7 +98,7 @@ Item {
                         return Colors.outline;
                     if (Audio.protectionTriggered && root.isMainDevice)
                         return Colors.warning;
-                    return Styling.styledRectItem("overprimary");
+                    return Styling.srItem("overprimary");
                 }
 
                 onValueChanged: {

@@ -198,7 +198,7 @@ Item {
             Layout.preferredHeight: 40
             color: hexInput.activeFocus ? Colors.surfaceContainerHigh : Colors.surfaceContainer
             radius: Styling.radius(-2)
-            border.color: hexInput.activeFocus ? Styling.styledRectItem("overprimary") : Colors.outlineVariant
+            border.color: hexInput.activeFocus ? Styling.srItem("overprimary") : Colors.outlineVariant
             border.width: 1
             opacity: root.isHexColor ? 1.0 : 0.5
 

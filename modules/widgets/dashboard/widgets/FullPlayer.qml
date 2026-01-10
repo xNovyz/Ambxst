@@ -275,7 +275,7 @@ StyledRect {
                         id: previousBtn
                         text: Icons.previous
                         textFormat: Text.RichText
-                        color: previousHover.hovered ? (player.hasArtwork ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("overprimary")) : Colors.overBackground
+                        color: previousHover.hovered ? (player.hasArtwork ? Styling.srItem("overprimary") : Styling.srItem("overprimary")) : Colors.overBackground
                         font.pixelSize: 20
                         font.family: Icons.font
                         opacity: MprisController.canGoPrevious ? 1.0 : 0.3
@@ -312,7 +312,7 @@ StyledRect {
                         id: nextBtn
                         text: Icons.next
                         textFormat: Text.RichText
-                        color: nextHover.hovered ? (player.hasArtwork ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("overprimary")) : Colors.overBackground
+                        color: nextHover.hovered ? (player.hasArtwork ? Styling.srItem("overprimary") : Styling.srItem("overprimary")) : Colors.overBackground
                         font.pixelSize: 20
                         font.family: Icons.font
                         opacity: MprisController.canGoNext ? 1.0 : 0.3
@@ -352,7 +352,7 @@ StyledRect {
                             }
                         }
                         textFormat: Text.RichText
-                        color: modeHover.hovered ? (player.hasArtwork ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("overprimary")) : Colors.overBackground
+                        color: modeHover.hovered ? (player.hasArtwork ? Styling.srItem("overprimary") : Styling.srItem("overprimary")) : Colors.overBackground
                         font.pixelSize: 20
                         font.family: Icons.font
                         opacity: {
@@ -402,7 +402,7 @@ StyledRect {
                             return player.getPlayerIcon(MprisController.activePlayer);
                         }
                         textFormat: Text.RichText
-                        color: playerIconHover.hovered ? (player.hasArtwork ? Styling.styledRectItem("overprimary") : Styling.styledRectItem("overprimary")) : Colors.overBackground
+                        color: playerIconHover.hovered ? (player.hasArtwork ? Styling.srItem("overprimary") : Styling.srItem("overprimary")) : Colors.overBackground
                         font.pixelSize: 20
                         font.family: Icons.font
                         opacity: MprisController.activePlayer ? 1.0 : 0.3
@@ -505,7 +505,7 @@ StyledRect {
                         }
 
                         highlight: Rectangle {
-                            color: Styling.styledRectItem("overprimary")
+                            color: Styling.srItem("overprimary")
                             radius: Styling.radius(0)
                             visible: playersListView.currentIndex >= 0
                             z: -1
@@ -633,7 +633,7 @@ StyledRect {
                     }
 
                     contentItem: Rectangle {
-                        color: Styling.styledRectItem("overprimary")
+                        color: Styling.srItem("overprimary")
                         radius: Styling.radius(0)
                     }
 

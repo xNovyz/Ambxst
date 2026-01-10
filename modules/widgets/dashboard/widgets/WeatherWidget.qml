@@ -938,7 +938,7 @@ ClippingRectangle {
         width: 20
         height: 20
         radius: 10
-        color: WeatherService.debugMode ? Styling.styledRectItem("overprimary") : "#555"
+        color: WeatherService.debugMode ? Styling.srItem("overprimary") : "#555"
         opacity: (debugButtonHover.containsMouse || WeatherService.debugMode) ? 0.8 : 0
         visible: root.showDebugControls
 

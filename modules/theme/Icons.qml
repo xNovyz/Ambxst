@@ -248,4 +248,5 @@ QtObject {
     readonly property string compositor: ""
     readonly property string aperture: ""
     readonly property string magicWand: ""
+    readonly property string google: ""
 }

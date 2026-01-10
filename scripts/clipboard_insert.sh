@@ -16,23 +16,23 @@ SIZE="${6:-0}"
 # Use a temp file to preserve all unicode characters exactly
 CONTENT_FILE=$(mktemp)
 trap 'rm -f "$CONTENT_FILE"' EXIT
-cat | tr -d '\r' > "$CONTENT_FILE"
+cat | tr -d '\r' >"$CONTENT_FILE"
 
 # Read content back
 CONTENT=$(cat "$CONTENT_FILE")
 
 # Don't insert empty content for text items
 if [ "$IS_IMAGE" = "0" ] && [ -z "$CONTENT" ]; then
-    exit 0
+	exit 0
 fi
 
 # Create preview
 if [ "$IS_IMAGE" = "1" ]; then
-    PREVIEW="[Image]"
+	PREVIEW="[Image]"
 elif [ ${#CONTENT} -gt 100 ]; then
-    PREVIEW="${CONTENT:0:97}..."
+	PREVIEW="${CONTENT:0:97}..."
 else
-    PREVIEW="$CONTENT"
+	PREVIEW="$CONTENT"
 fi
 
 # Get timestamp in milliseconds
@@ -41,7 +41,7 @@ TIMESTAMP=$(date +%s)000
 # Write preview to temp file
 PREVIEW_FILE=$(mktemp)
 trap 'rm -f "$CONTENT_FILE" "$PREVIEW_FILE"' EXIT
-printf '%s' "$PREVIEW" > "$PREVIEW_FILE"
+printf '%s' "$PREVIEW" >"$PREVIEW_FILE"
 
 # Use sqlite3 with -cmd to read from files using readfile() function
 # This avoids all shell escaping issues
@@ -69,7 +69,7 @@ updated_at = ${TIMESTAMP},
 display_index = 0;
 -- Reindex unpinned items (new item is at 0, others shift down)
 WITH reindexed AS (
-  SELECT id, ROW_NUMBER() OVER (ORDER BY updated_at DESC) - 1 AS new_idx
+  SELECT id, ROW_NUMBER() OVER (ORDER BY updated_at DESC, id DESC) - 1 AS new_idx
   FROM clipboard_items WHERE pinned = 0
 )
 UPDATE clipboard_items SET display_index = (SELECT new_idx FROM reindexed WHERE reindexed.id = clipboard_items.id) WHERE pinned = 0;

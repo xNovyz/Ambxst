@@ -174,7 +174,7 @@ Item {
                                         font.pixelSize: Config.theme.fontSize
                                         font.weight: Font.Bold
                                         font.underline: latestNotification && latestNotification.urgency == NotificationUrgency.Critical && onlyNotification
-                                        color: latestNotification && latestNotification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.styledRectItem("overprimary")
+                                        color: latestNotification && latestNotification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.srItem("overprimary")
                                         elide: Text.ElideRight
                                         maximumLineCount: 1
                                         wrapMode: Text.NoWrap
@@ -296,7 +296,7 @@ Item {
                                             font.pixelSize: Config.theme.fontSize
                                             font.weight: Font.Bold
                                             font.underline: latestNotification && latestNotification.urgency == NotificationUrgency.Critical && expanded
-                                            color: latestNotification && latestNotification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.styledRectItem("overprimary")
+                                            color: latestNotification && latestNotification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.srItem("overprimary")
                                             elide: Text.ElideRight
                                         }
 
@@ -348,7 +348,7 @@ Item {
                                     font.family: Config.theme.font
                                     font.pixelSize: Config.theme.fontSize
                                     font.weight: Font.Bold
-                                    color: latestNotification && latestNotification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.styledRectItem("overprimary")
+                                    color: latestNotification && latestNotification.urgency == NotificationUrgency.Critical ? Colors.criticalText : Styling.srItem("overprimary")
                                     elide: Text.ElideRight
                                 }
 

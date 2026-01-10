@@ -159,7 +159,7 @@ Item {
                                                 text: Icons.sparkle
                                                 font.family: Icons.font
                                                 font.pixelSize: Styling.fontSize(-1)
-                                                color: Styling.styledRectItem("primary")
+                                                color: Styling.srItem("primary")
                                                 opacity: presetButton.isActive ? 1 : 0
 
                                                 Behavior on opacity {
@@ -177,7 +177,7 @@ Item {
                                             font.family: Config.theme.font
                                             font.pixelSize: Styling.fontSize(-1)
                                             font.weight: presetButton.isActive ? Font.Bold : Font.Normal
-                                            color: presetButton.isActive ? Styling.styledRectItem("primary") : Colors.overBackground
+                                            color: presetButton.isActive ? Styling.srItem("primary") : Colors.overBackground
                                             anchors.verticalCenter: parent.verticalCenter
                                         }
                                     }
@@ -256,7 +256,7 @@ Item {
                                                 text: Icons.sparkle
                                                 font.family: Icons.font
                                                 font.pixelSize: Styling.fontSize(-1)
-                                                color: Styling.styledRectItem("primary")
+                                                color: Styling.srItem("primary")
                                                 opacity: inputPresetButton.isActive ? 1 : 0
 
                                                 Behavior on opacity {
@@ -274,7 +274,7 @@ Item {
                                             font.family: Config.theme.font
                                             font.pixelSize: Styling.fontSize(-1)
                                             font.weight: inputPresetButton.isActive ? Font.Bold : Font.Normal
-                                            color: inputPresetButton.isActive ? Styling.styledRectItem("primary") : Colors.overBackground
+                                            color: inputPresetButton.isActive ? Styling.srItem("primary") : Colors.overBackground
                                             anchors.verticalCenter: parent.verticalCenter
                                         }
                                     }
@@ -319,7 +319,7 @@ Item {
                                 text: Icons.speakerHigh
                                 font.family: Icons.font
                                 font.pixelSize: 14
-                                color: Styling.styledRectItem("overprimary")
+                                color: Styling.srItem("overprimary")
                             }
                             Text {
                                 text: EasyEffectsService.activeOutputPreset
@@ -337,7 +337,7 @@ Item {
                                 text: Icons.mic
                                 font.family: Icons.font
                                 font.pixelSize: 14
-                                color: Styling.styledRectItem("overprimary")
+                                color: Styling.srItem("overprimary")
                             }
                             Text {
                                 text: EasyEffectsService.activeInputPreset

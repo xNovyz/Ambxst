@@ -29,6 +29,8 @@ var data = {
     "blurSize": 4,
     "blurPasses": 2,
     "blurIgnoreOpacity": true,
+    "blurExplicitIgnoreAlpha": false,
+    "blurIgnoreAlphaValue": 0.2,
     "blurNewOptimizations": true,
     "blurXray": false,
     "blurNoise": 0.0,
