@@ -127,9 +127,36 @@ install_dependencies() {
 
 			# Quickshell
 			quickshell-git
+
+			# Utils for manual installs
+			unzip curl
 		)
 
 		sudo dnf install -y "${PKGS[@]}"
+
+		# Manual install of Phosphor Icons
+		log_info "Installing Phosphor Icons..."
+		PHOSPHOR_VERSION="2.1.2"
+		PHOSPHOR_URL="https://github.com/phosphor-icons/web/archive/refs/tags/v${PHOSPHOR_VERSION}.zip"
+		TEMP_DIR="$(mktemp -d)"
+
+		log_info "Downloading Phosphor Icons v${PHOSPHOR_VERSION}..."
+		curl -L -o "$TEMP_DIR/phosphor.zip" "$PHOSPHOR_URL"
+
+		log_info "Extracting..."
+		unzip -q "$TEMP_DIR/phosphor.zip" -d "$TEMP_DIR"
+
+		# Install to ~/.local/share/fonts (standard user font dir)
+		FONT_DIR="$HOME/.local/share/fonts/phosphor"
+		mkdir -p "$FONT_DIR"
+
+		# Find and move TTF files (structure: web-version/src/weight/file.ttf)
+		find "$TEMP_DIR" -name "*.ttf" -exec cp {} "$FONT_DIR/" \;
+
+		# Cleanup
+		rm -rf "$TEMP_DIR"
+		fc-cache -f "$FONT_DIR"
+		log_success "Phosphor Icons installed to $FONT_DIR"
 		;;
 
 	arch)
@@ -209,8 +236,34 @@ setup_repo() {
 			log_info "Cloning Ambxst to $INSTALL_PATH..."
 			git clone "$REPO_URL" "$INSTALL_PATH"
 		else
-			log_info "Ambxst directory exists at $INSTALL_PATH. Pulling latest..."
-			git -C "$INSTALL_PATH" pull
+			log_info "Ambxst directory exists. Checking status..."
+			git -C "$INSTALL_PATH" fetch origin
+
+			CURRENT_BRANCH=$(git -C "$INSTALL_PATH" rev-parse --abbrev-ref HEAD)
+			if [ "$CURRENT_BRANCH" == "main" ]; then
+				# Check for local changes (uncommitted or committed ahead of origin)
+				HAS_CHANGES=0
+				if [ -n "$(git -C "$INSTALL_PATH" status --porcelain)" ]; then HAS_CHANGES=1; fi
+				if [ -n "$(git -C "$INSTALL_PATH" log origin/main..HEAD)" ]; then HAS_CHANGES=1; fi
+
+				if [ "$HAS_CHANGES" -eq 1 ]; then
+					echo -e "${YELLOW}⚠  Local changes or custom commits detected on 'main'.${NC}"
+					echo -e "${RED}This update will DISCARD all your local changes to match the remote.${NC}"
+					echo -e "Make sure to save your changes in another branch if needed."
+					read -p "Continue and overwrite local changes? [y/N] " -n 1 -r
+					echo ""
+					if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+						log_warn "Update aborted by user to protect local changes."
+						exit 0
+					fi
+				fi
+
+				log_info "Enforcing remote state..."
+				git -C "$INSTALL_PATH" reset --hard origin/main
+			else
+				log_warn "Your Ambxst installation is on branch '$CURRENT_BRANCH', not 'main'."
+				log_warn "Automatic update skipped to protect your changes. Switch to 'main' to update."
+			fi
 		fi
 	fi
 }
