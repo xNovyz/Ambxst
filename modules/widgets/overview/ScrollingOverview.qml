@@ -30,7 +30,9 @@ Item {
     readonly property var monitorData: monitors.find(m => m.id === monitorId) ?? null
 
     readonly property string barPosition: Config.bar.position
-    readonly property int barReserved: Config.showBackground ? 44 : 40
+    readonly property var barPanel: monitor ? Visibilities.getBarPanelForScreen(monitor.name) : null
+    readonly property bool isBarPinned: barPanel ? barPanel.pinned : (Config.bar.pinnedOnStartup ?? true)
+    readonly property int barReserved: isBarPinned ? (Config.showBackground ? 44 : 40) : 0
 
     // Window data
     readonly property var windowList: HyprlandData.windowList

@@ -7,11 +7,18 @@ import qs.modules.components
 import qs.modules.services
 import qs.modules.notifications
 import qs.config
+import qs.modules.globals
 
 Item {
     id: root
     property var cascadeItems: []
     property int cascadeIndex: -1
+
+    Shortcut {
+        sequence: "Ctrl+L"
+        enabled: GlobalStates.dashboardOpen && GlobalStates.dashboardCurrentTab === 0 && GlobalStates.widgetsTabCurrentIndex === 0
+        onActivated: discardAllWithAnimation()
+    }
 
     function discardAllWithAnimation() {
         const children = notificationList.contentItem.children;

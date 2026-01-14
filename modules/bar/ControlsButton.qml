@@ -185,7 +185,14 @@ Item {
                 iconScale: 0.8 + (sliderValue / 1.0) * 0.2
 
                 onValueChanged: newValue => {
-                    if (currentMonitor && currentMonitor.ready) {
+                    if (Brightness.syncBrightness) {
+                        for (let i = 0; i < Brightness.monitors.length; i++) {
+                            let mon = Brightness.monitors[i];
+                            if (mon && mon.ready) {
+                                mon.setBrightness(newValue);
+                            }
+                        }
+                    } else if (currentMonitor && currentMonitor.ready) {
                         currentMonitor.setBrightness(newValue);
                     }
                 }

@@ -111,6 +111,39 @@ Rectangle {
             property var filteredApps: []
             property var appsById: ({})
 
+            // Incremental loading state
+            property var pendingApps: []
+            property int loadedCount: 0
+            property int batchSize: 10
+
+            Timer {
+                id: incrementalLoader
+                interval: 100 // Run as fast as possible without blocking
+                repeat: true
+                running: false
+                onTriggered: {
+                    if (appLauncher.loadedCount >= appLauncher.pendingApps.length || appLauncher.batchSize <= 0) {
+                        running = false;
+                        return;
+                    }
+
+                    let endIndex = Math.min(appLauncher.loadedCount + appLauncher.batchSize, appLauncher.pendingApps.length);
+                    for (let i = appLauncher.loadedCount; i < endIndex; i++) {
+                        let app = appLauncher.pendingApps[i];
+                        appsModel.append({
+                            appId: app.id,
+                            appName: app.name,
+                            appIcon: app.icon,
+                            appComment: app.comment,
+                            appExecString: app.execString,
+                            appCategories: app.categories,
+                            appRunInTerminal: app.runInTerminal
+                        });
+                    }
+                    appLauncher.loadedCount = endIndex;
+                }
+            }
+
             function updateFilteredApps() {
                 if (searchText.length > 0) {
                     filteredApps = AppSearch.fuzzyQuery(searchText);
@@ -129,7 +162,11 @@ Rectangle {
             }
 
             function updateAppsModel() {
+                // Stop any existing loading
+                incrementalLoader.stop();
+                
                 let newApps = filteredApps;
+                appLauncher.pendingApps = newApps;
 
                 // Build apps by ID map for execution
                 appsById = {};
@@ -138,7 +175,10 @@ Rectangle {
                 }
 
                 appsModel.clear();
-                for (let i = 0; i < newApps.length; i++) {
+                
+                // Load first batch immediately for instant feedback
+                let initialBatch = Math.min(appLauncher.batchSize, newApps.length);
+                for (let i = 0; i < initialBatch; i++) {
                     let app = newApps[i];
                     appsModel.append({
                         appId: app.id,
@@ -149,6 +189,13 @@ Rectangle {
                         appCategories: app.categories,
                         appRunInTerminal: app.runInTerminal
                     });
+                }
+                
+                appLauncher.loadedCount = initialBatch;
+                
+                // Schedule rest if needed
+                if (appLauncher.loadedCount < newApps.length) {
+                    incrementalLoader.start();
                 }
             }
 
@@ -172,6 +219,7 @@ Rectangle {
                 
                 // Re-update when UsageTracker finishes loading
                 UsageTracker.usageDataReady.connect(function() {
+                    AppSearch.invalidateCache();
                     updateFilteredApps();
                 });
             }

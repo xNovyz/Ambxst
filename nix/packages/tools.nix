@@ -22,4 +22,5 @@ with pkgs; [
   zbar
   zenity
   inetutils
+  adw-gtk3
 ]

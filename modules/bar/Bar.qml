@@ -24,8 +24,8 @@ import "." as Bar
 PanelWindow {
     id: panel
 
-    property string position: ["top", "bottom", "left", "right"].includes(Config.bar.position) ? Config.bar.position : "top"
-    property string orientation: position === "left" || position === "right" ? "vertical" : "horizontal"
+    property string barPosition: ["top", "bottom", "left", "right"].includes(Config.bar.position) ? Config.bar.position : "top"
+    property string orientation: barPosition === "left" || barPosition === "right" ? "vertical" : "horizontal"
 
     // Auto-hide properties
     property bool pinned: Config.bar?.pinnedOnStartup ?? true
@@ -51,7 +51,7 @@ PanelWindow {
     // Check if notch hover is active (for synchronized reveal when bar is at top)
     readonly property var notchPanelRef: Visibilities.notchPanels[screen.name]
     readonly property bool notchHoverActive: {
-        if (position !== "top")
+        if (barPosition !== "top")
             return false;
         // Access the notch panel's hoverActive property if available
         if (notchPanelRef && typeof notchPanelRef.hoverActive !== 'undefined') {
@@ -125,10 +125,10 @@ PanelWindow {
     }
 
     anchors {
-        top: position !== "bottom"
-        bottom: position !== "top"
-        left: position !== "right"
-        right: position !== "left"
+        top: barPosition !== "bottom"
+        bottom: barPosition !== "top"
+        left: barPosition !== "right"
+        right: barPosition !== "left"
     }
 
     color: "transparent"
@@ -141,7 +141,7 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
 
     // Altura implicita incluye espacio extra para animaciones / futuros elementos.
-    implicitHeight: Screen.height
+    implicitHeight: orientation === "horizontal" ? 200 : Screen.height
 
     // La mascara siempre apunta al MouseArea (igual que el Dock)
     mask: Region {
@@ -167,7 +167,7 @@ PanelWindow {
         states: [
             State {
                 name: "top"
-                when: panel.position === "top"
+                when: panel.barPosition === "top"
                 PropertyChanges {
                     target: barMouseArea
                     x: 0
@@ -178,7 +178,7 @@ PanelWindow {
             },
             State {
                 name: "bottom"
-                when: panel.position === "bottom"
+                when: panel.barPosition === "bottom"
                 PropertyChanges {
                     target: barMouseArea
                     x: 0
@@ -189,7 +189,7 @@ PanelWindow {
             },
             State {
                 name: "left"
-                when: panel.position === "left"
+                when: panel.barPosition === "left"
                 PropertyChanges {
                     target: barMouseArea
                     x: 0
@@ -200,7 +200,7 @@ PanelWindow {
             },
             State {
                 name: "right"
-                when: panel.position === "right"
+                when: panel.barPosition === "right"
                 PropertyChanges {
                     target: barMouseArea
                     x: panel.width - (panel.reveal ? bar.width : Math.max(Config.bar?.hoverRegionHeight ?? 8, 4))
@@ -226,14 +226,14 @@ PanelWindow {
             }
         }
         Behavior on y {
-            enabled: Config.animDuration > 0 && panel.shouldAutoHide && panel.position === "bottom"
+            enabled: Config.animDuration > 0 && panel.shouldAutoHide && panel.barPosition === "bottom"
             NumberAnimation {
                 duration: Config.animDuration / 4
                 easing.type: Easing.OutCubic
             }
         }
         Behavior on x {
-            enabled: Config.animDuration > 0 && panel.shouldAutoHide && panel.position === "right"
+            enabled: Config.animDuration > 0 && panel.shouldAutoHide && panel.barPosition === "right"
             NumberAnimation {
                 duration: Config.animDuration / 4
                 easing.type: Easing.OutCubic
@@ -262,18 +262,18 @@ PanelWindow {
                 x: {
                     if (!panel.shouldAutoHide)
                         return 0;
-                    if (panel.position === "left")
+                    if (panel.barPosition === "left")
                         return panel.reveal ? 0 : -bar.width;
-                    if (panel.position === "right")
+                    if (panel.barPosition === "right")
                         return panel.reveal ? 0 : bar.width;
                     return 0;
                 }
                 y: {
                     if (!panel.shouldAutoHide)
                         return 0;
-                    if (panel.position === "top")
+                    if (panel.barPosition === "top")
                         return panel.reveal ? 0 : -bar.height;
-                    if (panel.position === "bottom")
+                    if (panel.barPosition === "bottom")
                         return panel.reveal ? 0 : bar.height;
                     return 0;
                 }
@@ -296,7 +296,7 @@ PanelWindow {
             states: [
                 State {
                     name: "top"
-                    when: panel.position === "top"
+                    when: panel.barPosition === "top"
                     AnchorChanges {
                         target: bar
                         anchors.left: parent.left
@@ -312,7 +312,7 @@ PanelWindow {
                 },
                 State {
                     name: "bottom"
-                    when: panel.position === "bottom"
+                    when: panel.barPosition === "bottom"
                     AnchorChanges {
                         target: bar
                         anchors.left: parent.left
@@ -328,7 +328,7 @@ PanelWindow {
                 },
                 State {
                     name: "left"
-                    when: panel.position === "left"
+                    when: panel.barPosition === "left"
                     AnchorChanges {
                         target: bar
                         anchors.left: parent.left
@@ -344,7 +344,7 @@ PanelWindow {
                 },
                 State {
                     name: "right"
-                    when: panel.position === "right"
+                    when: panel.barPosition === "right"
                     AnchorChanges {
                         target: bar
                         anchors.left: undefined
@@ -363,7 +363,7 @@ PanelWindow {
             BarBg {
                 id: barBg
                 anchors.fill: parent
-                position: panel.position
+                position: panel.barPosition
             }
 
             RowLayout {

@@ -114,6 +114,7 @@ install_dependencies() {
 			# Tools
 			brightnessctl ddcutil fontconfig grim slurp ImageMagick jq sqlite upower
 			wl-clipboard wlsunset wtype zbar glib2 pipx zenity power-profiles-daemon
+			python3.12
 
 			# Tesseract (Fedora uses langpack naming)
 			tesseract tesseract-langpack-eng tesseract-langpack-spa tesseract-langpack-jpn
@@ -125,7 +126,7 @@ install_dependencies() {
 			google-noto-fonts-common google-noto-cjk-fonts google-noto-emoji-fonts
 
 			# Special Packages
-			mpvpaper matugen R-CRAN-phosphoricons
+			mpvpaper matugen R-CRAN-phosphoricons adw-gtk3-theme
 
 			# Quickshell
 			quickshell-git
@@ -163,10 +164,6 @@ install_dependencies() {
 
 	arch)
 		log_info "Preparing installation..."
-
-		# Sync package databases
-		log_info "Syncing package databases..."
-		sudo pacman -Syy
 
 		# Ensure git and base-devel are installed for AUR helper compilation
 		if ! command -v git >/dev/null || ! command -v makepkg >/dev/null; then
@@ -208,6 +205,7 @@ install_dependencies() {
 			# Tools
 			brightnessctl ddcutil fontconfig grim slurp imagemagick jq sqlite upower
 			wl-clipboard wlsunset wtype zbar glib2 python-pipx zenity inetutils power-profiles-daemon
+			python312
 
 			# Tesseract
 			tesseract tesseract-data-eng tesseract-data-spa tesseract-data-jpn tesseract-data-chi_sim tesseract-data-chi_tra tesseract-data-kor tesseract-data-lat
@@ -218,7 +216,7 @@ install_dependencies() {
 
 			# Special Packages
 			matugen gpu-screen-recorder wl-clip-persist mpvpaper
-			quickshell-git ttf-phosphor-icons ttf-league-gothic
+			quickshell-git ttf-phosphor-icons ttf-league-gothic adw-gtk-theme
 		)
 
 		$AUR_HELPER -S --needed --noconfirm "${PKGS[@]}"
@@ -298,7 +296,7 @@ install_python_tools() {
 
 	log_info "Installing Python tools..."
 	if command -v pipx >/dev/null; then
-		pipx install "litellm[proxy]"
+		pipx install "litellm[proxy]" --python 3.12
 		pipx ensurepath
 	else
 		log_warn "pipx not found. Skipping litellm[proxy] installation."

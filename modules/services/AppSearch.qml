@@ -160,18 +160,45 @@ Singleton {
         searchIndex = newIndex;
     }
     
-    Component.onCompleted: buildIndex()
+    property var allAppsCache: null
+
+    function invalidateCache() {
+        allAppsCache = null;
+    }
+
+    onListChanged: {
+        allAppsCache = null;
+        buildIndex();
+    }
+    
+    Component.onCompleted: {
+        buildIndex();
+        // Pre-build cache in background if possible, or just wait for first access
+    }
     
     function getAllApps() {
+        if (allAppsCache) return allAppsCache;
+
         const results = [];
         
         for (let i = 0; i < list.length; i++) {
             const app = list[i];
             const usageScore = UsageTracker.getUsageScore(app.id);
-            const validIcon = validateIcon(app.icon || "application-x-executable");
+            // Use getCachedIcon which uses iconCache, but we want a simpler validater here maybe?
+            // validateIcon is "safer" but slower. Let's cache the validation result too.
+            
+            let iconToUse = app.icon || "application-x-executable";
+            if (iconCache[iconToUse]) {
+                iconToUse = iconCache[iconToUse];
+            } else {
+                let validated = validateIcon(iconToUse);
+                iconCache[iconToUse] = validated;
+                iconToUse = validated;
+            }
+
             results.push({
                 name: app.name,
-                icon: validIcon,
+                icon: iconToUse,
                 id: app.id,
                 execString: app.execString,
                 comment: app.comment || "",
@@ -192,6 +219,7 @@ Singleton {
             return a.name.localeCompare(b.name);
         });
         
+        allAppsCache = results;
         return results; // Show all apps
     }
     
@@ -259,10 +287,18 @@ Singleton {
             if (matchFound) {
                 const app = entry.original;
                 const usageScore = UsageTracker.getUsageScore(app.id);
-                const validIcon = validateIcon(app.icon || "application-x-executable");
+                let iconToUse = app.icon || "application-x-executable";
+                if (iconCache[iconToUse]) {
+                    iconToUse = iconCache[iconToUse];
+                } else {
+                    let validated = validateIcon(iconToUse);
+                    iconCache[iconToUse] = validated;
+                    iconToUse = validated;
+                }
+                
                 results.push({
                     name: app.name,
-                    icon: validIcon,
+                    icon: iconToUse,
                     score: score,
                     id: app.id,
                     execString: app.execString,
